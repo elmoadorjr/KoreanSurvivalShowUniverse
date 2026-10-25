@@ -8,8 +8,11 @@
 //                                        and never fails the build.
 //
 // A player is matched only when exactly one person on Wikidata fits: their
-// Korean name must equal `ko` when we have it. Anything ambiguous is skipped
-// and listed. In src/data/universe.json a player can pin the match with
+// Korean name must equal `ko` when we have it, and the person's Wikidata
+// description must agree with what the player is `known` for (an actress with
+// an actress, a Go player with a Go player). Players with no `known`, and
+// private people (students, employees), are never matched. Anything ambiguous
+// is skipped and listed. In src/data/universe.json a player can pin the match with
 // "wikidata": "Q123", name a Commons file with "photo": "File name.jpg", or opt
 // out with "photo": false.
 import fs from "node:fs/promises";
@@ -59,7 +62,7 @@ async function candidates(person) {
     await pause(200);
   }
   if (!ids.size) return [];
-  const r = await api(WIKIDATA, { action: "wbgetentities", ids: [...ids].join("|"), props: "labels|aliases|claims", languages: "en|ko" });
+  const r = await api(WIKIDATA, { action: "wbgetentities", ids: [...ids].join("|"), props: "labels|aliases|claims|descriptions", languages: "en|ko" });
   return Object.values(r.entities ?? {});
 }
 
@@ -68,14 +71,68 @@ const isHuman = (e) => claim(e, "P31").some((v) => v.id === "Q5");
 const names = (e, lang) => [e.labels?.[lang]?.value, ...(e.aliases?.[lang] ?? []).map((a) => a.value)].filter(Boolean);
 const squash = (s) => s.toLowerCase().replace(/[\s\-.]/g, "");
 
+// What a player is known for, and words that confirm it in a Wikidata description.
+const TRADES = [
+  [/actor|actress/i, /actor|actress|배우/i],
+  [/singer|rapper|songwriter|idol/i, /singer|rapper|musician|idol|vocalist|가수|래퍼|그룹/i],
+  [/comedian/i, /comedian|개그맨|개그우먼|코미디언/i],
+  [/host|presenter|broadcaster|announcer|personality/i, /presenter|host|announcer|broadcaster|personality|아나운서|방송인|진행자/i],
+  [/politician|lawmaker/i, /politician|national assembly|정치인|국회의원/i],
+  [/go player/i, /go player|baduk|바둑/i],
+  [/starcraft|gamer/i, /starcraft|gamer|e-?sports|프로게이머/i],
+  [/poker/i, /poker|포커/i],
+  [/lawyer/i, /lawyer|attorney|변호사/i],
+  [/youtuber|streamer|creator|influencer/i, /youtuber|streamer|influencer|internet personality|유튜버|스트리머|크리에이터/i],
+  [/webtoon/i, /webtoon|cartoonist|manhwa|웹툰|만화/i],
+  [/critic/i, /critic|commentator|평론가/i],
+  [/chef/i, /chef|cook|셰프|요리사/i],
+  [/illusionist|magician/i, /magician|illusionist|마술사/i],
+  [/surgeon|doctor/i, /surgeon|physician|doctor|의사/i],
+  [/dancer/i, /dancer|choreographer|댄서|안무가/i],
+  [/model/i, /model|모델/i],
+  [/programmer|hacker/i, /programmer|hacker|engineer|프로그래머|해커/i],
+  [/science communicator/i, /science|communicator|youtuber|과학/i],
+  [/skeleton/i, /skeleton|스켈레톤/i],
+  [/gymnast/i, /gymnast|체조/i],
+  [/wrestler/i, /wrestl|레슬링|씨름/i],
+  [/judoka/i, /judo|유도/i],
+  [/footballer/i, /football|soccer|축구/i],
+  [/basketball/i, /basketball|농구/i],
+  [/baseball/i, /baseball|야구/i],
+  [/boxer/i, /box|복싱|권투/i],
+  [/martial/i, /martial|mma|ufc|격투/i],
+  [/cyclist/i, /cycl|사이클|경륜/i],
+  [/snowboard/i, /snowboard|스노보드/i],
+  [/luger/i, /luge|루지/i],
+  [/rugby/i, /rugby|럭비/i],
+  [/bodybuilder/i, /bodybuild|보디빌/i],
+  [/climber/i, /climb|클라이밍/i],
+  [/kabaddi/i, /kabaddi|카바디/i],
+  [/ssireum/i, /ssireum|씨름/i],
+  [/crossfit/i, /crossfit|크로스핏/i],
+];
+// Private people: never matched to a public figure who shares their name.
+const PRIVATE = /student|employee|officer|firefighter|soldier|rescuer|stuntwoman|car dealer|farmer|^lg /i;
+
+const descriptions = (e) => [e.descriptions?.en?.value, e.descriptions?.ko?.value].filter(Boolean).join(" ");
+
+function agrees(person, entity) {
+  const known = person.known ?? "";
+  if (!known || PRIVATE.test(known)) return false;
+  const text = descriptions(entity);
+  if (!text) return false;
+  const trades = TRADES.filter(([k]) => k.test(known));
+  return trades.length > 0 && trades.some(([, d]) => d.test(text));
+}
+
 function pick(person, entities) {
   const humans = entities.filter((e) => isHuman(e) && claim(e, "P18").length);
-  const fits = humans.filter((e) =>
+  const named = humans.filter((e) =>
     person.ko
       ? names(e, "ko").some((n) => squash(n) === squash(person.ko))
       : names(e, "en").some((n) => squash(n) === squash(plain(person.name)))
   );
-  return fits;
+  return named.filter((e) => agrees(person, e));
 }
 
 async function fileFor(id, person) {
@@ -85,6 +142,7 @@ async function fileFor(id, person) {
     const file = claim(r.entities?.[person.wikidata] ?? {}, "P18")[0];
     return file ? { file, wikidata: person.wikidata } : { skip: `${person.wikidata} has no image` };
   }
+  if (!person.known || PRIVATE.test(person.known)) return { skip: "private, or nothing to check a match against" };
   const fits = pick(person, await candidates(person));
   if (fits.length === 1) return { file: claim(fits[0], "P18")[0], wikidata: fits[0].id };
   return { skip: fits.length ? `ambiguous: ${fits.map((e) => e.id).join(", ")}` : "no match with a photo" };
@@ -100,13 +158,14 @@ async function download(id, file) {
   const meta = info.extmetadata ?? {};
   const ext = path.extname(new URL(info.thumburl).pathname).toLowerCase() || ".jpg";
   const name = `${id}${ext === ".jpeg" ? ".jpg" : ext}`;
-  const cached = path.join(CACHE, name);
+  // Cached by Commons file, so a corrected match never reuses the old image.
+  const cached = path.join(CACHE, "files", file.replace(/[^\w.-]+/g, "_") + (ext === ".jpeg" ? ".jpg" : ext));
   let bytes = await fs.readFile(cached).catch(() => null);
   if (!bytes) {
     const res = await fetch(info.thumburl, { headers: UA, signal: AbortSignal.timeout(30000) });
     if (!res.ok) throw new Error(`${res.status} ${info.thumburl}`);
     bytes = Buffer.from(await res.arrayBuffer());
-    await fs.mkdir(CACHE, { recursive: true });
+    await fs.mkdir(path.dirname(cached), { recursive: true });
     await fs.writeFile(cached, bytes);
   }
   await fs.writeFile(path.join(DIR, name), bytes);
