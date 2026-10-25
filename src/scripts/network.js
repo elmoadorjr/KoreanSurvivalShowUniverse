@@ -1,17 +1,28 @@
 import ForceGraph3D from "3d-force-graph";
 import SpriteText from "three-spritetext";
-import { forceX, forceY, forceZ } from "d3-force-3d";
-import { CanvasTexture, Group, SRGBColorSpace, Sprite, SpriteMaterial, Vector3 } from "three";
+import { forceX, forceY, forceZ, forceRadial } from "d3-force-3d";
+import {
+  AdditiveBlending, BufferGeometry, CanvasTexture, Color, Float32BufferAttribute, Group, LineBasicMaterial,
+  LineLoop, Mesh, MeshStandardMaterial, NormalBlending, Points, PointsMaterial, SphereGeometry, SRGBColorSpace,
+  Sprite, SpriteMaterial, Vector3,
+} from "three";
 
 const data = JSON.parse(document.getElementById("graph-data").textContent);
 const el = document.getElementById("graph");
 const css = getComputedStyle(document.documentElement);
 const token = (name) => css.getPropertyValue(name).trim();
 const theme = { bg: token("--bg"), ink: token("--ink"), muted: token("--muted"), gold: token("--gold"), line: token("--line") };
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const plain = (name) => name.replace(/\s*\(.*\)/, "");
 const narrow = () => matchMedia("(max-width: 760px)").matches;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function rgba(hex, a) {
+  const c = new Color(hex);
+  return `rgba(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)},${a})`;
+}
 
 // ---------- Indexes ----------
 const showById = Object.fromEntries(data.shows.map((s) => [s.id, s]));
@@ -24,19 +35,28 @@ for (const p of data.people) {
   const count = {};
   for (const a of p.apps) count[seasonById[a.season].show] = (count[seasonById[a.season].show] ?? 0) + 1;
   p.primary = p.showIds.reduce((best, s) => (count[s] > count[best] ? s : best), p.showIds[0]);
+  p.debut = Math.min(...p.apps.map((a) => seasonById[a.season].year));
   for (const a of p.apps) castOf[a.season].push(p.id);
 }
+for (const s of data.shows) s.debut = Math.min(...data.seasons.filter((x) => x.show === s.id).map((x) => x.year));
 const crossShow = (p) => p.showIds.length > 1;
 const FIRST = Math.min(...data.seasons.map((s) => s.year));
 const LAST = Math.max(...data.seasons.map((s) => s.year));
 const appOf = (id, sid) => personById[id].apps.find((a) => a.season === sid);
 
-// Seasons two players shared (all of them, whatever the filters).
+// The four tiers of a career, used by the Rings layout and the panel.
+const TIERS = [
+  { name: "Legend", test: (p) => p.titles >= 2 || p.showIds.length >= 3, r: 70 },
+  { name: "Crossover", test: (p) => p.showIds.length === 2, r: 170 },
+  { name: "Veteran", test: (p) => p.apps.length >= 2, r: 260 },
+  { name: "One season", test: () => true, r: 350 },
+];
+const tierOf = (p) => TIERS.find((t) => t.test(p));
+
 function together(a, b) {
   const theirs = new Set(personById[b].apps.map((x) => x.season));
   return personById[a].apps.map((x) => x.season).filter((s) => theirs.has(s));
 }
-// Everyone a player has shared a season with, and in how many seasons.
 function mates(id) {
   const n = new Map();
   for (const a of personById[id].apps) {
@@ -44,7 +64,9 @@ function mates(id) {
   }
   return n;
 }
-// Steps from one player to everyone reachable.
+const mateCount = Object.fromEntries(data.people.map((p) => [p.id, mates(p.id).size]));
+const connectedRank = Object.fromEntries(Object.entries(mateCount).sort((a, b) => b[1] - a[1]).map(([id], i) => [id, i + 1]));
+
 function distances(from) {
   const dist = new Map([[from, 0]]);
   const prev = new Map([[from, null]]);
@@ -67,7 +89,6 @@ function shortestPath(from, to) {
   for (let at = to; at !== null; at = prev.get(at)) path.unshift(at);
   return path;
 }
-// Who finished higher each time two players met.
 function headToHead(a, b) {
   const rows = together(a, b).map((sid) => {
     const pa = appOf(a, sid).place, pb = appOf(b, sid).place;
@@ -83,24 +104,25 @@ function headToHead(a, b) {
 const defaultDims = narrow() ? 2 : 3;
 const state = {
   view: "players",
+  layout: "web",
   who: "veterans",
   shows: new Set(data.shows.map((s) => s.id)),
   year: LAST,
   strong: true,
   dims: defaultDims,
-  group: null, // { ids: Set, label, except }
-  ego: null, // player whose circle is shown
-  path: null, // [ids]
+  group: null,
+  ego: null,
+  path: null,
   hover: null,
-  selected: null, // node or link
-  after: null, // runs once the layout settles
+  selected: null,
+  after: null,
   settled: false,
   list: false,
+  first: true,
 };
 
 const seasonOn = (sid) => state.shows.has(seasonById[sid].show) && sid !== state.group?.except && seasonById[sid].year <= state.year;
 
-// Which players are in the current view.
 function visiblePeople() {
   let ids;
   if (state.ego) {
@@ -119,7 +141,6 @@ function visiblePeople() {
   return ids;
 }
 
-// Seasons a connection runs through, kept in view even when filtered out.
 function pathSeasons() {
   const out = new Set();
   const path = state.path ?? [];
@@ -134,7 +155,7 @@ const nodeCache = new Map();
 function nodeObj(id, props) {
   let n = nodeCache.get(id);
   if (!n) {
-    n = { id };
+    n = { id, anim: { alpha: 0, scale: 0.2, label: 0 } };
     nodeCache.set(id, n);
   }
   return Object.assign(n, props);
@@ -148,8 +169,7 @@ function build() {
   const links = [];
   for (const id of ids) {
     const p = personById[id];
-    // Each player takes the color of the show they played most.
-    nodes.push(nodeObj(id, { kind: "person", ref: p, color: showById[p.primary].color, size: 1 + p.apps.length * 0.9 }));
+    nodes.push(nodeObj(id, { kind: "person", ref: p, color: showById[p.primary].color, size: 1 + mateCount[id] / 6 + p.apps.length * 0.6 }));
   }
 
   if (state.view === "players") {
@@ -160,7 +180,11 @@ function build() {
       for (let i = 0; i < cast.length; i++) {
         for (let j = i + 1; j < cast.length; j++) {
           const key = linkKey(cast[i], cast[j]);
-          if (!pairs.has(key)) pairs.set(key, { source: cast[i], target: cast[j], key, kind: "mates", seasons: [] });
+          if (!pairs.has(key)) {
+            // Light flows from the earlier debut to the later one.
+            const [x, y] = personById[cast[i]].debut <= personById[cast[j]].debut ? [cast[i], cast[j]] : [cast[j], cast[i]];
+            pairs.set(key, { source: x, target: y, key, kind: "mates", seasons: [] });
+          }
           pairs.get(key).seasons.push(s.id);
         }
       }
@@ -176,14 +200,14 @@ function build() {
       for (const a of personById[id].apps) {
         if (!on(a.season)) continue;
         seasonsUsed.add(a.season);
-        links.push({ source: id, target: `season:${a.season}`, key: `${id}>${a.season}`, kind: "played", color: showById[seasonById[a.season].show].color });
+        links.push({ source: `season:${a.season}`, target: id, key: `${id}>${a.season}`, kind: "played", color: showById[seasonById[a.season].show].color });
       }
     }
     const showsUsed = new Set([...seasonsUsed].map((s) => seasonById[s].show));
-    for (const sid of showsUsed) nodes.push(nodeObj(`show:${sid}`, { kind: "show", ref: showById[sid], color: showById[sid].color, size: 14 }));
+    for (const sid of showsUsed) nodes.push(nodeObj(`show:${sid}`, { kind: "show", ref: showById[sid], color: showById[sid].color, size: 16 }));
     for (const sid of seasonsUsed) {
       const s = seasonById[sid];
-      nodes.push(nodeObj(`season:${sid}`, { kind: "season", ref: s, color: showById[s.show].color, size: 5 }));
+      nodes.push(nodeObj(`season:${sid}`, { kind: "season", ref: s, color: showById[s.show].color, size: 6 }));
       links.push({ source: `show:${s.show}`, target: `season:${sid}`, key: `spine:${sid}`, kind: "spine", color: showById[s.show].color });
     }
   }
@@ -195,6 +219,11 @@ function build() {
     a.neighbors.add(b); b.neighbors.add(a);
     a.links.add(l); b.links.add(l);
   }
+  // Importance within this view decides how big a name is and how soon it shows.
+  const persons = nodes.filter((n) => n.kind === "person")
+    .sort((a, b) => (b.neighbors.size + b.ref.titles * 4 + b.ref.apps.length * 2) - (a.neighbors.size + a.ref.titles * 4 + a.ref.apps.length * 2));
+  persons.forEach((n, i) => { n.rank = persons.length <= 40 ? 0 : i < 8 ? 0 : i < 32 ? 1 : 2; });
+  for (const n of nodes) if (n.kind !== "person") n.rank = 0;
   return { nodes, links };
 }
 
@@ -230,13 +259,12 @@ function computeLit() {
       const want = new Set(state.path.slice(1).map((id, i) => linkKey(state.path[i], id)));
       for (const l of links) if (want.has(l.key)) lit.links.add(l);
     } else {
-      // In the seasons view, light each hop's shared season.
       for (let i = 1; i < state.path.length; i++) {
         const s = together(state.path[i - 1], state.path[i])[0];
         for (const l of links) {
           if (l.key === `${state.path[i - 1]}>${s}` || l.key === `${state.path[i]}>${s}`) {
             lit.links.add(l);
-            lit.nodes.add(l.target);
+            lit.nodes.add(l.source);
           }
         }
       }
@@ -247,11 +275,38 @@ function computeLit() {
 const anyLit = () => lit.nodes.size > 0;
 const dimmed = (n) => anyLit() && !lit.nodes.has(n);
 
-// ---------- Drawing ----------
-const REL_SIZE = 3;
+// ---------- Drawing: glowing nodes ----------
+const REL = 3.2;
+const radius = (n) => Math.cbrt(n.size) * REL;
+const sphere = new SphereGeometry(1, 24, 18);
 
-// A player with a photo is drawn as their face in a ring of their color.
-function photoSprite(node) {
+function canvasTexture(draw, px = 128) {
+  const c = document.createElement("canvas");
+  c.width = c.height = px;
+  draw(c.getContext("2d"), px);
+  const t = new CanvasTexture(c);
+  t.colorSpace = SRGBColorSpace;
+  return t;
+}
+const glowTex = canvasTexture((g, px) => {
+  const grd = g.createRadialGradient(px / 2, px / 2, 0, px / 2, px / 2, px / 2);
+  grd.addColorStop(0, "rgba(255,255,255,1)");
+  grd.addColorStop(0.18, "rgba(255,255,255,.55)");
+  grd.addColorStop(0.5, "rgba(255,255,255,.12)");
+  grd.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, px, px);
+});
+const ringTex = canvasTexture((g, px) => {
+  g.strokeStyle = "#fff";
+  g.lineWidth = px * 0.06;
+  g.beginPath();
+  g.arc(px / 2, px / 2, px * 0.42, 0, Math.PI * 2);
+  g.stroke();
+});
+const noPick = (o) => { o.raycast = () => {}; return o; };
+
+function photoTexture(node) {
   const px = 128;
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = px;
@@ -265,7 +320,6 @@ function photoSprite(node) {
     ctx.beginPath();
     ctx.arc(px / 2, px / 2, px / 2 - ring / 2, 0, Math.PI * 2);
     ctx.clip();
-    // Cover the circle, favoring the top of the photo where faces usually are.
     const scale = Math.max(px / img.width, px / img.height);
     const w = img.width * scale, h = img.height * scale;
     ctx.drawImage(img, (px - w) / 2, Math.min(0, (px - h) * 0.25), w, h);
@@ -278,61 +332,97 @@ function photoSprite(node) {
     texture.needsUpdate = true;
   };
   img.src = node.ref.photo;
-  const sprite = new Sprite(new SpriteMaterial({ map: texture, transparent: true, depthWrite: false }));
-  const r = Math.cbrt(node.size) * REL_SIZE * 1.25;
-  sprite.scale.set(r * 2, r * 2, 1);
-  node.pic = sprite;
-  return sprite;
+  return texture;
 }
 
-function label(node) {
-  const text = node.kind === "season" ? node.ref.name : plain(node.ref.name);
-  const sprite = new SpriteText(text);
-  sprite.fontFace = "Inter, system-ui, sans-serif";
-  sprite.fontWeight = node.kind === "person" ? "600" : "700";
-  sprite.color = node.kind === "person" ? theme.ink : node.color;
-  sprite.textHeight = node.kind === "show" ? 7 : node.kind === "season" ? 3.6 : 3;
-  sprite.center.y = -0.6 - node.size * 0.04;
-  sprite.material.depthWrite = false;
-  sprite.material.transparent = true;
-  node.sprite = sprite;
-  return sprite;
+const LABEL_SIZES = [5.2, 3.6, 2.8];
+
+function makeNode(n) {
+  const r = radius(n);
+  const g = new Group();
+  const parts = {};
+  const halo = noPick(new Sprite(new SpriteMaterial({
+    map: glowTex, color: n.color, transparent: true, depthWrite: false,
+    blending: dark ? AdditiveBlending : NormalBlending, opacity: 0,
+  })));
+  halo.scale.setScalar(r * (n.kind === "show" ? 6 : 4.2));
+  parts.halo = halo;
+  g.add(halo);
+
+  if (n.kind === "person" && n.ref.photo) {
+    const pic = new Sprite(new SpriteMaterial({ map: photoTexture(n), transparent: true, depthWrite: false, opacity: 0 }));
+    pic.scale.setScalar(r * 2.5);
+    parts.core = pic;
+    g.add(pic);
+  } else {
+    const core = new Mesh(sphere, new MeshStandardMaterial({
+      color: n.color, emissive: new Color(n.color), emissiveIntensity: dark ? 0.32 : 0.12,
+      roughness: 0.35, metalness: 0.1, transparent: true, opacity: 0,
+    }));
+    core.scale.setScalar(r);
+    parts.core = core;
+    g.add(core);
+  }
+
+  if (n.kind === "person" && n.ref.titles) {
+    const ring = noPick(new Sprite(new SpriteMaterial({ map: ringTex, color: theme.gold, transparent: true, depthWrite: false, opacity: 0 })));
+    ring.scale.setScalar(r * 3.1);
+    parts.ring = ring;
+    g.add(ring);
+  }
+
+  const text = n.kind === "season" ? n.ref.name : plain(n.ref.name);
+  const label = noPick(new SpriteText(text));
+  label.fontFace = "Inter, system-ui, sans-serif";
+  label.fontWeight = n.kind === "person" ? "600" : "700";
+  label.color = n.kind === "person" ? theme.ink : n.color;
+  label.textHeight = n.kind === "show" ? 8 : n.kind === "season" ? 3.8 : LABEL_SIZES[n.rank ?? 2];
+  label.center.y = -0.55 - r * 0.09;
+  label.material.depthWrite = false;
+  label.material.transparent = true;
+  label.material.opacity = 0;
+  if (dark) label.strokeWidth = 0;
+  parts.label = label;
+  g.add(label);
+
+  n.parts = parts;
+  n.labelSize = label.textHeight;
+  return g;
 }
 
-const hasPhoto = (n) => n.kind === "person" && !!n.ref.photo;
-
-function nodeObject(node) {
-  const text = label(node);
-  if (!hasPhoto(node)) return text;
-  const group = new Group();
-  group.add(photoSprite(node));
-  group.add(text);
-  return group;
-}
-
+// ---------- The graph ----------
 const graph = new ForceGraph3D(el, { controlType: "orbit" })
   .backgroundColor(theme.bg)
   .showNavInfo(false)
   .numDimensions(state.dims)
-  .nodeRelSize(REL_SIZE)
   .nodeVal((n) => n.size)
-  .nodeColor((n) => (dimmed(n) ? theme.line : n.color))
-  .nodeOpacity(0.95)
-  .nodeResolution(14)
+  .nodeRelSize(REL)
+  .nodeThreeObject(makeNode)
   .nodeLabel((n) => {
     if (n.kind !== "person") return `<div class="net-tip"><b>${esc(n.kind === "season" ? n.ref.full : n.ref.name)}</b></div>`;
     const p = n.ref;
-    return `<div class="net-tip"><b>${esc(p.name)}</b>${p.known ? `<br>${esc(p.known)}` : ""}<br>${p.apps.length} season${p.apps.length > 1 ? "s" : ""}${p.titles ? `, ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""}</div>`;
+    return `<div class="net-tip"><b>${esc(p.name)}</b>${p.known ? `<br>${esc(p.known)}` : ""}<br>${p.apps.length} season${p.apps.length > 1 ? "s" : ""}${p.titles ? `, ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""} · ${tierOf(p).name}</div>`;
   })
-  .nodeThreeObjectExtend((n) => !hasPhoto(n))
-  .nodeThreeObject(nodeObject)
   .linkVisibility((l) => !weak(l) || lit.links.has(l))
-  .linkColor((l) => (lit.links.has(l) ? (lit.path ? theme.gold : l.color) : theme.muted))
-  .linkOpacity(0.24)
-  .linkWidth((l) => (lit.links.has(l) ? (l.kind === "mates" ? 0.8 + l.seasons.length * 0.5 : 1.1) : 0))
-  .linkDirectionalParticles((l) => (lit.links.has(l) && lit.path ? 3 : 0))
-  .linkDirectionalParticleWidth(1.6)
-  .linkDirectionalParticleColor(() => theme.gold)
+  .linkCurvature((l) => (l.kind === "mates" ? 0.18 : 0))
+  .linkCurveRotation((l) => (l.key.length % 7) / 7 * Math.PI)
+  .linkOpacity(1)
+  .linkColor((l) => {
+    if (lit.links.has(l)) return lit.path ? theme.gold : rgba(l.color, 0.95);
+    if (anyLit()) return rgba(theme.muted, 0.05);
+    const w = l.kind === "mates" ? Math.min(l.seasons.length, 4) : 2;
+    return rgba(l.kind === "mates" && l.seasons.length < 2 ? theme.muted : l.color, dark ? 0.1 + w * 0.09 : 0.12 + w * 0.08);
+  })
+  .linkWidth((l) => (lit.links.has(l) ? (l.kind === "mates" ? 0.6 + l.seasons.length * 0.45 : 1) : l.kind === "mates" && l.seasons.length >= 3 ? 0.5 : 0))
+  .linkDirectionalParticles((l) => {
+    if (reduceMotion) return 0;
+    if (lit.links.has(l)) return 4;
+    if (anyLit() || weak(l)) return 0;
+    return l.kind === "mates" ? Math.min(l.seasons.length - 1, 3) : 0;
+  })
+  .linkDirectionalParticleSpeed((l) => (lit.links.has(l) ? 0.009 : 0.0028))
+  .linkDirectionalParticleWidth((l) => (lit.links.has(l) ? 2.2 : 1.3))
+  .linkDirectionalParticleColor((l) => (lit.path ? theme.gold : l.color))
   .linkLabel((l) => {
     if (l.kind !== "mates") return "";
     const a = l.source.id ?? l.source, b = l.target.id ?? l.target;
@@ -345,7 +435,8 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
   .onNodeClick((node) => select(node, true))
   .onLinkClick((link) => link.kind === "mates" && select(link))
   .onBackgroundClick(() => clearSelection())
-  .cooldownTime(4000)
+  .d3VelocityDecay(0.32)
+  .cooldownTime(5000)
   .onEngineStop(() => {
     state.settled = true;
     const fn = state.after;
@@ -353,16 +444,201 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
     if (fn) fn();
   });
 
-// Spread hubs apart; players who shared more seasons sit closer together.
-graph.d3Force("charge").strength((n) => (n.kind === "show" ? -260 : n.kind === "season" ? -90 : -36));
-graph.d3Force("link")
-  .distance((l) => (l.kind === "spine" ? 30 : l.kind === "mates" ? 34 - Math.min(l.seasons.length, 4) * 4 : 22))
-  .strength((l) => {
-    const base = 1 / Math.min(l.source.neighbors?.size || 1, l.target.neighbors?.size || 1);
-    return weak(l) ? base * 0.15 : base;
-  });
-// A little gravity, so islands stay in view instead of drifting off.
-for (const [name, f] of [["x", forceX], ["y", forceY], ["z", forceZ]]) graph.d3Force(name, f(0).strength(0.04));
+// A faint field of stars far behind everything.
+if (dark) {
+  const pts = [];
+  for (let i = 0; i < 1400; i++) {
+    const v = new Vector3().randomDirection().multiplyScalar(1600 + Math.random() * 1800);
+    pts.push(v.x, v.y, v.z);
+  }
+  const geo = new BufferGeometry();
+  geo.setAttribute("position", new Float32BufferAttribute(pts, 3));
+  const stars = new Points(geo, new PointsMaterial({ color: theme.muted, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.55, depthWrite: false }));
+  stars.name = "stars";
+  graph.scene().add(stars);
+}
+
+// ---------- Layouts ----------
+const yearX = (y) => (y - (FIRST + LAST) / 2) * 62;
+const nodeYear = (n) => (n.kind === "person" ? n.ref.debut : n.kind === "season" ? n.ref.year : n.ref.debut);
+
+const decor = new Group();
+graph.scene().add(decor);
+
+function clearDecor() {
+  for (const c of [...decor.children]) {
+    decor.remove(c);
+    c.geometry?.dispose?.();
+    c.material?.dispose?.();
+  }
+}
+
+function addGuideText(text, x, y, size, color = theme.muted, opacity = 0.7) {
+  const s = noPick(new SpriteText(text));
+  s.fontFace = "Inter, system-ui, sans-serif";
+  s.fontWeight = "700";
+  s.color = color;
+  s.textHeight = size;
+  s.material.transparent = true;
+  s.material.opacity = opacity;
+  s.material.depthWrite = false;
+  s.position.set(x, y, 0);
+  decor.add(s);
+}
+
+function drawGuides() {
+  clearDecor();
+  if (state.layout === "rings" && state.view === "players") {
+    for (const t of TIERS) {
+      const pts = [];
+      for (let i = 0; i < 128; i++) {
+        const a = (i / 128) * Math.PI * 2;
+        pts.push(Math.cos(a) * t.r, Math.sin(a) * t.r, 0);
+      }
+      const geo = new BufferGeometry();
+      geo.setAttribute("position", new Float32BufferAttribute(pts, 3));
+      decor.add(noPick(new LineLoop(geo, new LineBasicMaterial({ color: theme.muted, transparent: true, opacity: 0.18 }))));
+      addGuideText(`${t.name}s`.replace("One seasons", "One season"), 0, t.r + 12, 13, theme.muted, 0.8);
+    }
+  }
+  if (state.layout === "flow") {
+    const pts = [yearX(FIRST) - 30, -230, 0, yearX(LAST) + 30, -230, 0];
+    const geo = new BufferGeometry();
+    geo.setAttribute("position", new Float32BufferAttribute(pts, 3));
+    decor.add(noPick(new LineLoop(geo, new LineBasicMaterial({ color: theme.muted, transparent: true, opacity: 0.3 }))));
+    for (let y = FIRST; y <= LAST; y++) addGuideText(String(y), yearX(y), -252, y === FIRST || y === LAST || y % 2 === 1 ? 14 : 10, theme.muted, 0.85);
+  }
+}
+
+function applyLayout() {
+  const L = state.layout;
+  graph.d3Force("charge").strength((n) => (n.kind === "show" ? -300 : n.kind === "season" ? -100 : L === "web" ? -40 : -22));
+  graph.d3Force("radial", null);
+  if (L === "web") {
+    for (const [name, f] of [["x", forceX], ["y", forceY], ["z", forceZ]]) graph.d3Force(name, f(0).strength(0.04));
+  } else if (L === "rings") {
+    graph.d3Force("radial", forceRadial((n) => (n.kind === "person" ? tierOf(n.ref).r : n.kind === "show" ? 0 : 30), 0, 0, 0).strength(0.85));
+    graph.d3Force("x", null);
+    graph.d3Force("y", null);
+    graph.d3Force("z", forceZ(0).strength(0.6));
+  } else {
+    graph.d3Force("x", forceX((n) => yearX(nodeYear(n))).strength(1));
+    graph.d3Force("y", forceY(0).strength(0.06));
+    graph.d3Force("z", forceZ(0).strength(0.25));
+  }
+  graph.d3Force("link")
+    .distance((l) => (l.kind === "spine" ? 34 : l.kind === "mates" ? 38 - Math.min(l.seasons.length, 4) * 5 : 24))
+    .strength((l) => {
+      const base = 1 / Math.min(l.source.neighbors?.size || 1, l.target.neighbors?.size || 1);
+      const k = L === "web" ? 1 : L === "rings" ? 0.35 : 0.06;
+      return (weak(l) ? base * 0.15 : base) * k;
+    });
+  drawGuides();
+  const hints = {
+    web: "Players pulled together by the seasons they shared.",
+    rings: "Legends at the center (2+ titles or 3+ shows), then crossovers, veterans, and one-season players outside.",
+    flow: "Left to right by debut year. Lines arc forward in time from the earlier debut.",
+  };
+  $("layout-hint").textContent = hints[L];
+}
+
+// ---------- Nebulae: a soft cloud behind each show's cluster ----------
+const nebulae = new Map();
+function syncNebulae() {
+  for (const n of nebulae.values()) graph.scene().remove(n.glow);
+  nebulae.clear();
+  if (state.view !== "players" || state.layout !== "web") return;
+  const members = {};
+  for (const n of graph.graphData().nodes) (members[n.ref.primary] ??= []).push(n);
+  for (const [sid, list] of Object.entries(members)) {
+    if (list.length < 3) continue;
+    const glow = noPick(new Sprite(new SpriteMaterial({ map: glowTex, color: showById[sid].color, transparent: true, depthWrite: false, opacity: 0, blending: dark ? AdditiveBlending : NormalBlending })));
+    graph.scene().add(glow);
+    nebulae.set(sid, { glow, list });
+  }
+}
+
+// ---------- Animation: everything eases toward its target ----------
+const camPos = new Vector3();
+const tmp = new Vector3();
+let lastFrame = performance.now();
+
+function targets(n) {
+  const hovered = state.hover === n;
+  const selected = state.selected === n;
+  const dim = dimmed(n);
+  return {
+    alpha: dim ? 0.1 : 1,
+    scale: hovered ? 1.4 : selected ? 1.3 : 1,
+    halo: dim ? 0.02 : lit.nodes.has(n) ? 0.75 : n.kind === "person" ? (n.rank === 0 ? 0.5 : n.rank === 1 ? 0.34 : 0.22) : 0.42,
+  };
+}
+
+function labelWanted(n, dist) {
+  if (lit.nodes.has(n)) return dimmed(n) ? 0 : 1;
+  if (anyLit()) return 0;
+  if (n.kind !== "person") return 1;
+  // Semantic zoom: legends always, the next tier as you come closer, everyone up close.
+  const reach = [Infinity, 520, 230][n.rank ?? 2];
+  return dist < reach ? 1 : 0;
+}
+
+function animate(now) {
+  const dt = Math.min(64, now - lastFrame);
+  lastFrame = now;
+  const k = 1 - Math.pow(0.001, dt / 450); // ease factor
+  graph.camera().getWorldPosition(camPos);
+  const { nodes } = graph.graphData();
+  for (const n of nodes) {
+    const p = n.parts;
+    if (!p) continue;
+    const t = targets(n);
+    const a = n.anim;
+    a.alpha += (t.alpha - a.alpha) * k;
+    a.scale += (t.scale - a.scale) * k;
+    tmp.set(n.x || 0, n.y || 0, n.z || 0);
+    const want = labelWanted(n, camPos.distanceTo(tmp));
+    a.label += (want - a.label) * k;
+    p.core.material.opacity = a.alpha;
+    p.halo.material.opacity = t.halo * a.alpha;
+    if (p.ring) p.ring.material.opacity = a.alpha * 0.95;
+    p.label.material.opacity = a.label * Math.max(a.alpha, 0.15);
+    p.label.visible = a.label > 0.02;
+    const obj = n.__threeObj;
+    if (obj) obj.scale.setScalar(a.scale);
+  }
+  // Nebulae follow their clusters.
+  for (const neb of nebulae.values()) {
+    let cx = 0, cy = 0, cz = 0;
+    for (const n of neb.list) { cx += n.x || 0; cy += n.y || 0; cz += n.z || 0; }
+    const c = neb.list.length;
+    cx /= c; cy /= c; cz /= c;
+    let spread = 0;
+    for (const n of neb.list) spread = Math.max(spread, Math.hypot((n.x || 0) - cx, (n.y || 0) - cy, (n.z || 0) - cz));
+    neb.glow.position.set(cx, cy, cz - 10);
+    neb.glow.scale.setScalar(Math.max(70, spread * 2.4));
+    const show = anyLit() ? 0 : dark ? 0.05 : 0.05;
+    neb.glow.material.opacity += (show - neb.glow.material.opacity) * k;
+  }
+  const stars = graph.scene().getObjectByName("stars");
+  if (stars && !reduceMotion) stars.rotation.y += dt * 0.000008;
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// Drift slowly when nobody is touching it.
+let idleTimer = null;
+function wake() {
+  const c = graph.controls();
+  if (c) c.autoRotate = false;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (reduceMotion || state.dims === 2 || state.layout === "flow" || state.selected || state.path) return;
+    const ctl = graph.controls();
+    if (ctl) { ctl.autoRotate = true; ctl.autoRotateSpeed = 0.35; }
+  }, 9000);
+}
+for (const ev of ["pointerdown", "wheel", "keydown", "touchstart"]) el.addEventListener(ev, wake, { passive: true });
 
 function setHover(target) {
   el.style.cursor = target ? "pointer" : "";
@@ -373,35 +649,36 @@ function setHover(target) {
 
 function refresh() {
   computeLit();
-  graph.nodeColor(graph.nodeColor()).linkColor(graph.linkColor()).linkWidth(graph.linkWidth())
+  graph.linkColor(graph.linkColor()).linkWidth(graph.linkWidth())
     .linkVisibility(graph.linkVisibility()).linkDirectionalParticles(graph.linkDirectionalParticles());
-  const { nodes } = graph.graphData();
-  const persons = nodes.filter((n) => n.kind === "person");
-  // The best-connected names stay labelled however big the view gets.
-  const top = new Set([...persons].sort((a, b) => b.neighbors.size - a.neighbors.size).slice(0, 24));
-  for (const n of nodes) {
-    if (n.pic) n.pic.material.opacity = dimmed(n) ? 0.18 : 1;
-    if (!n.sprite) continue;
-    n.sprite.visible = n.kind !== "person" || lit.nodes.has(n) || persons.length <= 70 || (top.has(n) && !anyLit());
-    n.sprite.material.opacity = dimmed(n) ? 0.15 : 1;
-  }
 }
 
 const nodeFor = (id) => graph.graphData().nodes.find((n) => n.id === id) ?? null;
-const fit = () => graph.zoomToFit(700, narrow() ? 20 : 40);
+const fit = (ms = 900) => graph.zoomToFit(ms, narrow() ? 20 : 50);
 
 function render(after) {
   state.hover = null;
   const keepId = state.selected?.kind === "person" ? state.selected.id : null;
   state.settled = false;
-  state.after = after === undefined ? fit : after;
-  graph.graphData(build());
+  state.after = after === undefined ? () => fit() : after;
+  const built = build();
+  // Labels resize with their importance in the new view.
+  for (const n of built.nodes) {
+    if (n.parts && n.kind === "person") {
+      const size = LABEL_SIZES[n.rank ?? 2];
+      if (n.labelSize !== size) { n.parts.label.textHeight = size; n.labelSize = size; }
+    }
+  }
+  graph.graphData(built);
+  applyLayout();
+  syncNebulae();
   state.selected = keepId ? nodeFor(keepId) : null;
   refresh();
   updateActive();
   updateCount();
   if (state.list) renderList();
   writeUrl();
+  wake();
 }
 
 function updateCount() {
@@ -415,14 +692,12 @@ function updateCount() {
 
 // ---------- Camera ----------
 function flyTo(node) {
-  const dist = node.kind === "show" ? 280 : 220;
+  const dist = node.kind === "show" ? 300 : 230;
   const cam = graph.cameraPosition();
-  // In the flat view nodes have no z, and the camera must keep looking straight down.
   const nz = state.dims === 2 ? 0 : node.z || 0;
-  const d = state.dims === 2 ? { x: 0, y: 0, z: 1 } : { x: cam.x - node.x, y: cam.y - node.y, z: cam.z - nz };
+  const d = state.dims === 2 || state.layout !== "web" ? { x: 0, y: 0, z: 1 } : { x: cam.x - node.x, y: cam.y - node.y, z: cam.z - nz };
   const len = Math.hypot(d.x, d.y, d.z) || 1;
   let look = { x: node.x, y: node.y, z: nz };
-  // On a phone the details sheet covers the bottom, so keep the player in the top half.
   if (narrow()) {
     const up = new Vector3(0, 1, 0).applyQuaternion(graph.camera().quaternion);
     const shift = dist * 0.22;
@@ -431,7 +706,7 @@ function flyTo(node) {
   graph.cameraPosition(
     { x: look.x + (d.x / len) * dist, y: look.y + (d.y / len) * dist, z: look.z + (d.z / len) * dist },
     look,
-    1000
+    1100
   );
 }
 const whenSettled = (fn) => (state.settled ? fn() : (state.after = fn));
@@ -443,6 +718,7 @@ const body = $("info-body");
 function select(target, fly = false) {
   state.selected = target;
   refresh();
+  wake();
   if (!target) return hideInfo();
   if (target.kind === "person") personPanel(target.ref);
   else if (target.kind === "mates") pairPanel(target.source.id, target.target.id);
@@ -469,6 +745,27 @@ function showInfo(html) {
   info.scrollTop = 0;
 }
 
+// A career on one line: a dot for each season, gold for a title.
+function careerStrip(people) {
+  const W = 300, rowH = 22, H = people.length * rowH + 16;
+  const x = (y) => 10 + ((y - FIRST) / Math.max(1, LAST - FIRST)) * (W - 20);
+  const rows = people.map((p, i) => {
+    const y0 = 10 + i * rowH;
+    const perYear = {};
+    const dots = p.apps.map((a) => {
+      const s = seasonById[a.season];
+      const k = (perYear[s.year] = (perYear[s.year] ?? 0) + 1) - 1;
+      const cx = x(s.year) + k * 7;
+      const fill = showById[s.show].color;
+      return `<circle cx="${cx}" cy="${y0}" r="${a.won ? 5.5 : 4.5}" fill="${fill}" ${a.won ? `stroke="${theme.gold}" stroke-width="2"` : ""} ${s.upcoming ? 'fill-opacity=".35" stroke-dasharray="2 2" stroke="' + fill + '"' : ""}><title>${esc(s.full)}: ${esc(a.result || (s.upcoming ? "Announced" : "Played"))}</title></circle>`;
+    }).join("");
+    const name = people.length > 1 ? `<text x="0" y="${y0 - 8}">${esc(plain(p.name))}</text>` : "";
+    return `<line x1="10" x2="${W - 10}" y1="${y0}" y2="${y0}" stroke="${theme.line}" stroke-width="1"/>${name}${dots}`;
+  }).join("");
+  const axis = `<text x="10" y="${H}">${FIRST}</text><text x="${W / 2}" y="${H}" text-anchor="middle">${Math.round((FIRST + LAST) / 2)}</text><text x="${W - 10}" y="${H}" text-anchor="end">${LAST}</text>`;
+  return `<svg class="strip" viewBox="0 -6 ${W} ${H + 8}" role="img" aria-label="Career timeline">${rows}${axis}</svg>`;
+}
+
 function recordList(p) {
   return `<ul class="rec">${p.apps.map((a) => {
     const s = seasonById[a.season];
@@ -488,11 +785,12 @@ function personPanel(p) {
   const repeat = list.filter(([, n]) => n > 1);
   const LIMIT = 40;
   showInfo(`
-    <div class="eyebrow">${crossShow(p) ? "Cross-show veteran" : p.apps.length > 1 ? "Veteran" : "Player"}</div>
+    <div class="eyebrow">${crossShow(p) ? "Cross-show veteran" : p.apps.length > 1 ? "Veteran" : "Player"}<span class="tier">${tierOf(p).name}</span></div>
     ${p.photo ? `<img class="pic" src="${esc(p.photo)}" alt="">` : ""}
     <h2>${esc(p.name)}</h2>${p.ko ? `<div class="ko" lang="ko">${esc(p.ko)}</div>` : ""}
     ${p.known ? `<div class="muted">${esc(p.known)}</div>` : ""}
-    <div class="stat">${p.apps.length} season${p.apps.length > 1 ? "s" : ""} · ${p.showIds.length} show${p.showIds.length > 1 ? "s" : ""}${p.titles ? ` · ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""} · played with ${list.length}</div>
+    <div class="stat">${p.apps.length} season${p.apps.length > 1 ? "s" : ""} · ${p.showIds.length} show${p.showIds.length > 1 ? "s" : ""}${p.titles ? ` · ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""} · played with ${list.length} (#${connectedRank[p.id]} most connected)</div>
+    ${careerStrip([p])}
     <div class="acts">
       <button type="button" class="act" data-circle="${p.id}">${state.ego === p.id ? "Back to everyone" : "Show their circle"}</button>
       <button type="button" class="act ghost" data-from="${p.id}">Connect from here</button>
@@ -529,6 +827,7 @@ function pairPanel(a, b) {
     <h2>${na} &amp; ${nb}</h2>
     <div class="stat">${rows.length} season${rows.length > 1 ? "s" : ""} together${decided < rows.length ? ` · ${rows.length - decided} without a placement for both` : ""}</div>
     ${verdict ? `<div class="score">${verdict}</div>` : ""}
+    ${careerStrip([pa, pb])}
     <ul>${rows.map(({ sid, better }) => {
       const s = seasonById[sid];
       return `<li class="hop"><span><span class="chip" style="--show:${showById[s.show].color}">${esc(s.full)}</span></span>
@@ -571,6 +870,7 @@ function pathPanel(path) {
     <div class="eyebrow">Connection</div>
     <h2>${esc(plain(a.name))} to ${esc(plain(b.name))}</h2>
     <div class="stat">${steps === 1 ? "They played together directly." : `${steps} steps apart, through ${steps - 1} other player${steps - 1 > 1 ? "s" : ""}.`}</div>
+    ${careerStrip(path.map((id) => personById[id]))}
     <ul>${hops}</ul>
     <div class="acts"><button type="button" class="act ghost" data-clear-path>Clear</button></div>
   `);
@@ -638,7 +938,6 @@ function focusPerson(id) {
   closeList();
   personPanel(p);
   if (!visiblePeople().has(id)) {
-    // Widen the view just enough to include them.
     state.group = null;
     state.ego = null;
     state.year = LAST;
@@ -704,7 +1003,7 @@ function runPath(from, to) {
   render(() => {
     refresh();
     const ids = new Set(path);
-    graph.zoomToFit(800, 80, (n) => ids.has(n.id));
+    graph.zoomToFit(900, 90, (n) => ids.has(n.id));
   });
 }
 
@@ -716,7 +1015,6 @@ function clearPath() {
   render();
 }
 
-// Tags for whatever narrows the view, each removable.
 function updateActive() {
   const tags = [];
   if (state.group) tags.push(["group", `Showing: ${state.group.label}`]);
@@ -751,7 +1049,6 @@ function stop() {
   $("play").textContent = "▶";
   $("play").setAttribute("aria-label", "Play the timeline");
 }
-// Watch the universe grow, one year at a time.
 function play() {
   if (timer) return stop();
   state.group = null;
@@ -765,7 +1062,7 @@ function play() {
   $("play").setAttribute("aria-label", "Pause the timeline");
   const step = () => {
     render(null);
-    setTimeout(() => graph.zoomToFit(900, 60), 700);
+    setTimeout(() => fit(1200), 600);
   };
   step();
   timer = setInterval(() => {
@@ -776,7 +1073,7 @@ function play() {
     state.year++;
     syncYear();
     step();
-  }, 1600);
+  }, 1700);
 }
 $("play").addEventListener("click", play);
 $("year").addEventListener("input", (e) => {
@@ -793,6 +1090,15 @@ function setPressed(attr, value) {
 for (const b of document.querySelectorAll("#controls [data-view]")) {
   b.addEventListener("click", () => { state.view = b.dataset.view; setPressed("view", state.view); render(); });
 }
+for (const b of document.querySelectorAll("#controls [data-layout]")) {
+  b.addEventListener("click", () => {
+    state.layout = b.dataset.layout;
+    setPressed("layout", state.layout);
+    // Rings and Flow read best face-on.
+    if (state.layout !== "web") graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 900);
+    render();
+  });
+}
 for (const b of document.querySelectorAll("#controls [data-who]")) {
   b.addEventListener("click", () => { state.who = b.dataset.who; setPressed("who", state.who); state.group = null; state.ego = null; render(); });
 }
@@ -803,7 +1109,6 @@ function syncChips() {
 let chipTimer = null;
 for (const c of document.querySelectorAll(".show-chip")) {
   c.addEventListener("click", () => {
-    // A double-tap means "only this show", so wait a moment before toggling.
     clearTimeout(chipTimer);
     chipTimer = setTimeout(() => {
       const id = c.dataset.show;
@@ -859,7 +1164,6 @@ function renderList() {
   }
   $("list-body").innerHTML = html;
 }
-// Rows are table rows, not buttons, so route their clicks here.
 $("list-body").addEventListener("click", (e) => {
   const row = e.target.closest("tr.pick");
   if (!row) return;
@@ -885,10 +1189,10 @@ $("list-close").addEventListener("click", closeList);
 
 // ---------- Insights ----------
 function renderInsights() {
-  const connected = data.people.map((p) => [p.id, mates(p.id).size]).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const connected = Object.entries(mateCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
   const titled = data.people.filter((p) => p.titles > 1).sort((a, b) => b.titles - a.titles || a.name.localeCompare(b.name));
+  const legends = data.people.filter((p) => tierOf(p).name === "Legend").sort((a, b) => b.titles - a.titles || b.apps.length - a.apps.length);
 
-  // Pairs of shows joined by exactly one player.
   const bridges = new Map();
   for (const p of data.people) {
     for (let i = 0; i < p.showIds.length; i++) {
@@ -903,7 +1207,6 @@ function renderInsights() {
     .map(([key, [id]]) => ({ id, shows: key.split("|").map((s) => showById[s].name) }))
     .sort((a, b) => personById[a.id].name.localeCompare(personById[b.id].name));
 
-  // Steps from Hong Jin-ho.
   const HUB = "hong-jin-ho";
   const { dist } = distances(HUB);
   const counts = [];
@@ -914,6 +1217,9 @@ function renderInsights() {
   const avg = ([...dist.values()].reduce((s, d) => s + d, 0) / (dist.size - 1)).toFixed(1);
 
   $("insights-body").innerHTML = `
+    <h4>Legends</h4>
+    <p>Two or more titles, or three or more shows. They sit at the center of the Rings layout.</p>
+    <ol>${legends.map((p) => `<li><button type="button" class="row-btn" data-go="${p.id}">${esc(plain(p.name))}</button> <span class="n">${p.showIds.length} shows${p.titles ? `, ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""}</span></li>`).join("")}</ol>
     <h4>Most connected</h4>
     <ol>${connected.map(([id, n]) => `<li><button type="button" class="row-btn" data-go="${id}">${esc(plain(personById[id].name))}</button> <span class="n">played with ${n}</span></li>`).join("")}</ol>
     <h4>Most titles</h4>
@@ -1019,6 +1325,7 @@ document.addEventListener("keydown", (e) => {
 function writeUrl() {
   const q = new URLSearchParams();
   if (state.view !== "players") q.set("view", state.view);
+  if (state.layout !== "web") q.set("layout", state.layout);
   if (state.who !== "veterans") q.set("who", state.who);
   if (state.shows.size < data.shows.length) q.set("shows", [...state.shows].join(","));
   if (state.year < LAST) q.set("year", state.year);
@@ -1037,6 +1344,7 @@ function writeUrl() {
 function readUrl() {
   const q = new URLSearchParams(location.search);
   if (q.get("view") === "seasons") state.view = "seasons";
+  if (["rings", "flow"].includes(q.get("layout"))) state.layout = q.get("layout");
   if (q.get("who") === "all") state.who = "all";
   if (q.get("shows")) {
     const want = q.get("shows").split(",").filter((s) => showById[s]);
@@ -1049,6 +1357,7 @@ function readUrl() {
   if (q.get("flat") === "0") state.dims = 3;
   if (q.get("circle") && personById[q.get("circle")]) state.ego = q.get("circle");
   setPressed("view", state.view);
+  setPressed("layout", state.layout);
   setPressed("who", state.who);
   syncChips();
   syncYear();
@@ -1067,6 +1376,8 @@ size();
 if (narrow()) $("more").open = false;
 renderInsights();
 
+// Open from far away and glide in once the layout settles.
+graph.cameraPosition({ x: 0, y: 0, z: 2600 });
 const q = readUrl();
 if (q.get("group") && seasonById[q.get("group")]) {
   setGroup(q.get("group"));
@@ -1079,6 +1390,6 @@ if (q.get("group") && seasonById[q.get("group")]) {
   state.ego = null;
   toggleCircle(id);
 } else {
-  render();
+  render(() => fit(1800));
   if (q.get("focus")) focusPerson(q.get("focus"));
 }

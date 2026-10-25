@@ -76,6 +76,14 @@ const tries = [
       <details class="more" id="more" open>
         <summary>Filters and tools</summary>
 
+        <div class="label">Layout</div>
+        <div class="seg" role="group" aria-label="Layout">
+          <button type="button" data-layout="web" aria-pressed="true" title="Players pulled together by shared seasons">Web</button>
+          <button type="button" data-layout="rings" aria-pressed="false" title="Legends at the center, one-season players outside">Rings</button>
+          <button type="button" data-layout="flow" aria-pressed="false" title="Left to right by debut year">Flow</button>
+        </div>
+        <p class="hint muted" id="layout-hint">Players pulled together by the seasons they shared.</p>
+
         <div class="label">View</div>
         <div class="seg" role="group" aria-label="View">
           <button type="button" data-view="players" aria-pressed="true">Players</button>
@@ -141,6 +149,14 @@ const tries = [
     </section>
 
     <div class="net-count" id="count" aria-live="polite"></div>
+
+    <div class="net-legend" id="legend" aria-label="Legend">
+      <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="12" r="3" fill="currentColor"/><circle cx="17" cy="12" r="6" fill="currentColor"/></svg>Size: how many people they played with</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--gold)" stroke-width="2"/></svg>Gold ring: champion</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16 Q12 4 22 16" fill="none" stroke="currentColor" stroke-width="3"/></svg>Line: seasons together (thicker, brighter: more)</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16 Q12 4 22 16" fill="none" stroke="var(--gold)" stroke-width="2"/></svg>Gold line: met on more than one show</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16 Q12 4 22 16" fill="none" stroke="currentColor" stroke-width="1" opacity=".4"/><circle cx="12" cy="10" r="2.5" fill="currentColor"/></svg>Moving light: from the earlier debut to the later</div>
+    </div>
   </div>
 
   <script type="application/json" id="graph-data" set:html={JSON.stringify(graph)} />
@@ -152,6 +168,8 @@ const tries = [
 <style>
   .net { position: relative; height: calc(100dvh - 61px); overflow: hidden; }
   .net-canvas { position: absolute; inset: 0; }
+  /* On wide screens the graph starts right of the controls, so nothing hides behind them. */
+  @media (min-width: 761px) { .net-canvas { left: 342px; } }
   :global(body:has(.net) .site-foot) { display: none; }
 
   .net-panel {
@@ -302,6 +320,19 @@ const tries = [
   :global(.net-list .note) { color: var(--muted); font-size: 13px; padding: 10px 0; }
 
   .net-list[hidden], .active[hidden], .net-info[hidden] { display: none; }
+
+  .net-legend {
+    position: absolute; z-index: 1; right: 16px; bottom: 16px; display: grid; gap: 4px;
+    font-size: 12px; color: var(--muted); pointer-events: none;
+    background: color-mix(in srgb, var(--bg) 60%, transparent); padding: 10px 12px; border-radius: 10px;
+  }
+  .net-legend div { display: flex; align-items: center; gap: 8px; }
+  .net-legend svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+  .net:has(.net-info:not([hidden])) .net-legend { display: none; }
+
+  :global(.net-info .strip) { width: 100%; height: auto; display: block; margin: 10px 0 2px; overflow: visible; }
+  :global(.net-info .strip text) { font: 10px var(--sans); fill: var(--muted); }
+  :global(.net-info .tier) { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--gold) 18%, transparent); color: var(--gold); margin-left: 6px; vertical-align: middle; }
   .net-count { position: absolute; z-index: 1; left: 50%; bottom: 12px; transform: translateX(-50%); font-size: 12px; color: var(--muted); pointer-events: none; white-space: nowrap; }
 
   @media (max-width: 760px) {
@@ -309,7 +340,7 @@ const tries = [
     .net-controls h1, .net-controls .eyebrow { display: none; }
     .net-info { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 46%; }
     .net-list { inset: 8px; }
-    .net-count { display: none; }
+    .net-count, .net-legend { display: none; }
     /* With details open, the controls shrink to the search box so the graph stays visible. */
     .net:has(.net-info:not([hidden])) .net-controls > :not(.search) { display: none; }
   }

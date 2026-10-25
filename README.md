@@ -36,6 +36,14 @@ npm run build     # static site in dist/
 - `/devils-plan-3/`: The Devil's Plan: Dead Again (November 2026): all sixteen
   players' records and every pair who has played together before
 - `/network/`: the explorer (three.js via 3d-force-graph).
+  - Three layouts: Web (players pulled together by shared seasons), Rings
+    (legends at the center, then crossovers, veterans and one-season
+    players) and Flow (left to right by debut year, lines arcing forward).
+  - Glowing nodes sized by connections, gold rings for champions, curved
+    lines with light flowing from the earlier debut to the later, a faint
+    glow behind each show's cluster, names that appear by importance as you
+    zoom, eased highlights, an idle drift and a fly-in on load. Career strips
+    in the panel show every season on a 2013 to 2026 line.
   - Players view links players who shared a season; Seasons view hangs them
     off show and season hubs. Strong ties (2+ seasons) by default; hovering a
     player brings back all their lines. Phones start in the flat 2D view.
