@@ -76,7 +76,7 @@ Promotional photos from networks are copyrighted, so they are never used.
 - Physical: 100 (100 players a season), Physical: Asia and The Influencer (77)
   list featured players only.
 - Winners from fan records only: Accomplice 2 and Four Wishes.
-- Some middle placements are still blank where sources disagree (The Bloody
-  Game seasons 1 to 3, Devil's Plan 1 placements 11 to 12 aside).
+- Some middle placements in The Bloody Game seasons 1 to 3 are still blank
+  where sources disagree.
 - Some middle placements (The Genius seasons 1, 3 and 4, The Devil's Plan,
   The Bloody Game) are left blank because sources disagree.
