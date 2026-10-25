@@ -4,7 +4,7 @@ import { shows, contestants, photos, seasonLabel, seasonYear, resultText } from 
 
 // Everything the explorer needs, built once at build time.
 const graph = {
-  shows: shows.map((s) => ({ id: s.id, name: s.name, color: s.color, network: s.network, years: s.years })),
+  shows: shows.map((s) => ({ id: s.id, name: s.name, color: s.color, network: s.network, years: s.years, kind: s.kind })),
   seasons: shows.flatMap((show) =>
     show.seasons.map((season) => ({
       id: season.id,
@@ -22,11 +22,31 @@ const graph = {
     ko: c.ko ?? "",
     known: c.known ?? "",
     photo: photos[c.id]?.src ?? "",
-    apps: c.apps.map(({ season, entry }) => ({ season: season.id, result: resultText(entry, season), won: entry.place === 1 })),
+    apps: c.apps.map(({ season, entry }) => ({
+      season: season.id,
+      result: resultText(entry, season),
+      place: entry.place ?? null,
+      won: entry.place === 1,
+    })),
   })),
 };
+
+const years = graph.seasons.map((s) => s.year);
+const firstYear = Math.min(...years), lastYear = Math.max(...years);
+
+// Show filters grouped by kind of game.
+const kindOrder = ["Strategy", "Team strategy", "Duel", "Deduction", "Social", "Indie web show", "Brain and physical", "Physical"];
+const kinds = [...new Set(shows.map((s) => s.kind))].sort((a, b) => (kindOrder.indexOf(a) + 99) % 99 - (kindOrder.indexOf(b) + 99) % 99);
+
+const tries = [
+  { action: "circle:hong-jin-ho", label: "Hong Jin-ho's circle" },
+  { action: "path:lee-se-dol:amotti", label: "Lee Se-dol to Amotti" },
+  { action: "group:devils-plan-3", label: "Devil's Plan 3 cast" },
+  { action: "focus:jang-dong-min", label: "Jang Dong-min's titles" },
+  { action: "timeline", label: "Watch it grow" },
+];
 ---
-<Base title="Network" description="Explore who played with whom across every Korean survival show: search players, trace connections and filter by show.">
+<Base title="Network" description="Explore who played with whom across every Korean survival show: search players, trace connections, compare rivals and watch the universe grow.">
   <div class="net" id="net">
     <div class="net-canvas" id="graph" aria-label="3D network of players and the seasons they shared"></div>
 
@@ -39,7 +59,19 @@ const graph = {
         <ul class="suggest" id="find-list" role="listbox" hidden></ul>
       </div>
 
+      <div class="try" aria-label="Try">
+        {tries.map((t) => <button type="button" class="try-chip" data-action={t.action}>{t.label}</button>)}
+      </div>
+
       <div class="active" id="active" hidden></div>
+
+      <div class="timeline">
+        <div class="label row"><span>Timeline</span><output id="year-out">{lastYear}</output></div>
+        <div class="time-row">
+          <button type="button" class="play" id="play" aria-label="Play the timeline">▶</button>
+          <input type="range" id="year" min={firstYear} max={lastYear} step="1" value={lastYear} aria-label="Show seasons up to year" />
+        </div>
+      </div>
 
       <details class="more" id="more" open>
         <summary>Filters and tools</summary>
@@ -56,6 +88,9 @@ const graph = {
           <button type="button" data-who="all" aria-pressed="false">Everyone</button>
         </div>
 
+        <label class="check"><input type="checkbox" id="strong" checked /> Strong ties only (2+ seasons together)</label>
+        <label class="check"><input type="checkbox" id="flat" /> Flat view (2D)</label>
+
         <div class="label">Connect two players</div>
         <div class="connect">
           <div class="search">
@@ -70,15 +105,25 @@ const graph = {
         </div>
 
         <div class="label row">Shows <button type="button" class="link" id="all-shows">All</button></div>
-        <div class="show-chips" id="show-chips">
-          {shows.map((s) => (
-            <button type="button" class="show-chip" data-show={s.id} aria-pressed="true" style={`--c:${s.color}`}>{s.name}</button>
-          ))}
-        </div>
+        {kinds.map((kind) => (
+          <div class="kind">
+            <div class="kind-name">{kind}</div>
+            <div class="show-chips">
+              {shows.filter((s) => s.kind === kind).map((s) => (
+                <button type="button" class="show-chip" data-show={s.id} aria-pressed="true" style={`--c:${s.color}`}>{s.name}</button>
+              ))}
+            </div>
+          </div>
+        ))}
         <p class="hint muted">Players take the color of the show they played most. Tap a show to hide it, double-tap to show only it. Gold lines join players who met on more than one show.</p>
 
-        <label class="check"><input type="checkbox" id="flat" /> Flat view (2D)</label>
+        <button type="button" class="go ghost" id="list-open">Show as a list</button>
         <p class="hint muted">Drag to orbit, scroll or pinch to zoom. Hover a line to see what two players shared. Press / to search, Esc to clear.</p>
+      </details>
+
+      <details class="more" id="insights">
+        <summary>Insights</summary>
+        <div id="insights-body"></div>
       </details>
     </div>
 
@@ -86,6 +131,14 @@ const graph = {
       <button type="button" class="close" id="close" aria-label="Close">×</button>
       <div id="info-body"></div>
     </aside>
+
+    <section class="net-list" id="list" hidden aria-label="List of connections">
+      <div class="list-head">
+        <h2 id="list-title">Connections</h2>
+        <button type="button" class="close" id="list-close" aria-label="Close the list">×</button>
+      </div>
+      <div id="list-body"></div>
+    </section>
 
     <div class="net-count" id="count" aria-live="polite"></div>
   </div>
@@ -108,15 +161,18 @@ const graph = {
     border: 1px solid var(--line); border-radius: var(--radius);
     padding: 16px;
   }
-  .net-controls { top: 16px; left: 16px; width: 300px; max-height: calc(100% - 32px); overflow: auto; }
+  .net-controls { top: 16px; left: 16px; width: 310px; max-height: calc(100% - 32px); overflow: auto; }
   .net-controls h1 { font-size: 22px; margin: 6px 0 12px; }
   .label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
   .label.row { display: flex; justify-content: space-between; align-items: center; }
+  .label output { font: 700 15px var(--display); color: var(--ink); letter-spacing: 0; }
   .seg { display: flex; background: var(--bg-2); border-radius: 10px; padding: 3px; }
+  .seg button, .try-chip, .show-chip, .play, .go {
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  }
   .seg button {
     flex: 1; font: 600 14px var(--sans); color: var(--muted); background: none;
     border: 0; border-radius: 8px; padding: 7px 8px; cursor: pointer;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
   .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .25); }
 
@@ -137,6 +193,14 @@ const graph = {
   :global(.suggest .dot) { width: 9px; height: 9px; border-radius: 50%; flex: none; }
   :global(.suggest .meta) { margin-left: auto; color: var(--muted); font-size: 12px; text-align: right; }
 
+  .try { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .try-chip {
+    font: 600 12px var(--sans); color: var(--ink); cursor: pointer;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+    border-radius: 999px; padding: 4px 9px;
+  }
+
   .active { margin-top: 10px; display: grid; gap: 6px; }
   :global(.active .tag) {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -145,7 +209,14 @@ const graph = {
   }
   :global(.active .tag button) { background: none; border: 0; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 0 2px; }
 
-  .more { margin-top: 12px; }
+  .time-row { display: flex; align-items: center; gap: 8px; }
+  .time-row input { flex: 1; accent-color: var(--accent); }
+  .play {
+    width: 34px; height: 34px; flex: none; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--bg-2); color: var(--ink); cursor: pointer; font-size: 13px;
+  }
+
+  .more { margin-top: 14px; }
   .more summary { cursor: pointer; font-weight: 650; font-size: 14px; color: var(--muted); list-style: none; }
   .more summary::-webkit-details-marker { display: none; }
   .more summary::before { content: "▸ "; }
@@ -155,21 +226,33 @@ const graph = {
   .go, :global(.net-info .act) {
     font: 650 14px var(--sans); color: #fff; background: var(--accent);
     border: 0; border-radius: 9px; padding: 9px 12px; cursor: pointer;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
+  .go.ghost { background: var(--bg-2); color: var(--ink); width: 100%; margin-top: 14px; }
   .link { background: none; border: 0; color: var(--accent); font: 600 12px var(--sans); cursor: pointer; text-transform: none; letter-spacing: 0; }
+  .kind { margin-bottom: 8px; }
+  .kind-name { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
   .show-chips { display: flex; flex-wrap: wrap; gap: 5px; }
   .show-chip {
     font: 600 12px var(--sans); padding: 4px 9px 4px 7px; border-radius: 999px; cursor: pointer;
     border: 1px solid var(--line); background: transparent; color: var(--muted);
     display: inline-flex; align-items: center; gap: 6px;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
   .show-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); opacity: .35; }
   .show-chip[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--c) 14%, transparent); border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
   .show-chip[aria-pressed="true"]::before { opacity: 1; }
-  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; color: var(--muted); }
   .hint { font-size: 12px; margin: 8px 0 0; }
+
+  :global(#insights-body h4) { font-size: 13px; margin: 14px 0 6px; font-family: var(--sans); }
+  :global(#insights-body p) { font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+  :global(#insights-body ol) { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 13px; }
+  :global(#insights-body .row-btn) { background: none; border: 0; padding: 0; color: var(--ink); font: inherit; cursor: pointer; text-align: left; }
+  :global(#insights-body .row-btn:hover) { color: var(--accent); }
+  :global(#insights-body .n) { color: var(--muted); }
+  :global(#insights-body .dist) { display: flex; gap: 4px; align-items: flex-end; height: 56px; margin: 6px 0; }
+  :global(#insights-body .bar) { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 2px; position: relative; }
+  :global(#insights-body .bar span) { position: absolute; bottom: -18px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--muted); }
+  :global(#insights-body .dist-gap) { height: 16px; }
 
   .net-info { top: 16px; right: 16px; width: 340px; max-height: calc(100% - 32px); overflow: auto; }
   .close { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--muted); font-size: 26px; line-height: 1; cursor: pointer; }
@@ -178,6 +261,8 @@ const graph = {
   :global(.net-info .ko) { color: var(--muted); }
   :global(.net-info .pic) { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; display: block; margin-bottom: 8px; }
   :global(.net-info .stat) { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  :global(.net-info .score) { font: 700 18px var(--display); margin-top: 8px; }
+  :global(.net-info .score .gold) { color: var(--gold); }
   :global(.net-info .acts) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   :global(.net-info .act.ghost) { background: var(--bg-2); color: var(--ink); }
   :global(.net-info a.act) { text-decoration: none; display: inline-block; }
@@ -194,17 +279,38 @@ const graph = {
   :global(.net-info .mate.cross) { border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
   :global(.net-info .hop) { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
   :global(.net-info .hop:last-child) { border-bottom: 0; }
+  :global(.net-info .hop) { font-size: 14px; }
   :global(.net-info .hop .who) { font-weight: 650; }
+  :global(.net-info .hop .better) { color: var(--ink); font-weight: 650; }
   :global(.net-info .chip) { margin: 0 4px 4px 0; }
   :global(.net-info .muted) { color: var(--muted); }
 
+  .net-list {
+    position: absolute; z-index: 3; inset: 16px 16px 16px 342px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .list-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); position: relative; }
+  .list-head h2 { font-size: 18px; }
+  #list-body { overflow: auto; padding: 0 16px 16px; }
+  :global(.net-list table) { width: 100%; border-collapse: collapse; font-size: 14px; }
+  :global(.net-list th) { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 10px 6px; position: sticky; top: 0; background: var(--card); cursor: pointer; }
+  :global(.net-list td) { padding: 8px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+  :global(.net-list tr.pick) { cursor: pointer; }
+  :global(.net-list tr.pick:hover td) { background: var(--bg-2); }
+  :global(.net-list .chip) { margin: 0 4px 4px 0; }
+  :global(.net-list .note) { color: var(--muted); font-size: 13px; padding: 10px 0; }
+
+  .net-list[hidden], .active[hidden], .net-info[hidden] { display: none; }
   .net-count { position: absolute; z-index: 1; left: 50%; bottom: 12px; transform: translateX(-50%); font-size: 12px; color: var(--muted); pointer-events: none; white-space: nowrap; }
 
   @media (max-width: 760px) {
-    .net-controls { left: 8px; right: 8px; top: 8px; width: auto; padding: 12px; max-height: 60%; }
-    .net-controls h1 { display: none; }
-    .net-controls .eyebrow { display: none; }
-    .net-info { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 48%; }
-    .net-count { bottom: auto; top: 4px; display: none; }
+    .net-controls { left: 8px; right: 8px; top: 8px; width: auto; padding: 12px; max-height: 62%; }
+    .net-controls h1, .net-controls .eyebrow { display: none; }
+    .net-info { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 46%; }
+    .net-list { inset: 8px; }
+    .net-count { display: none; }
+    /* With details open, the controls shrink to the search box so the graph stays visible. */
+    .net:has(.net-info:not([hidden])) .net-controls > :not(.search) { display: none; }
   }
 </style>

@@ -114,3 +114,28 @@ export function findSeason(id) {
   }
   return null;
 }
+
+// Who finished higher each time two players met. Seasons without a placement
+// for both (or not yet aired) count as undecided.
+export function headToHead(a, b, except) {
+  const record = { a: 0, b: 0, ties: 0, undecided: 0 };
+  for (const x of sharedSeasons(a, b, except)) {
+    const y = appearances[b].find((z) => z.season.id === x.season.id);
+    const pa = x.entry.place, pb = y.entry.place;
+    if (x.season.upcoming || !pa || !pb) record.undecided++;
+    else if (pa < pb) record.a++;
+    else if (pb < pa) record.b++;
+    else record.ties++;
+  }
+  return record;
+}
+
+export function headToHeadText(a, b, except) {
+  const r = headToHead(a, b, except);
+  const decided = r.a + r.b + r.ties;
+  if (!decided) return "";
+  const na = people[a].name.replace(/\s*\(.*\)/, ""), nb = people[b].name.replace(/\s*\(.*\)/, "");
+  if (r.a === r.b) return `Level at ${r.a}–${r.b}${r.ties ? `, ${r.ties} tied` : ""}`;
+  const [lead, w, l] = r.a > r.b ? [na, r.a, r.b] : [nb, r.b, r.a];
+  return `${lead} leads ${w}–${l}${r.ties ? `, ${r.ties} tied` : ""}`;
+}

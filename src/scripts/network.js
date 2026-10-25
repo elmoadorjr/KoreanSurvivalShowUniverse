@@ -1,7 +1,7 @@
 import ForceGraph3D from "3d-force-graph";
 import SpriteText from "three-spritetext";
 import { forceX, forceY, forceZ } from "d3-force-3d";
-import { CanvasTexture, Group, SRGBColorSpace, Sprite, SpriteMaterial } from "three";
+import { CanvasTexture, Group, SRGBColorSpace, Sprite, SpriteMaterial, Vector3 } from "three";
 
 const data = JSON.parse(document.getElementById("graph-data").textContent);
 const el = document.getElementById("graph");
@@ -11,6 +11,7 @@ const theme = { bg: token("--bg"), ink: token("--ink"), muted: token("--muted"),
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const plain = (name) => name.replace(/\s*\(.*\)/, "");
+const narrow = () => matchMedia("(max-width: 760px)").matches;
 
 // ---------- Indexes ----------
 const showById = Object.fromEntries(data.shows.map((s) => [s.id, s]));
@@ -26,6 +27,9 @@ for (const p of data.people) {
   for (const a of p.apps) castOf[a.season].push(p.id);
 }
 const crossShow = (p) => p.showIds.length > 1;
+const FIRST = Math.min(...data.seasons.map((s) => s.year));
+const LAST = Math.max(...data.seasons.map((s) => s.year));
+const appOf = (id, sid) => personById[id].apps.find((a) => a.season === sid);
 
 // Seasons two players shared (all of them, whatever the filters).
 function together(a, b) {
@@ -40,43 +44,61 @@ function mates(id) {
   }
   return n;
 }
-// Shortest chain of co-players between two people.
-function shortestPath(from, to) {
-  if (from === to) return [from];
+// Steps from one player to everyone reachable.
+function distances(from) {
+  const dist = new Map([[from, 0]]);
   const prev = new Map([[from, null]]);
   const queue = [from];
   while (queue.length) {
     const cur = queue.shift();
     for (const next of mates(cur).keys()) {
-      if (prev.has(next)) continue;
+      if (dist.has(next)) continue;
+      dist.set(next, dist.get(cur) + 1);
       prev.set(next, cur);
-      if (next === to) {
-        const path = [to];
-        for (let at = cur; at !== null; at = prev.get(at)) path.unshift(at);
-        return path;
-      }
       queue.push(next);
     }
   }
-  return null;
+  return { dist, prev };
+}
+function shortestPath(from, to) {
+  const { prev } = distances(from);
+  if (!prev.has(to)) return null;
+  const path = [];
+  for (let at = to; at !== null; at = prev.get(at)) path.unshift(at);
+  return path;
+}
+// Who finished higher each time two players met.
+function headToHead(a, b) {
+  const rows = together(a, b).map((sid) => {
+    const pa = appOf(a, sid).place, pb = appOf(b, sid).place;
+    const decided = !seasonById[sid].upcoming && pa && pb;
+    return { sid, better: decided ? (pa < pb ? a : pb < pa ? b : "tie") : null };
+  });
+  const score = { [a]: 0, [b]: 0, tie: 0 };
+  for (const r of rows) if (r.better) score[r.better]++;
+  return { rows, score };
 }
 
 // ---------- State ----------
+const defaultDims = narrow() ? 2 : 3;
 const state = {
   view: "players",
   who: "veterans",
   shows: new Set(data.shows.map((s) => s.id)),
+  year: LAST,
+  strong: true,
+  dims: defaultDims,
   group: null, // { ids: Set, label, except }
   ego: null, // player whose circle is shown
   path: null, // [ids]
-  dims: 3,
   hover: null,
   selected: null, // node or link
   after: null, // runs once the layout settles
   settled: false,
+  list: false,
 };
 
-const seasonOn = (sid) => state.shows.has(seasonById[sid].show) && sid !== state.group?.except;
+const seasonOn = (sid) => state.shows.has(seasonById[sid].show) && sid !== state.group?.except && seasonById[sid].year <= state.year;
 
 // Which players are in the current view.
 function visiblePeople() {
@@ -107,17 +129,27 @@ function pathSeasons() {
 
 const linkKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
 
+// Node objects are reused between builds, so the layout grows instead of restarting.
+const nodeCache = new Map();
+function nodeObj(id, props) {
+  let n = nodeCache.get(id);
+  if (!n) {
+    n = { id };
+    nodeCache.set(id, n);
+  }
+  return Object.assign(n, props);
+}
+
 function build() {
   const ids = visiblePeople();
   const keep = pathSeasons();
   const on = (sid) => seasonOn(sid) || keep.has(sid);
   const nodes = [];
   const links = [];
-  // Each player takes the color of the show they played most.
-  const color = (p) => showById[p.primary].color;
   for (const id of ids) {
     const p = personById[id];
-    nodes.push({ id, kind: "person", ref: p, color: color(p), size: 1 + p.apps.length * 0.9 });
+    // Each player takes the color of the show they played most.
+    nodes.push(nodeObj(id, { kind: "person", ref: p, color: showById[p.primary].color, size: 1 + p.apps.length * 0.9 }));
   }
 
   if (state.view === "players") {
@@ -148,10 +180,10 @@ function build() {
       }
     }
     const showsUsed = new Set([...seasonsUsed].map((s) => seasonById[s].show));
-    for (const sid of showsUsed) nodes.push({ id: `show:${sid}`, kind: "show", ref: showById[sid], color: showById[sid].color, size: 14 });
+    for (const sid of showsUsed) nodes.push(nodeObj(`show:${sid}`, { kind: "show", ref: showById[sid], color: showById[sid].color, size: 14 }));
     for (const sid of seasonsUsed) {
       const s = seasonById[sid];
-      nodes.push({ id: `season:${sid}`, kind: "season", ref: s, color: showById[s.show].color, size: 5 });
+      nodes.push(nodeObj(`season:${sid}`, { kind: "season", ref: s, color: showById[s.show].color, size: 5 }));
       links.push({ source: `show:${s.show}`, target: `season:${sid}`, key: `spine:${sid}`, kind: "spine", color: showById[s.show].color });
     }
   }
@@ -165,6 +197,8 @@ function build() {
   }
   return { nodes, links };
 }
+
+const weak = (l) => state.view === "players" && state.strong && l.kind === "mates" && l.seasons.length < 2;
 
 // ---------- Highlighting ----------
 const lit = { nodes: new Set(), links: new Set(), path: false };
@@ -255,9 +289,9 @@ function label(node) {
   const text = node.kind === "season" ? node.ref.name : plain(node.ref.name);
   const sprite = new SpriteText(text);
   sprite.fontFace = "Inter, system-ui, sans-serif";
-  sprite.fontWeight = node.kind === "person" ? "500" : "700";
+  sprite.fontWeight = node.kind === "person" ? "600" : "700";
   sprite.color = node.kind === "person" ? theme.ink : node.color;
-  sprite.textHeight = node.kind === "show" ? 7 : node.kind === "season" ? 3.6 : 2.6;
+  sprite.textHeight = node.kind === "show" ? 7 : node.kind === "season" ? 3.6 : 3;
   sprite.center.y = -0.6 - node.size * 0.04;
   sprite.material.depthWrite = false;
   sprite.material.transparent = true;
@@ -279,6 +313,7 @@ function nodeObject(node) {
 const graph = new ForceGraph3D(el, { controlType: "orbit" })
   .backgroundColor(theme.bg)
   .showNavInfo(false)
+  .numDimensions(state.dims)
   .nodeRelSize(REL_SIZE)
   .nodeVal((n) => n.size)
   .nodeColor((n) => (dimmed(n) ? theme.line : n.color))
@@ -291,16 +326,19 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
   })
   .nodeThreeObjectExtend((n) => !hasPhoto(n))
   .nodeThreeObject(nodeObject)
+  .linkVisibility((l) => !weak(l) || lit.links.has(l))
   .linkColor((l) => (lit.links.has(l) ? (lit.path ? theme.gold : l.color) : theme.muted))
-  .linkOpacity(0.22)
+  .linkOpacity(0.24)
   .linkWidth((l) => (lit.links.has(l) ? (l.kind === "mates" ? 0.8 + l.seasons.length * 0.5 : 1.1) : 0))
   .linkDirectionalParticles((l) => (lit.links.has(l) && lit.path ? 3 : 0))
   .linkDirectionalParticleWidth(1.6)
   .linkDirectionalParticleColor(() => theme.gold)
   .linkLabel((l) => {
     if (l.kind !== "mates") return "";
-    const a = personById[l.source.id ?? l.source], b = personById[l.target.id ?? l.target];
-    return `<div class="net-tip"><b>${esc(plain(a.name))} &amp; ${esc(plain(b.name))}</b><br>${l.seasons.map((s) => esc(seasonById[s].full)).join("<br>")}</div>`;
+    const a = l.source.id ?? l.source, b = l.target.id ?? l.target;
+    const { score } = headToHead(a, b);
+    const decided = score[a] + score[b] + score.tie;
+    return `<div class="net-tip"><b>${esc(plain(personById[a].name))} &amp; ${esc(plain(personById[b].name))}</b><br>${l.seasons.map((s) => esc(seasonById[s].full)).join("<br>")}${decided ? `<br><i>Head to head ${score[a]}–${score[b]}</i>` : ""}</div>`;
   })
   .onNodeHover((node) => setHover(node))
   .onLinkHover((link) => setHover(link && link.kind === "mates" ? link : null))
@@ -317,7 +355,12 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
 
 // Spread hubs apart; players who shared more seasons sit closer together.
 graph.d3Force("charge").strength((n) => (n.kind === "show" ? -260 : n.kind === "season" ? -90 : -36));
-graph.d3Force("link").distance((l) => (l.kind === "spine" ? 30 : l.kind === "mates" ? 34 - Math.min(l.seasons.length, 4) * 4 : 22));
+graph.d3Force("link")
+  .distance((l) => (l.kind === "spine" ? 30 : l.kind === "mates" ? 34 - Math.min(l.seasons.length, 4) * 4 : 22))
+  .strength((l) => {
+    const base = 1 / Math.min(l.source.neighbors?.size || 1, l.target.neighbors?.size || 1);
+    return weak(l) ? base * 0.15 : base;
+  });
 // A little gravity, so islands stay in view instead of drifting off.
 for (const [name, f] of [["x", forceX], ["y", forceY], ["z", forceZ]]) graph.d3Force(name, f(0).strength(0.04));
 
@@ -331,49 +374,63 @@ function setHover(target) {
 function refresh() {
   computeLit();
   graph.nodeColor(graph.nodeColor()).linkColor(graph.linkColor()).linkWidth(graph.linkWidth())
-    .linkDirectionalParticles(graph.linkDirectionalParticles());
+    .linkVisibility(graph.linkVisibility()).linkDirectionalParticles(graph.linkDirectionalParticles());
   const { nodes } = graph.graphData();
-  const persons = nodes.filter((n) => n.kind === "person").length;
+  const persons = nodes.filter((n) => n.kind === "person");
+  // The best-connected names stay labelled however big the view gets.
+  const top = new Set([...persons].sort((a, b) => b.neighbors.size - a.neighbors.size).slice(0, 24));
   for (const n of nodes) {
     if (n.pic) n.pic.material.opacity = dimmed(n) ? 0.18 : 1;
     if (!n.sprite) continue;
-    // Labels: every name in a small view; in a big one, the lit names and the cross-show veterans.
-    n.sprite.visible = n.kind !== "person" || lit.nodes.has(n) || persons <= 70 || (persons <= 220 && crossShow(n.ref) && !anyLit());
+    n.sprite.visible = n.kind !== "person" || lit.nodes.has(n) || persons.length <= 70 || (top.has(n) && !anyLit());
     n.sprite.material.opacity = dimmed(n) ? 0.15 : 1;
   }
 }
 
 const nodeFor = (id) => graph.graphData().nodes.find((n) => n.id === id) ?? null;
+const fit = () => graph.zoomToFit(700, narrow() ? 20 : 40);
 
 function render(after) {
   state.hover = null;
   const keepId = state.selected?.kind === "person" ? state.selected.id : null;
   state.settled = false;
-  state.after = after ?? (() => graph.zoomToFit(700, 40));
+  state.after = after === undefined ? fit : after;
   graph.graphData(build());
   state.selected = keepId ? nodeFor(keepId) : null;
   refresh();
   updateActive();
   updateCount();
+  if (state.list) renderList();
+  writeUrl();
 }
 
 function updateCount() {
   const { nodes, links } = graph.graphData();
   const people = nodes.filter((n) => n.kind === "person").length;
+  const shown = links.filter((l) => !weak(l)).length;
   $("count").textContent = state.view === "players"
-    ? `${people} players · ${links.length} connections`
-    : `${people} players · ${nodes.filter((n) => n.kind === "season").length} seasons`;
+    ? `${people} players · ${shown} connection${shown === 1 ? "" : "s"}${shown < links.length ? ` shown of ${links.length}` : ""}${state.year < LAST ? ` · up to ${state.year}` : ""}`
+    : `${people} players · ${nodes.filter((n) => n.kind === "season").length} seasons${state.year < LAST ? ` · up to ${state.year}` : ""}`;
 }
 
 // ---------- Camera ----------
 function flyTo(node) {
   const dist = node.kind === "show" ? 280 : 220;
   const cam = graph.cameraPosition();
-  const d = { x: cam.x - node.x, y: cam.y - node.y, z: cam.z - node.z };
+  // In the flat view nodes have no z, and the camera must keep looking straight down.
+  const nz = state.dims === 2 ? 0 : node.z || 0;
+  const d = state.dims === 2 ? { x: 0, y: 0, z: 1 } : { x: cam.x - node.x, y: cam.y - node.y, z: cam.z - nz };
   const len = Math.hypot(d.x, d.y, d.z) || 1;
+  let look = { x: node.x, y: node.y, z: nz };
+  // On a phone the details sheet covers the bottom, so keep the player in the top half.
+  if (narrow()) {
+    const up = new Vector3(0, 1, 0).applyQuaternion(graph.camera().quaternion);
+    const shift = dist * 0.22;
+    look = { x: look.x - up.x * shift, y: look.y - up.y * shift, z: look.z - up.z * shift };
+  }
   graph.cameraPosition(
-    { x: node.x + (d.x / len) * dist, y: node.y + (d.y / len) * dist, z: node.z + (d.z / len) * dist },
-    { x: node.x, y: node.y, z: node.z },
+    { x: look.x + (d.x / len) * dist, y: look.y + (d.y / len) * dist, z: look.z + (d.z / len) * dist },
+    look,
     1000
   );
 }
@@ -388,10 +445,10 @@ function select(target, fly = false) {
   refresh();
   if (!target) return hideInfo();
   if (target.kind === "person") personPanel(target.ref);
-  else if (target.kind === "mates") pairPanel(target);
+  else if (target.kind === "mates") pairPanel(target.source.id, target.target.id);
   else seasonOrShowPanel(target);
   if (fly && !isLink(target)) flyTo(target);
-  if (target.kind === "person") setUrl({ focus: target.id });
+  writeUrl();
 }
 
 function clearSelection() {
@@ -399,6 +456,7 @@ function clearSelection() {
   refresh();
   if (state.path) pathPanel(state.path);
   else hideInfo();
+  writeUrl();
 }
 
 function hideInfo() {
@@ -453,22 +511,32 @@ function personPanel(p) {
   });
 }
 
-function pairPanel(l) {
-  const a = personById[l.source.id], b = personById[l.target.id];
-  const all = together(a.id, b.id);
-  const res = (p, sid) => p.apps.find((x) => x.season === sid)?.result || "Played";
+function pairPanel(a, b) {
+  const pa = personById[a], pb = personById[b];
+  const { rows, score } = headToHead(a, b);
+  const decided = score[a] + score[b] + score.tie;
+  const na = esc(plain(pa.name)), nb = esc(plain(pb.name));
+  let verdict = "";
+  if (decided) {
+    verdict = score[a] === score[b]
+      ? `Level at ${score[a]}–${score[b]}`
+      : `<span class="gold">${score[a] > score[b] ? na : nb}</span> leads ${Math.max(score[a], score[b])}–${Math.min(score[a], score[b])}`;
+    if (score.tie) verdict += `, ${score.tie} tied`;
+  }
+  const res = (p, sid) => esc(appOf(p.id, sid)?.result || (seasonById[sid].upcoming ? "Announced" : "Played"));
   showInfo(`
-    <div class="eyebrow">Played together</div>
-    <h2>${esc(plain(a.name))} &amp; ${esc(plain(b.name))}</h2>
-    <div class="stat">${all.length} season${all.length > 1 ? "s" : ""} together</div>
-    <ul>${all.map((sid) => {
+    <div class="eyebrow">Head to head</div>
+    <h2>${na} &amp; ${nb}</h2>
+    <div class="stat">${rows.length} season${rows.length > 1 ? "s" : ""} together${decided < rows.length ? ` · ${rows.length - decided} without a placement for both` : ""}</div>
+    ${verdict ? `<div class="score">${verdict}</div>` : ""}
+    <ul>${rows.map(({ sid, better }) => {
       const s = seasonById[sid];
       return `<li class="hop"><span><span class="chip" style="--show:${showById[s.show].color}">${esc(s.full)}</span></span>
-        <span class="muted">${esc(plain(a.name))}: ${esc(res(a, sid))} · ${esc(plain(b.name))}: ${esc(res(b, sid))}</span></li>`;
+        <span class="muted"><span class="${better === a ? "better" : ""}">${na}: ${res(pa, sid)}</span> · <span class="${better === b ? "better" : ""}">${nb}: ${res(pb, sid)}</span></span></li>`;
     }).join("")}</ul>
     <div class="acts">
-      <button type="button" class="act ghost" data-go="${a.id}">${esc(plain(a.name))}</button>
-      <button type="button" class="act ghost" data-go="${b.id}">${esc(plain(b.name))}</button>
+      <button type="button" class="act ghost" data-go="${a}">${na}</button>
+      <button type="button" class="act ghost" data-go="${b}">${nb}</button>
     </div>
   `);
 }
@@ -495,9 +563,8 @@ function pathPanel(path) {
   const a = personById[path[0]], b = personById[path.at(-1)];
   const hops = path.slice(1).map((id, i) => {
     const prev = path[i];
-    const shared = together(prev, id);
     return `<li class="hop"><span class="who">${esc(plain(personById[prev].name))} → ${esc(plain(personById[id].name))}</span>
-      <span>${shared.map((sid) => `<span class="chip" style="--show:${showById[seasonById[sid].show].color}">${esc(seasonById[sid].full)}</span>`).join("")}</span></li>`;
+      <span>${together(prev, id).map((sid) => `<span class="chip" style="--show:${showById[seasonById[sid].show].color}">${esc(seasonById[sid].full)}${seasonById[sid].upcoming ? " (announced)" : ""}</span>`).join("")}</span></li>`;
   }).join("");
   const steps = path.length - 1;
   showInfo(`
@@ -517,37 +584,65 @@ function noPathPanel(a, b) {
   `);
 }
 
-// Panel buttons.
-body.addEventListener("click", (e) => {
+// One handler for every button that acts on the graph: panel, insights, try chips.
+function handleAction(e) {
   const t = e.target.closest("button, a");
   if (!t) return;
-  if (t.dataset.go) return focusPerson(t.dataset.go);
-  if (t.dataset.circle) return toggleCircle(t.dataset.circle);
-  if (t.dataset.from) {
+  const d = t.dataset;
+  if (d.go) return focusPerson(d.go);
+  if (d.circle) return toggleCircle(d.circle);
+  if (d.from) {
     $("more").open = true;
-    setPick("from", t.dataset.from);
+    setPick("from", d.from);
     $("to").focus();
     return;
   }
-  if (t.dataset.group) return setGroup(t.dataset.group);
-  if (t.dataset.only) return onlyShow(t.dataset.only);
-  if ("clearPath" in t.dataset) return clearPath();
-});
+  if (d.group) return setGroup(d.group);
+  if (d.only) return onlyShow(d.only);
+  if (d.path) {
+    const [from, to] = d.path.split(":");
+    setPick("from", from);
+    setPick("to", to);
+    return runPath(from, to);
+  }
+  if (d.action) return runAction(d.action);
+  if ("clearPath" in d) return clearPath();
+}
+body.addEventListener("click", handleAction);
+$("insights-body").addEventListener("click", handleAction);
+document.querySelector(".try").addEventListener("click", handleAction);
 $("close").addEventListener("click", () => {
   state.selected = null;
   refresh();
   hideInfo();
+  writeUrl();
 });
+
+function runAction(action) {
+  const [kind, a, b] = action.split(":");
+  if (kind === "circle") {
+    if (state.ego !== a) toggleCircle(a);
+  } else if (kind === "path") {
+    setPick("from", a);
+    setPick("to", b);
+    runPath(a, b);
+  } else if (kind === "group") setGroup(a);
+  else if (kind === "focus") focusPerson(a);
+  else if (kind === "timeline") play();
+}
 
 // ---------- Actions ----------
 function focusPerson(id) {
   const p = personById[id];
   if (!p) return;
+  closeList();
   personPanel(p);
   if (!visiblePeople().has(id)) {
     // Widen the view just enough to include them.
     state.group = null;
     state.ego = null;
+    state.year = LAST;
+    syncYear();
     if (!p.apps.some((a) => seasonOn(a.season))) {
       state.shows = new Set(data.shows.map((s) => s.id));
       syncChips();
@@ -568,7 +663,7 @@ function toggleCircle(id) {
   state.group = null;
   state.selected = null;
   render(() => {
-    graph.zoomToFit(700, 60);
+    fit();
     const n = nodeFor(id);
     if (n) select(n);
   });
@@ -582,7 +677,6 @@ function setGroup(seasonId) {
   state.group = { ids: new Set(castOf[seasonId]), label: `${s.full} cast`, except: seasonId };
   state.selected = null;
   hideInfo();
-  setUrl({ group: seasonId });
   render();
 }
 
@@ -598,6 +692,7 @@ function runPath(from, to) {
   if (!from || !to) return;
   const path = shortestPath(from, to);
   state.selected = null;
+  closeList();
   if (!path) {
     state.path = null;
     render();
@@ -605,7 +700,6 @@ function runPath(from, to) {
     return;
   }
   state.path = path;
-  setUrl({ from, to });
   pathPanel(path);
   render(() => {
     refresh();
@@ -618,7 +712,6 @@ function clearPath() {
   state.path = null;
   picks.from = picks.to = null;
   $("from").value = $("to").value = "";
-  setUrl({});
   hideInfo();
   render();
 }
@@ -630,6 +723,7 @@ function updateActive() {
   if (state.ego) tags.push(["ego", `Circle of ${plain(personById[state.ego].name)}`]);
   if (state.path) tags.push(["path", `Connection: ${plain(personById[state.path[0]].name)} to ${plain(personById[state.path.at(-1)].name)}`]);
   if (state.shows.size < data.shows.length) tags.push(["shows", `${state.shows.size} of ${data.shows.length} shows`]);
+  if (state.year < LAST) tags.push(["year", `Seasons up to ${state.year}`]);
   const box = $("active");
   box.hidden = !tags.length;
   box.innerHTML = tags.map(([k, t]) => `<div class="tag"><span>${esc(t)}</span><button type="button" data-clear="${k}" aria-label="Remove">×</button></div>`).join("");
@@ -638,9 +732,57 @@ $("active").addEventListener("click", (e) => {
   const k = e.target.closest("[data-clear]")?.dataset.clear;
   if (!k) return;
   if (k === "path") return clearPath();
-  if (k === "group") { state.group = null; setUrl({}); }
+  if (k === "group") state.group = null;
   if (k === "ego") state.ego = null;
   if (k === "shows") { state.shows = new Set(data.shows.map((s) => s.id)); syncChips(); }
+  if (k === "year") { stop(); state.year = LAST; syncYear(); }
+  render();
+});
+
+// ---------- Timeline ----------
+let timer = null;
+function syncYear() {
+  $("year").value = state.year;
+  $("year-out").textContent = state.year;
+}
+function stop() {
+  clearInterval(timer);
+  timer = null;
+  $("play").textContent = "▶";
+  $("play").setAttribute("aria-label", "Play the timeline");
+}
+// Watch the universe grow, one year at a time.
+function play() {
+  if (timer) return stop();
+  state.group = null;
+  state.ego = null;
+  state.path = null;
+  state.selected = null;
+  hideInfo();
+  state.year = FIRST;
+  syncYear();
+  $("play").textContent = "❚❚";
+  $("play").setAttribute("aria-label", "Pause the timeline");
+  const step = () => {
+    render(null);
+    setTimeout(() => graph.zoomToFit(900, 60), 700);
+  };
+  step();
+  timer = setInterval(() => {
+    if (state.year >= LAST) {
+      stop();
+      return;
+    }
+    state.year++;
+    syncYear();
+    step();
+  }, 1600);
+}
+$("play").addEventListener("click", play);
+$("year").addEventListener("input", (e) => {
+  stop();
+  state.year = +e.target.value;
+  syncYear();
   render();
 });
 
@@ -681,11 +823,111 @@ $("all-shows").addEventListener("click", () => {
   syncChips();
   render();
 });
+$("strong").addEventListener("change", (e) => {
+  state.strong = e.target.checked;
+  render();
+});
 $("flat").addEventListener("change", (e) => {
   state.dims = e.target.checked ? 2 : 3;
   graph.numDimensions(state.dims);
   render();
 });
+
+// ---------- List view ----------
+function renderList() {
+  const { nodes, links } = graph.graphData();
+  const LIMIT = 400;
+  let html;
+  if (state.view === "players") {
+    const rows = links.filter((l) => !weak(l) || lit.links.has(l))
+      .sort((x, y) => y.seasons.length - x.seasons.length || plain(personById[x.source.id ?? x.source].name).localeCompare(plain(personById[y.source.id ?? y.source].name)));
+    $("list-title").textContent = `${rows.length} connection${rows.length === 1 ? "" : "s"} in this view`;
+    html = `<table><thead><tr><th>Players</th><th>Together</th><th>Head to head</th></tr></thead><tbody>${rows.slice(0, LIMIT).map((l) => {
+      const a = l.source.id ?? l.source, b = l.target.id ?? l.target;
+      const { score } = headToHead(a, b);
+      const decided = score[a] + score[b] + score.tie;
+      return `<tr class="pick" data-pair="${a}:${b}"><td><b>${esc(plain(personById[a].name))}</b> &amp; <b>${esc(plain(personById[b].name))}</b></td>
+        <td>${l.seasons.map((s) => `<span class="chip" style="--show:${showById[seasonById[s].show].color}">${esc(seasonById[s].full)}</span>`).join("")}</td>
+        <td>${decided ? `${score[a]}–${score[b]}` : "–"}</td></tr>`;
+    }).join("")}</tbody></table>${rows.length > LIMIT ? `<p class="note">Showing the first ${LIMIT}. Narrow the view to see the rest.</p>` : ""}`;
+  } else {
+    const people = nodes.filter((n) => n.kind === "person").sort((x, y) => y.ref.apps.length - x.ref.apps.length || x.ref.name.localeCompare(y.ref.name));
+    $("list-title").textContent = `${people.length} players in this view`;
+    html = `<table><thead><tr><th>Player</th><th>Seasons</th></tr></thead><tbody>${people.slice(0, LIMIT).map((n) => `
+      <tr class="pick" data-go-row="${n.id}"><td><b>${esc(n.ref.name)}</b>${n.ref.known ? `<br><span class="muted">${esc(n.ref.known)}</span>` : ""}</td>
+      <td>${n.ref.apps.filter((a) => seasonOn(a.season)).map((a) => `<span class="chip" style="--show:${showById[seasonById[a.season].show].color}">${esc(seasonById[a.season].full)}</span>`).join("")}</td></tr>`).join("")}</tbody></table>`;
+  }
+  $("list-body").innerHTML = html;
+}
+// Rows are table rows, not buttons, so route their clicks here.
+$("list-body").addEventListener("click", (e) => {
+  const row = e.target.closest("tr.pick");
+  if (!row) return;
+  if (row.dataset.pair) {
+    const [a, b] = row.dataset.pair.split(":");
+    closeList();
+    const link = graph.graphData().links.find((l) => l.key === linkKey(a, b));
+    if (link) select(link);
+    else pairPanel(a, b);
+  } else if (row.dataset.goRow) focusPerson(row.dataset.goRow);
+});
+function openList() {
+  state.list = true;
+  $("list").hidden = false;
+  renderList();
+}
+function closeList() {
+  state.list = false;
+  $("list").hidden = true;
+}
+$("list-open").addEventListener("click", openList);
+$("list-close").addEventListener("click", closeList);
+
+// ---------- Insights ----------
+function renderInsights() {
+  const connected = data.people.map((p) => [p.id, mates(p.id).size]).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const titled = data.people.filter((p) => p.titles > 1).sort((a, b) => b.titles - a.titles || a.name.localeCompare(b.name));
+
+  // Pairs of shows joined by exactly one player.
+  const bridges = new Map();
+  for (const p of data.people) {
+    for (let i = 0; i < p.showIds.length; i++) {
+      for (let j = i + 1; j < p.showIds.length; j++) {
+        const key = [p.showIds[i], p.showIds[j]].sort().join("|");
+        if (!bridges.has(key)) bridges.set(key, []);
+        bridges.get(key).push(p.id);
+      }
+    }
+  }
+  const only = [...bridges.entries()].filter(([, ids]) => ids.length === 1)
+    .map(([key, [id]]) => ({ id, shows: key.split("|").map((s) => showById[s].name) }))
+    .sort((a, b) => personById[a.id].name.localeCompare(personById[b.id].name));
+
+  // Steps from Hong Jin-ho.
+  const HUB = "hong-jin-ho";
+  const { dist } = distances(HUB);
+  const counts = [];
+  for (const [id, d] of dist) if (id !== HUB) counts[d] = (counts[d] ?? 0) + 1;
+  const max = Math.max(...counts.filter(Boolean));
+  const furthest = [...dist.entries()].filter(([, d]) => d === counts.length - 1).map(([id]) => id).slice(0, 6);
+  const unreachable = data.people.length - dist.size;
+  const avg = ([...dist.values()].reduce((s, d) => s + d, 0) / (dist.size - 1)).toFixed(1);
+
+  $("insights-body").innerHTML = `
+    <h4>Most connected</h4>
+    <ol>${connected.map(([id, n]) => `<li><button type="button" class="row-btn" data-go="${id}">${esc(plain(personById[id].name))}</button> <span class="n">played with ${n}</span></li>`).join("")}</ol>
+    <h4>Most titles</h4>
+    <ol>${titled.map((p) => `<li><button type="button" class="row-btn" data-go="${p.id}">${esc(plain(p.name))}</button> <span class="n">${p.titles}</span></li>`).join("")}</ol>
+    <h4>Steps from Hong Jin-ho</h4>
+    <p>How many co-players separate everyone from the genre's most familiar face. On average: ${avg}.</p>
+    <div class="dist">${counts.map((n, d) => (d ? `<div class="bar" style="height:${Math.round((n / max) * 100)}%" title="${n} players at ${d} step${d > 1 ? "s" : ""}"><span>${d}</span></div>` : "")).join("")}</div>
+    <div class="dist-gap"></div>
+    <p>Furthest away: ${furthest.map((id) => `<button type="button" class="row-btn" data-path="${HUB}:${id}">${esc(plain(personById[id].name))}</button>`).join(", ")}.${unreachable ? ` ${unreachable} players have no link to him at all.` : ""}</p>
+    <h4>Only links between shows</h4>
+    <p>Pairs of shows joined by a single player.</p>
+    <ol>${only.map(({ id, shows: s }) => `<li><button type="button" class="row-btn" data-go="${id}">${esc(plain(personById[id].name))}</button> <span class="n">${esc(s[0])} and ${esc(s[1])}</span></li>`).join("")}</ol>
+  `;
+}
 
 // ---------- Search with suggestions ----------
 const fold = (s) => s.toLowerCase().replace(/[\s\-.]/g, "");
@@ -766,16 +1008,54 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     $("find").focus();
   } else if (e.key === "Escape" && !typing) {
-    if (state.selected) clearSelection();
+    if (state.list) closeList();
+    else if (state.selected) clearSelection();
     else if (state.path) clearPath();
     else if (state.ego) { state.ego = null; render(); }
   }
 });
 
-// ---------- URL ----------
-function setUrl(params) {
-  const q = new URLSearchParams(params).toString();
-  history.replaceState(null, "", q ? `?${q}` : location.pathname);
+// ---------- URL: the whole view is shareable ----------
+function writeUrl() {
+  const q = new URLSearchParams();
+  if (state.view !== "players") q.set("view", state.view);
+  if (state.who !== "veterans") q.set("who", state.who);
+  if (state.shows.size < data.shows.length) q.set("shows", [...state.shows].join(","));
+  if (state.year < LAST) q.set("year", state.year);
+  if (!state.strong) q.set("strong", "0");
+  if (state.dims !== defaultDims) q.set("flat", state.dims === 2 ? "1" : "0");
+  if (state.group) q.set("group", state.group.except);
+  if (state.ego) q.set("circle", state.ego);
+  if (state.path) {
+    q.set("from", state.path[0]);
+    q.set("to", state.path.at(-1));
+  } else if (state.selected?.kind === "person") q.set("focus", state.selected.id);
+  const s = q.toString();
+  history.replaceState(null, "", s ? `?${s}` : location.pathname);
+}
+
+function readUrl() {
+  const q = new URLSearchParams(location.search);
+  if (q.get("view") === "seasons") state.view = "seasons";
+  if (q.get("who") === "all") state.who = "all";
+  if (q.get("shows")) {
+    const want = q.get("shows").split(",").filter((s) => showById[s]);
+    if (want.length) state.shows = new Set(want);
+  }
+  const year = +q.get("year");
+  if (year >= FIRST && year < LAST) state.year = year;
+  if (q.get("strong") === "0") state.strong = false;
+  if (q.get("flat") === "1") state.dims = 2;
+  if (q.get("flat") === "0") state.dims = 3;
+  if (q.get("circle") && personById[q.get("circle")]) state.ego = q.get("circle");
+  setPressed("view", state.view);
+  setPressed("who", state.who);
+  syncChips();
+  syncYear();
+  $("strong").checked = state.strong;
+  $("flat").checked = state.dims === 2;
+  graph.numDimensions(state.dims);
+  return q;
 }
 
 // ---------- Start ----------
@@ -784,15 +1064,20 @@ function size() {
 }
 addEventListener("resize", size);
 size();
-if (matchMedia("(max-width: 760px)").matches) $("more").open = false;
+if (narrow()) $("more").open = false;
+renderInsights();
 
-const q = new URLSearchParams(location.search);
+const q = readUrl();
 if (q.get("group") && seasonById[q.get("group")]) {
   setGroup(q.get("group"));
 } else if (personById[q.get("from")] && personById[q.get("to")]) {
   setPick("from", q.get("from"));
   setPick("to", q.get("to"));
   runPath(q.get("from"), q.get("to"));
+} else if (state.ego) {
+  const id = state.ego;
+  state.ego = null;
+  toggleCircle(id);
 } else {
   render();
   if (q.get("focus")) focusPerson(q.get("focus"));

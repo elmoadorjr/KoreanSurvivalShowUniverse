@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Avatar from "../components/Avatar.astro";
-import { people, appearances, findSeason, pairsWithin, seasonLabel, resultText } from "../lib/universe.mjs";
+import { people, appearances, findSeason, pairsWithin, seasonLabel, resultText, headToHeadText } from "../lib/universe.mjs";
 
 const SEASON = "devils-plan-3";
 const { show, season } = findSeason(SEASON);
@@ -90,7 +90,7 @@ const color = show.color;
                 <a href={`/contestants/${b}/`}><Avatar id={b} color={color} /></a>
                 <div class="pair-names">
                   <b>{people[a].name} &amp; {people[b].name}</b>
-                  <span class="muted small">{together.length} season{together.length === 1 ? "" : "s"} together</span>
+                  <span class="muted small">{together.length} season{together.length === 1 ? "" : "s"} together{headToHeadText(a, b, SEASON) && ` · ${headToHeadText(a, b, SEASON)}`}</span>
                 </div>
               </div>
               <div class="chips">

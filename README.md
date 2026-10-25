@@ -35,11 +35,19 @@ npm run build     # static site in dist/
 - `/contestants/<id>/`: a bio, the full survival record and old rivals
 - `/devils-plan-3/`: The Devil's Plan: Dead Again (November 2026): all sixteen
   players' records and every pair who has played together before
-- `/network/`: the explorer (three.js via 3d-force-graph). Players view links
-  players who shared a season; Seasons view hangs players off show and season
-  hubs. Search players, shows or season casts; connect two players (shortest
-  chain of co-players); show a player's circle; filter by show; flat 2D mode.
-  Shareable links: `?focus=<id>`, `?from=<id>&to=<id>`, `?group=<season id>`.
+- `/network/`: the explorer (three.js via 3d-force-graph).
+  - Players view links players who shared a season; Seasons view hangs them
+    off show and season hubs. Strong ties (2+ seasons) by default; hovering a
+    player brings back all their lines. Phones start in the flat 2D view.
+  - One-tap starting points, search with suggestions, connect any two players
+    (shortest chain of co-players), a player's circle, cast groups.
+  - Head to head on every link: who finished higher each time they met.
+  - Timeline slider and play button: the universe from 2013 onwards.
+  - Insights: most connected, most titles, steps from Hong Jin-ho, and the
+    players who are the only link between two shows.
+  - Show filters grouped by kind, a sortable list view of the same data, and
+    the whole view in the URL (`view`, `who`, `shows`, `year`, `strong`,
+    `flat`, `focus`, `from`/`to`, `group`, `circle`).
 
 ## Editing the data
 

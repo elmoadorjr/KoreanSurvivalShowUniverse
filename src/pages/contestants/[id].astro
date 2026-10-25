@@ -2,7 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
 import Avatar from "../../components/Avatar.astro";
-import { contestants, photos, resultText, seasonLabel, seasonNetwork, recordBio } from "../../lib/universe.mjs";
+import { contestants, photos, resultText, seasonLabel, seasonNetwork, recordBio, headToHeadText } from "../../lib/universe.mjs";
 
 export function getStaticPaths() {
   return contestants.map((c) => ({ params: { id: c.id }, props: { c } }));
@@ -70,7 +70,7 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
         <div class="section-head"><h2>Old rivals</h2></div>
         <p class="muted" style="margin-top:-8px">Players who shared more than one season with {c.name}.</p>
         <div class="grid people">
-          {rivals.map(([id, n]) => <PersonTile id={id} color={rivalColor(id)} sub={`${n} seasons together`} />)}
+          {rivals.map(([id, n]) => <PersonTile id={id} color={rivalColor(id)} sub={`${n} seasons together${headToHeadText(c.id, id) ? ` · ${headToHeadText(c.id, id)}` : ""}`} />)}
         </div>
       </section>
     )}
