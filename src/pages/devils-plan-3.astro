@@ -1,0 +1,150 @@
+---
+import Base from "../layouts/Base.astro";
+import Avatar from "../components/Avatar.astro";
+import { people, appearances, findSeason, pairsWithin, seasonLabel, resultText } from "../lib/universe.mjs";
+
+const SEASON = "devils-plan-3";
+const { show, season } = findSeason(SEASON);
+const ids = season.cast.map((e) => e.person);
+
+// Each player's record before this season.
+const cast = ids.map((id) => {
+  const past = appearances[id].filter((a) => a.season.id !== SEASON && !a.season.upcoming);
+  const titles = past.filter((a) => a.entry.place === 1);
+  const showsPlayed = [...new Map(past.map((a) => [a.show.id, a.show])).values()];
+  return { id, p: people[id], past, titles, showsPlayed };
+});
+// Champions first, then the most experienced, then debuts.
+cast.sort((x, y) => y.titles.length - x.titles.length || y.past.length - x.past.length);
+
+const pairs = pairsWithin(ids, SEASON);
+const debuts = cast.filter((c) => !c.past.length);
+const totalSeasons = cast.reduce((n, c) => n + c.past.length, 0);
+const totalTitles = cast.reduce((n, c) => n + c.titles.length, 0);
+const linked = new Set(pairs.flatMap((p) => [p.a, p.b]));
+const color = show.color;
+---
+<Base title="The Devil's Plan: Dead Again" description="The Devil's Plan season 3: all sixteen players, their survival-show records, and who has played together before.">
+  <div class="dp3" style={`--show:${color}`}>
+    <section class="dp3-hero">
+      <div class="wrap">
+        <div class="eyebrow">Netflix · {season.episodes} episodes · from November 10, 2026</div>
+        <h1>The Devil's Plan: <span>Dead Again</span></h1>
+        <p class="lede">Season 3 brings back sixteen players, the most ever: both earlier winners, the genre's biggest champions and a few newcomers. Here is everything they have played before, and every rivalry they bring with them.</p>
+        <p class="countdown" id="countdown" data-date="2026-11-10"></p>
+        <div class="stats">
+          <div><b>16</b><span>players</span></div>
+          <div><b>{totalSeasons}</b><span>past seasons between them</span></div>
+          <div><b>{totalTitles}</b><span>titles won</span></div>
+          <div><b>{pairs.length}</b><span>pairs who have met before</span></div>
+        </div>
+        <div class="dp3-actions">
+          <a class="btn" href={`/network/?group=${SEASON}`}>Explore the cast in the network</a>
+          <a class="btn ghost" href={`/shows/${show.id}/`}>Earlier seasons</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <section>
+        <div class="section-head"><h2>The sixteen</h2><span class="muted">{debuts.length} debut{debuts.length === 1 ? "" : "s"}</span></div>
+        <div class="dp3-grid">
+          {cast.map((c) => (
+            <a class="card dp3-card" href={`/contestants/${c.id}/`}>
+              <div class="dp3-top">
+                <Avatar id={c.id} color={c.titles.length ? "#e8b84a" : color} won={c.titles.length > 0} />
+                <div>
+                  <h3>{c.p.name}</h3>
+                  {c.p.known && <div class="muted small">{c.p.known}</div>}
+                </div>
+              </div>
+              <div class="dp3-line">
+                {c.past.length
+                  ? <>{c.past.length} season{c.past.length === 1 ? "" : "s"} on {c.showsPlayed.length} show{c.showsPlayed.length === 1 ? "" : "s"}{c.titles.length > 0 && <b class="gold"> · {c.titles.length} title{c.titles.length === 1 ? "" : "s"}</b>}</>
+                  : <span class="debut">Survival-show debut</span>}
+              </div>
+              {c.past.length > 0 && (
+                <ul class="dp3-past">
+                  {c.past.map((a) => (
+                    <li style={`--c:${a.show.color}`}>
+                      <span>{seasonLabel(a.show, a.season)}</span>
+                      <span class:list={["r", { gold: a.entry.place === 1 }]}>{resultText(a.entry, a.season) || "Played"}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Old rivals</h2></div>
+        <p class="muted" style="margin-top:-8px">{linked.size} of the sixteen have already shared a game with someone else in the house.</p>
+        <div class="pairs">
+          {pairs.map(({ a, b, together }) => (
+            <div class="card pair">
+              <div class="pair-who">
+                <a href={`/contestants/${a}/`}><Avatar id={a} color={color} /></a>
+                <span class="amp" aria-hidden="true">×</span>
+                <a href={`/contestants/${b}/`}><Avatar id={b} color={color} /></a>
+                <div class="pair-names">
+                  <b>{people[a].name} &amp; {people[b].name}</b>
+                  <span class="muted small">{together.length} season{together.length === 1 ? "" : "s"} together</span>
+                </div>
+              </div>
+              <div class="chips">
+                {together.map((t) => <a class="chip" style={`--show:${t.show.color}`} href={`/shows/${t.show.id}/#${t.season.id}`}>{seasonLabel(t.show, t.season)}</a>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const el = document.getElementById("countdown");
+    if (el) {
+      const start = new Date(el.dataset.date + "T00:00:00+09:00");
+      const days = Math.ceil((start.getTime() - Date.now()) / 864e5);
+      el.textContent = days > 1 ? `Premieres in ${days} days` : days === 1 ? "Premieres tomorrow" : days === 0 ? "Premieres today" : "Now streaming on Netflix";
+    }
+  </script>
+</Base>
+
+<style>
+  .dp3-hero {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 80% 0%, color-mix(in srgb, var(--show) 38%, transparent), transparent 60%),
+      linear-gradient(180deg, color-mix(in srgb, var(--show) 14%, transparent), transparent);
+  }
+  .dp3-hero h1 { margin: 12px 0 14px; max-width: 820px; }
+  .dp3-hero h1 span { color: color-mix(in srgb, var(--show) 60%, var(--ink)); }
+  .countdown { font: 700 18px var(--display); color: var(--gold); margin: 14px 0 0; }
+  .dp3-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .btn {
+    display: inline-block; text-decoration: none; font-weight: 650; font-size: 15px;
+    padding: 11px 16px; border-radius: 10px; background: var(--show); color: #fff;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .dp3-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .dp3-card { display: flex; flex-direction: column; gap: 10px; }
+  .dp3-top { display: flex; gap: 12px; align-items: center; }
+  .dp3-top h3 { font-size: 18px; }
+  .small { font-size: 13px; }
+  .dp3-line { font-size: 14px; color: var(--muted); }
+  .dp3-line .gold, .r.gold { color: var(--gold); }
+  .debut { color: var(--ink); font-weight: 600; }
+  .dp3-past { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .dp3-past li { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; border-left: 3px solid var(--c); padding-left: 8px; }
+  .dp3-past .r { color: var(--muted); text-align: right; flex: none; max-width: 50%; }
+  .pairs { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .pair { display: grid; gap: 10px; }
+  .pair-who { display: flex; align-items: center; gap: 8px; }
+  .pair-who a { text-decoration: none; }
+  .amp { color: var(--muted); font-size: 18px; }
+  .pair-names { display: grid; margin-left: 4px; min-width: 0; }
+</style>

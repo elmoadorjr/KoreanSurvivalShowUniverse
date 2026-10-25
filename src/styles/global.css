@@ -170,6 +170,18 @@ a.card:hover { border-color: color-mix(in srgb, var(--show, var(--accent)) 70%, 
 .toolbar label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 15px; }
 .count { color: var(--muted); font-size: 14px; margin: -8px 0 16px; }
 
+.showcase-link { font-weight: 650; color: var(--gold); }
+.feature {
+  display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
+  margin-top: 24px; padding: 20px; border-radius: var(--radius); text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--show) 60%, var(--line));
+  background: linear-gradient(120deg, color-mix(in srgb, var(--show) 30%, var(--card)), var(--card));
+}
+.feature h2 { font-size: clamp(20px, 3vw, 26px); margin: 4px 0; }
+.feature p { margin: 0; color: var(--muted); font-size: 15px; }
+.feature .faces { display: flex; }
+.feature .faces .avatar { margin-left: -10px; box-shadow: 0 0 0 2px var(--card); }
+@media (max-width: 640px) { .feature { grid-template-columns: 1fr; } }
 .back { display: inline-block; margin-top: 8px; color: var(--muted); font-size: 15px; text-decoration: none; }
 .back:hover { color: var(--ink); }
 

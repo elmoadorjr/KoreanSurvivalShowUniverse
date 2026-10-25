@@ -88,3 +88,29 @@ export function recordBio(c) {
       : seasons.slice(0, -1).join(", ") + " and " + seasons.at(-1);
   return `${c.name} competed on ${list}.`;
 }
+
+// Seasons two players shared, oldest first, leaving out `except` (a season id).
+export function sharedSeasons(a, b, except) {
+  const theirs = new Set((appearances[b] ?? []).map((x) => x.season.id));
+  return (appearances[a] ?? []).filter((x) => x.season.id !== except && theirs.has(x.season.id));
+}
+
+// Every pair in a group who have played together before, most shared seasons first.
+export function pairsWithin(ids, except) {
+  const out = [];
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      const together = sharedSeasons(ids[i], ids[j], except);
+      if (together.length) out.push({ a: ids[i], b: ids[j], together });
+    }
+  }
+  return out.sort((x, y) => y.together.length - x.together.length);
+}
+
+export function findSeason(id) {
+  for (const show of shows) {
+    const season = show.seasons.find((s) => s.id === id);
+    if (season) return { show, season };
+  }
+  return null;
+}

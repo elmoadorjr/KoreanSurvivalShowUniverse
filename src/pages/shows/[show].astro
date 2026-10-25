@@ -38,6 +38,7 @@ const { show } = Astro.props;
           </span>
         </div>
         {season.note && <p class:list={["note", { pending: !season.complete }]}>{season.note}</p>}
+        {season.showcase && <p><a class="showcase-link" href={season.showcase}>The full season guide: every player's record and every old rivalry</a></p>}
         <div class="grid people">
           {season.cast.map((entry) => (
             <PersonTile id={entry.person} color={show.color} won={entry.place === 1} sub={resultText(entry, season)} />

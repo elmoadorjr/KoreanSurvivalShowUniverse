@@ -33,9 +33,13 @@ npm run build     # static site in dist/
 - `/shows/` and `/shows/<show>/`: each show with every season's cast
 - `/contestants/`: every player, searchable (English or Korean) and filterable
 - `/contestants/<id>/`: a bio, the full survival record and old rivals
-- `/network/`: a 3D graph (three.js, via 3d-force-graph) of every player linked
-  to every season they played; veterans who crossed shows glow gold.
-  `/network/?focus=<id>` flies to a player.
+- `/devils-plan-3/`: The Devil's Plan: Dead Again (November 2026): all sixteen
+  players' records and every pair who has played together before
+- `/network/`: the explorer (three.js via 3d-force-graph). Players view links
+  players who shared a season; Seasons view hangs players off show and season
+  hubs. Search players, shows or season casts; connect two players (shortest
+  chain of co-players); show a player's circle; filter by show; flat 2D mode.
+  Shareable links: `?focus=<id>`, `?from=<id>&to=<id>`, `?group=<season id>`.
 
 ## Editing the data
 
@@ -69,10 +73,10 @@ Promotional photos from networks are copyrighted, so they are never used.
 
 ### Known gaps
 
-- Physical: 100 seasons, Physical: Asia, Siren, The Influencer, University War,
-  Death Game and Life's Game list featured players only (or none: Life's Game
-  players are LG employees under aliases).
-- Unconfirmed winners: The Black Sheep Game (not recorded), Accomplice 2 and
-  Four Wishes (from fan records).
+- Physical: 100 (100 players a season), Physical: Asia and The Influencer (77)
+  list featured players only.
+- Winners from fan records only: Accomplice 2 and Four Wishes.
+- Some middle placements are still blank where sources disagree (The Bloody
+  Game seasons 1 to 3, Devil's Plan 1 placements 11 to 12 aside).
 - Some middle placements (The Genius seasons 1, 3 and 4, The Devil's Plan,
   The Bloody Game) are left blank because sources disagree.

@@ -2,7 +2,10 @@
 import Base from "../layouts/Base.astro";
 import ShowCard from "../components/ShowCard.astro";
 import PersonTile from "../components/PersonTile.astro";
-import { shows, contestants, crossovers, champions, seasonLabel } from "../lib/universe.mjs";
+import Avatar from "../components/Avatar.astro";
+import { shows, contestants, crossovers, champions, seasonLabel, findSeason } from "../lib/universe.mjs";
+
+const dp3 = findSeason("devils-plan-3");
 
 const seasons = shows.flatMap((s) => s.seasons);
 ---
@@ -12,6 +15,16 @@ const seasons = shows.flatMap((s) => s.seasons);
       <div class="eyebrow">The Korean survival show fan site</div>
       <h1>Every game, every player, every comeback.</h1>
       <p class="lede">From The Genius to The Devil's Plan, from The Bloody Game and The Time Hotel to indie web shows like Money Game and Four Wishes. Browse every season's cast and follow players as they cross from show to show.</p>
+      <a class="feature" href="/devils-plan-3/" style={`--show:${dp3.show.color}`}>
+        <div>
+          <div class="eyebrow">Coming to Netflix November 10</div>
+          <h2>The Devil's Plan: Dead Again</h2>
+          <p>Sixteen players, the most ever, with both past winners and the genre's biggest champions. See every record and every old rivalry.</p>
+        </div>
+        <div class="faces" aria-hidden="true">
+          {dp3.season.cast.slice(0, 6).map((e) => <Avatar id={e.person} color={dp3.show.color} />)}
+        </div>
+      </a>
       <div class="stats">
         <div><b>{shows.length}</b><span>shows</span></div>
         <div><b>{seasons.length}</b><span>seasons</span></div>
