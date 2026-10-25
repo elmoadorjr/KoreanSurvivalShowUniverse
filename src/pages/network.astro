@@ -1,6 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import { shows, contestants, seasonLabel, resultText } from "../lib/universe.mjs";
+import { shows, contestants, photos, seasonLabel, resultText } from "../lib/universe.mjs";
 
 // Everything the graph needs, built once at build time.
 const graph = {
@@ -19,6 +19,7 @@ const graph = {
     name: c.name,
     ko: c.ko ?? "",
     known: c.known ?? "",
+    photo: photos[c.id]?.src ?? "",
     shows: c.shows.map((s) => s.id),
     apps: c.apps.map(({ season, entry }) => ({ season: season.id, result: resultText(entry), won: entry.place === 1 })),
   })),
@@ -101,6 +102,7 @@ const crossShow = contestants.filter((c) => c.shows.length > 1).length;
   .close { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--muted); font-size: 26px; line-height: 1; cursor: pointer; }
   :global(.net-info h2) { font-size: 22px; margin: 4px 24px 2px 0; }
   :global(.net-info .ko) { color: var(--muted); }
+  :global(.net-info .pic) { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; display: block; margin-bottom: 8px; }
   :global(.net-info ul) { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 6px; }
   :global(.net-info li) { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; border-left: 3px solid var(--c); padding-left: 8px; }
   :global(.net-info li b) { font-weight: 600; }

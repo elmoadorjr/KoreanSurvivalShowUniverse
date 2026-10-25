@@ -37,6 +37,24 @@ adding a show, a season or a player needs no code.
   Without a `bio`, the page writes one from the player's record.
 - Use the same person id across shows to link a crossover player.
 
+## Player photos
+
+Photos are freely licensed images from Wikimedia Commons, found through each
+player's Wikidata "image" and credited on their bio page. `npm run build` runs
+`node scripts/photos.mjs --build` first: it fetches any new photos (cached in
+`node_modules/.cache/ksu-photos`), quietly does nothing offline, and never fails
+the build. Players without a free photo keep their initials badge.
+
+- `npm run photos` fetches photos locally and lists the players it skipped.
+  Commit `public/photos/` and `src/data/photos.json` to keep them.
+- `npm run photos -- lee-se-dol` refetches one player.
+- A player is matched only when exactly one person on Wikidata fits (their
+  Korean name must match `ko`). For a common name, pin it in
+  `universe.json` with `"wikidata": "Q..."`, name a Commons file with
+  `"photo": "File name.jpg"`, or opt out with `"photo": false`.
+
+Promotional photos from networks are copyrighted, so they are never used.
+
 ### Known gaps
 
 - Physical: 100 seasons, Physical: Asia, Siren, The Influencer, Society Game and

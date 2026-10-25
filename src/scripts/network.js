@@ -1,6 +1,7 @@
 import ForceGraph3D from "3d-force-graph";
 import SpriteText from "three-spritetext";
 import { forceX, forceY, forceZ } from "d3-force-3d";
+import { CanvasTexture, Group, SRGBColorSpace, Sprite, SpriteMaterial } from "three";
 
 const data = JSON.parse(document.getElementById("graph-data").textContent);
 const el = document.getElementById("graph");
@@ -83,6 +84,52 @@ function focusSet(node) {
 const active = () => state.hover ?? state.selected;
 const dimmed = (node) => active() && !lit.nodes.has(node);
 
+const REL_SIZE = 3;
+
+// A player with a photo is drawn as their face in a ring of their show's color.
+function photoSprite(node) {
+  const px = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = px;
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  const img = new Image();
+  img.onload = () => {
+    const ctx = canvas.getContext("2d");
+    const ring = 8;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(px / 2, px / 2, px / 2 - ring / 2, 0, Math.PI * 2);
+    ctx.clip();
+    // Cover the circle, favoring the top of the photo where faces usually are.
+    const scale = Math.max(px / img.width, px / img.height);
+    const w = img.width * scale, h = img.height * scale;
+    ctx.drawImage(img, (px - w) / 2, Math.min(0, (px - h) * 0.25), w, h);
+    ctx.restore();
+    ctx.lineWidth = ring;
+    ctx.strokeStyle = node.color;
+    ctx.beginPath();
+    ctx.arc(px / 2, px / 2, px / 2 - ring / 2, 0, Math.PI * 2);
+    ctx.stroke();
+    texture.needsUpdate = true;
+  };
+  img.src = node.ref.photo;
+  const sprite = new Sprite(new SpriteMaterial({ map: texture, transparent: true, depthWrite: false }));
+  const r = Math.cbrt(node.size) * REL_SIZE * 1.25;
+  sprite.scale.set(r * 2, r * 2, 1);
+  node.pic = sprite;
+  return sprite;
+}
+
+function nodeObject(node) {
+  const text = label(node);
+  if (!(node.kind === "person" && node.ref.photo)) return text;
+  const group = new Group();
+  group.add(photoSprite(node));
+  if (text) group.add(text);
+  return group;
+}
+
 function label(node) {
   const showLabel =
     node.kind === "show" ||
@@ -105,7 +152,7 @@ function label(node) {
 const graph = new ForceGraph3D(el, { controlType: "orbit" })
   .backgroundColor(theme.bg)
   .showNavInfo(false)
-  .nodeRelSize(3)
+  .nodeRelSize(REL_SIZE)
   .nodeVal((n) => n.size)
   .nodeColor((n) => (dimmed(n) ? theme.line : n.color))
   .nodeOpacity(0.95)
@@ -117,8 +164,8 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
     }
     return `<div class="net-tip"><b>${n.kind === "season" ? n.ref.full : n.ref.name}</b></div>`;
   })
-  .nodeThreeObjectExtend(true)
-  .nodeThreeObject(label)
+  .nodeThreeObjectExtend((n) => !(n.kind === "person" && n.ref.photo))
+  .nodeThreeObject(nodeObject)
   .linkColor((l) => (lit.links.has(l) ? (l.kind === "spine" ? l.source.color : theme.ink) : theme.muted))
   .linkOpacity(0.28)
   .linkWidth((l) => (lit.links.has(l) ? 1.1 : 0))
@@ -162,6 +209,7 @@ function refresh() {
     .linkDirectionalParticles(graph.linkDirectionalParticles());
   for (const n of graph.graphData().nodes) {
     if (n.sprite) n.sprite.material.opacity = dimmed(n) ? 0.15 : 1;
+    if (n.pic) n.pic.material.opacity = dimmed(n) ? 0.2 : 1;
   }
 }
 
@@ -185,6 +233,7 @@ function showInfo(node) {
   if (node.kind === "person") {
     const p = node.ref;
     html = `<div class="eyebrow">${p.shows.length > 1 ? "Cross-show veteran" : p.apps.length > 1 ? "Veteran" : "Player"}</div>
+      ${p.photo ? `<img class="pic" src="${esc(p.photo)}" alt="">` : ""}
       <h2>${esc(p.name)}</h2>${p.ko ? `<div class="ko" lang="ko">${esc(p.ko)}</div>` : ""}
       ${p.known ? `<div class="muted">${esc(p.known)}</div>` : ""}
       <ul>${p.apps.map((a) => {

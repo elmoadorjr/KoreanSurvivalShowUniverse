@@ -1,7 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
-import { contestants, initials, resultText, seasonLabel, recordBio } from "../../lib/universe.mjs";
+import Avatar from "../../components/Avatar.astro";
+import { contestants, photos, resultText, seasonLabel, recordBio } from "../../lib/universe.mjs";
 
 export function getStaticPaths() {
   return contestants.map((c) => ({ params: { id: c.id }, props: { c } }));
@@ -27,7 +28,7 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
   <div class="wrap">
     <a class="back" href="/contestants/" style="margin-top:20px">All contestants</a>
     <div class="profile">
-      <span class="avatar big" style={`--show:${color}`} aria-hidden="true">{initials(c.name)}{wins > 0 && <span class="crown">👑</span>}</span>
+      <Avatar id={c.id} color={color} won={wins > 0} big />
       <div>
         <h1>{c.name}</h1>
         {c.ko && <div class="ko" lang="ko">{c.ko}</div>}
@@ -42,6 +43,9 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
 
     <section style="padding-top:8px">
       <p class="bio">{c.bio ?? recordBio(c)}</p>
+      {photos[c.id] && (
+        <p class="credit">Photo: {photos[c.id].credit}, <a href={photos[c.id].source} rel="noopener">{photos[c.id].license}</a>, via Wikimedia Commons</p>
+      )}
     </section>
 
     <section>

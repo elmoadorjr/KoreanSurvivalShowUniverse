@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { shows, contestants, initials } from "../../lib/universe.mjs";
+import Avatar from "../../components/Avatar.astro";
+import { shows, contestants } from "../../lib/universe.mjs";
 ---
 <Base title="Contestants" description="Every contestant across the Korean survival show universe, with a bio page for each.">
   <div class="wrap">
@@ -32,7 +33,7 @@ import { shows, contestants, initials } from "../../lib/universe.mjs";
           data-multi={c.apps.length > 1 ? "1" : ""}
           data-won={c.apps.some((a) => a.entry.place === 1) ? "1" : ""}
         >
-          <span class="avatar" aria-hidden="true">{initials(c.name)}{c.apps.some((a) => a.entry.place === 1) && <span class="crown">👑</span>}</span>
+          <Avatar id={c.id} color={c.shows[0].color} won={c.apps.some((a) => a.entry.place === 1)} />
           <span class="who">
             <span class="name">{c.name}</span>
             <span class="sub">{c.known ?? c.shows.map((s) => s.name).join(", ")}</span>

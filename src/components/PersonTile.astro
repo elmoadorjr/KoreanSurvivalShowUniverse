@@ -1,5 +1,6 @@
 ---
-import { people, initials } from "../lib/universe.mjs";
+import Avatar from "./Avatar.astro";
+import { people } from "../lib/universe.mjs";
 
 interface Props {
   id: string;
@@ -11,7 +12,7 @@ const { id, sub, color, won = false } = Astro.props;
 const p = people[id];
 ---
 <a class:list={["card person", { won }]} href={`/contestants/${id}/`} style={`--show:${color}`}>
-  <span class="avatar" aria-hidden="true">{initials(p.name)}{won && <span class="crown">👑</span>}</span>
+  <Avatar id={id} color={color} won={won} />
   <span class="who">
     <span class="name">{p.name}</span>
     {sub && <span class="sub">{sub}</span>}

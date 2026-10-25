@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/photos.mjs --build && astro build",
+    "photos": "node scripts/photos.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

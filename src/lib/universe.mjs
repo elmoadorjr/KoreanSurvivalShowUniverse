@@ -1,7 +1,10 @@
 import data from "../data/universe.json";
+// Written by scripts/photos.mjs: freely licensed photos from Wikimedia Commons.
+import photoData from "../data/photos.json";
 
 export const shows = data.shows;
 export const people = data.people;
+export const photos = photoData;
 
 const ordinal = (n) => {
   const s = ["th", "st", "nd", "rd"];

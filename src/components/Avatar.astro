@@ -1,0 +1,19 @@
+---
+import { people, photos, initials } from "../lib/universe.mjs";
+
+interface Props {
+  id: string;
+  color: string;
+  won?: boolean;
+  big?: boolean;
+}
+const { id, color, won = false, big = false } = Astro.props;
+const photo = photos[id];
+const size = big ? 112 : 46;
+---
+<span class:list={["avatar", { big, photo: !!photo }]} style={`--show:${color}`} aria-hidden={photo ? undefined : "true"}>
+  {photo
+    ? <img src={photo.src} alt={people[id].name} width={size} height={size} loading={big ? "eager" : "lazy"} decoding="async" />
+    : initials(people[id].name)}
+  {won && <span class="crown">👑</span>}
+</span>
