@@ -3084,6 +3084,360 @@
           ]
         }
       ]
+    },
+    {
+      "id": "busted",
+      "name": "Busted!",
+      "ko": "범인은 바로 너!",
+      "network": "Netflix",
+      "years": "2018-2021",
+      "kind": "Mystery and escape",
+      "color": "#9d4edd",
+      "blurb": "Netflix's first Korean variety show: a squad of amateur detectives solving staged crimes, from escape puzzles to a murder in a mansion.",
+      "seasons": [
+        {
+          "id": "busted-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2018",
+          "complete": true,
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "ahn-jae-wook"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "lee-kwang-soo"
+            },
+            {
+              "person": "park-min-young"
+            },
+            {
+              "person": "sehun"
+            },
+            {
+              "person": "kim-se-jeong"
+            }
+          ]
+        },
+        {
+          "id": "busted-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2019",
+          "complete": true,
+          "note": "Lee Kwang-soo sat this season out; Lee Seung-gi joined.",
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "lee-seung-gi"
+            },
+            {
+              "person": "park-min-young"
+            },
+            {
+              "person": "sehun"
+            },
+            {
+              "person": "kim-se-jeong"
+            }
+          ]
+        },
+        {
+          "id": "busted-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2021",
+          "complete": true,
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "lee-seung-gi"
+            },
+            {
+              "person": "park-min-young"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "sehun"
+            },
+            {
+              "person": "kim-se-jeong"
+            },
+            {
+              "person": "lee-kwang-soo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sixth-sense",
+      "name": "The Sixth Sense",
+      "ko": "식스센스",
+      "network": "tvN",
+      "years": "2020-2022",
+      "kind": "Mystery and escape",
+      "color": "#ef476f",
+      "blurb": "Find the fake: each week the cast visits three real places and one staged by the producers, and has to sniff out which is the lie.",
+      "seasons": [
+        {
+          "id": "sixth-sense-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2020",
+          "complete": true,
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "oh-na-ra"
+            },
+            {
+              "person": "jeon-so-min"
+            },
+            {
+              "person": "jessi"
+            },
+            {
+              "person": "mijoo"
+            }
+          ]
+        },
+        {
+          "id": "sixth-sense-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2021",
+          "complete": true,
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "oh-na-ra"
+            },
+            {
+              "person": "jeon-so-min"
+            },
+            {
+              "person": "jessi"
+            },
+            {
+              "person": "mijoo"
+            },
+            {
+              "person": "lee-sang-yeob"
+            }
+          ]
+        },
+        {
+          "id": "sixth-sense-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2022",
+          "complete": true,
+          "note": "Jeon So-min stayed on the cast list but could not film this season after an injury.",
+          "cast": [
+            {
+              "person": "yoo-jae-suk"
+            },
+            {
+              "person": "oh-na-ra"
+            },
+            {
+              "person": "jessi"
+            },
+            {
+              "person": "mijoo"
+            },
+            {
+              "person": "lee-sang-yeob"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "code-secret-room",
+      "name": "Code: Secret Room",
+      "ko": "코드 - 비밀의 방",
+      "network": "JTBC",
+      "years": "2016",
+      "kind": "Mystery and escape",
+      "color": "#118ab2",
+      "blurb": "A locked-room puzzle show: ten players solve codes and trade allies to be the first to crack the last code and escape.",
+      "seasons": [
+        {
+          "id": "code-secret-room-1",
+          "title": "Code: Secret Room",
+          "number": 1,
+          "aired": "2016",
+          "complete": true,
+          "note": "A new winner every week: Oh Hyun-min cracked the first episode's last code, Kim Hee-chul the next.",
+          "cast": [
+            {
+              "person": "oh-hyun-min"
+            },
+            {
+              "person": "kim-hee-chul"
+            },
+            {
+              "person": "jung-joon-ha"
+            },
+            {
+              "person": "baek-sung-hyun"
+            },
+            {
+              "person": "han-suk-joon"
+            },
+            {
+              "person": "choi-song-hyun"
+            },
+            {
+              "person": "lee-yong-jin"
+            },
+            {
+              "person": "seo-yu-ri"
+            },
+            {
+              "person": "shin-jae-pyung"
+            },
+            {
+              "person": "ji-joo-yeon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "penthouse",
+      "name": "Penthouse",
+      "ko": "입주쟁탈전: 펜트하우스",
+      "network": "Channel A",
+      "years": "2022",
+      "kind": "Social",
+      "color": "#bc6c25",
+      "blurb": "A ten-day fight for the top floor: each day's mission winner owns the penthouse, its 30-million-won daily prize and the food, and decides what the floors below get.",
+      "seasons": [
+        {
+          "id": "penthouse-1",
+          "title": "Penthouse",
+          "number": 1,
+          "aired": "2022",
+          "complete": true,
+          "full": "Penthouse: The Move-In War",
+          "cast": [
+            {
+              "person": "jang-myung-jin",
+              "place": 1,
+              "result": "Winner, as the wildcard"
+            },
+            {
+              "person": "lim-hyun-seo",
+              "result": "Final four; joined partway"
+            },
+            {
+              "person": "seo-chul-gu"
+            },
+            {
+              "person": "nancy-lang"
+            },
+            {
+              "person": "jiban"
+            },
+            {
+              "person": "jo-seon-gi"
+            },
+            {
+              "person": "lee-ru-an"
+            },
+            {
+              "person": "kim-bo-sung"
+            },
+            {
+              "person": "lee-si-yoon",
+              "result": "First out in the final"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deadly-tag",
+      "name": "Deadly Tag",
+      "ko": "술래게임",
+      "network": "Disney+",
+      "years": "2026",
+      "kind": "Brain and physical",
+      "color": "#d62828",
+      "blurb": "Hide-and-seek as a survival game, from Bloody Game creator Hyun Jung-wan: chase, hide and deceive, with psychological games between the hunts.",
+      "seasons": [
+        {
+          "id": "deadly-tag-1",
+          "title": "Deadly Tag",
+          "number": 1,
+          "aired": "2026",
+          "complete": true,
+          "note": "Released from September 30, 2026: 10 episodes.",
+          "cast": [
+            {
+              "person": "hwang-jae-gyun"
+            },
+            {
+              "person": "pani-bottle"
+            },
+            {
+              "person": "kyung-soo-jin"
+            },
+            {
+              "person": "malwang"
+            },
+            {
+              "person": "jang-eun-sil"
+            },
+            {
+              "person": "park-ji-min"
+            },
+            {
+              "person": "kim-ddolddol"
+            },
+            {
+              "person": "yang-da-il"
+            },
+            {
+              "person": "yuk-jun-seo"
+            },
+            {
+              "person": "ji-ji-won"
+            },
+            {
+              "person": "shin-ji-eun"
+            },
+            {
+              "person": "yoon-sang-hyun"
+            },
+            {
+              "person": "lee-jun-su"
+            }
+          ]
+        }
+      ]
     }
   ],
   "people": {
@@ -5122,6 +5476,180 @@
       "name": "Joo Woo-jae",
       "ko": "주우재",
       "known": "Model and TV personality"
+    },
+    "yoo-jae-suk": {
+      "name": "Yoo Jae-suk",
+      "ko": "유재석",
+      "known": "TV host"
+    },
+    "ahn-jae-wook": {
+      "name": "Ahn Jae-wook",
+      "ko": "안재욱",
+      "known": "Actor"
+    },
+    "lee-kwang-soo": {
+      "name": "Lee Kwang-soo",
+      "ko": "이광수",
+      "known": "Actor"
+    },
+    "park-min-young": {
+      "name": "Park Min-young",
+      "ko": "박민영",
+      "known": "Actress"
+    },
+    "sehun": {
+      "name": "Sehun",
+      "ko": "세훈",
+      "known": "Singer, EXO"
+    },
+    "kim-se-jeong": {
+      "name": "Kim Se-jeong",
+      "ko": "김세정",
+      "known": "Singer and actress"
+    },
+    "lee-seung-gi": {
+      "name": "Lee Seung-gi",
+      "ko": "이승기",
+      "known": "Singer and actor"
+    },
+    "oh-na-ra": {
+      "name": "Oh Na-ra",
+      "ko": "오나라",
+      "known": "Actress"
+    },
+    "jeon-so-min": {
+      "name": "Jeon So-min",
+      "ko": "전소민",
+      "known": "Actress"
+    },
+    "jessi": {
+      "name": "Jessi",
+      "ko": "제시",
+      "known": "Rapper"
+    },
+    "mijoo": {
+      "name": "Mijoo",
+      "ko": "미주",
+      "known": "Singer, Lovelyz"
+    },
+    "jung-joon-ha": {
+      "name": "Jung Joon-ha",
+      "ko": "정준하",
+      "known": "Comedian"
+    },
+    "kim-hee-chul": {
+      "name": "Kim Hee-chul",
+      "ko": "김희철",
+      "known": "Singer, Super Junior"
+    },
+    "baek-sung-hyun": {
+      "name": "Baek Sung-hyun",
+      "ko": "백성현",
+      "known": "Actor"
+    },
+    "han-suk-joon": {
+      "name": "Han Suk-joon",
+      "ko": "한석준",
+      "known": "Broadcaster, former announcer"
+    },
+    "choi-song-hyun": {
+      "name": "Choi Song-hyun",
+      "ko": "최송현",
+      "known": "Actress, former announcer"
+    },
+    "seo-yu-ri": {
+      "name": "Seo Yu-ri",
+      "ko": "서유리",
+      "known": "Voice actress"
+    },
+    "shin-jae-pyung": {
+      "name": "Shin Jae-pyung",
+      "ko": "신재평",
+      "known": "Musician, Peppertones"
+    },
+    "ji-joo-yeon": {
+      "name": "Ji Joo-yeon",
+      "ko": "지주연",
+      "known": "Actress"
+    },
+    "nancy-lang": {
+      "name": "Nancy Lang",
+      "ko": "낸시랭",
+      "known": "Pop artist"
+    },
+    "jiban": {
+      "name": "Jiban",
+      "ko": "지반",
+      "known": "Content creator"
+    },
+    "jo-seon-gi": {
+      "name": "Jo Seon-gi",
+      "ko": "조선기"
+    },
+    "lee-ru-an": {
+      "name": "Lee Ru-an",
+      "ko": "이루안",
+      "known": "Actress"
+    },
+    "kim-bo-sung": {
+      "name": "Kim Bo-sung",
+      "ko": "김보성",
+      "known": "Actor"
+    },
+    "jang-myung-jin": {
+      "name": "Jang Myung-jin",
+      "ko": "장명진",
+      "bio": "A North Korean defector who won Penthouse as its wildcard after ten days of steady play."
+    },
+    "lee-si-yoon": {
+      "name": "Lee Si-yoon",
+      "ko": "이시윤"
+    },
+    "hwang-jae-gyun": {
+      "name": "Hwang Jae-gyun",
+      "ko": "황재균",
+      "known": "Baseball player"
+    },
+    "kyung-soo-jin": {
+      "name": "Kyung Soo-jin",
+      "ko": "경수진",
+      "known": "Actress"
+    },
+    "malwang": {
+      "name": "Malwang",
+      "ko": "말왕",
+      "known": "Fitness YouTuber"
+    },
+    "kim-ddolddol": {
+      "name": "Kim Ddolddol",
+      "ko": "김똘똘",
+      "known": "YouTuber"
+    },
+    "yang-da-il": {
+      "name": "Yang Da-il",
+      "ko": "양다일",
+      "known": "Singer"
+    },
+    "yuk-jun-seo": {
+      "name": "Yuk Jun-seo",
+      "ko": "육준서",
+      "known": "Former Navy UDT, artist"
+    },
+    "ji-ji-won": {
+      "name": "Ji Ji-won",
+      "ko": "지지원"
+    },
+    "shin-ji-eun": {
+      "name": "Shin Ji-eun",
+      "ko": "신지은"
+    },
+    "yoon-sang-hyun": {
+      "name": "Yoon Sang-hyun",
+      "ko": "윤상현"
+    },
+    "lee-jun-su": {
+      "name": "Lee Jun-su",
+      "ko": "이준수"
     }
   }
 }

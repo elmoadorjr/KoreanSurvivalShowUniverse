@@ -210,6 +210,8 @@ const state = {
   ringsBy: "tier",
   flowBy: "debut",
   center: "hong-jin-ho",
+  lens: "islands",
+  lensFrom: null,
 };
 
 // Color and size of a player, by the chosen measure.
@@ -587,6 +589,7 @@ const graph = new ForceGraph3D(el, { controlType: "orbit", rendererConfig: { ant
     state.stepFrom = null;
     if (event?.shiftKey && node.kind === "person") toggleCompare(node.id);
     else if (state.layout === "rings" && state.ringsBy === "steps" && node.kind === "person" && node.id !== state.center) centerOn(node.id);
+    else if (state.layout === "insights" && state.lens === "steps" && node.kind === "person" && node.id !== state.lensFrom) { state.lensFrom = node.id; render(() => fit(1200)); }
     else select(node, true);
   })
   .onLinkClick((link) => link.kind === "mates" && select(link))
@@ -712,6 +715,7 @@ function drawGuides() {
       if (byStep.none) addRing(stepRadii[stepMax + 1], `No link · ${byStep.none}`);
     }
   }
+  if (state.layout === "insights" && state.view === "players") lens.guides();
   if (state.layout === "flow") {
     if (state.flowBy === "spiral") {
       const pts = [];
@@ -747,13 +751,371 @@ const HINTS = {
   "flow-debut": "Left to right by debut year. Lines arc forward in time from the earlier debut.",
   "flow-lanes": "A lane for each show, left to right by year. Lines crossing lanes are players moving between shows.",
   "flow-spiral": "Time winds outward from 2013 at the center to today on the rim.",
+  "insights-islands": "Rings by steps from the best-connected player, with every group that never linked up floating on the outer orbit.",
+  "insights-families": "A ring for each hidden family, all set around one big ring. Lines across the middle cross between families.",
+  "insights-crossroads": "Shows around the rim. One-show players sit outside; crossovers are pulled inside toward every show they played.",
+  "insights-bridges": "The players most shortest chains run through sit in the middle. Hinges hold a group to the rest on their own.",
+  "insights-champions": "Champions at the center by titles, then everyone by whether they ever shared a season with one.",
+  "insights-steps": "Columns flowing left to right by distance from one player. The gold line is the longest chain. Tap anyone to start from them.",
 };
+
+// ---------- Insights: the findings, laid out like Rings and Flow ----------
+// Each lens gives every player a spot, draws its own guides and writes a headline from the live view.
+const LENS_NAMES = ["islands", "families", "crossroads", "bridges", "champions", "steps"];
+const lens = { pos: new Map(), guides: () => {}, title: "", text: "" };
+const TAU = Math.PI * 2;
+const showKey = (id) => laneOrder.indexOf(personById[id].primary);
+const ringFor = (count, gap = 12, min = 0) => Math.max(min, (count * gap) / (count > 260 ? 3 : count > 120 ? 2 : 1) / TAU);
+const firstName = (id) => plain(personById[id].name);
+const andList = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}` : xs.join(""));
+const listNames = (ids) => andList(ids.map(firstName));
+
+function place(id, x, y) { lens.pos.set(id, { x, y }); }
+// Crowded rings split into a few staggered rows, so a big ring stays a ring without growing huge.
+const rowsFor = (count) => (count > 260 ? 3 : count > 120 ? 2 : 1);
+function onRing(ids, r, cx = 0, cy = 0, start = -Math.PI / 2) {
+  const rows = rowsFor(ids.length);
+  ids.forEach((id, i) => {
+    const t = start + (i / ids.length) * TAU;
+    const rr = r + ((i % rows) - (rows - 1) / 2) * 9;
+    place(id, cx + Math.cos(t) * rr, cy + Math.sin(t) * rr);
+  });
+}
+// A sunflower: the first id sits in the middle, the rest spiral out evenly. Returns its radius.
+function sunflower(ids, cx, cy, gap = 8) {
+  ids.forEach((id, i) => {
+    const r = gap * 0.9 * Math.sqrt(i);
+    place(id, cx + Math.cos(i * 2.39996) * r, cy + Math.sin(i * 2.39996) * r);
+  });
+  return gap * 0.9 * Math.sqrt(Math.max(1, ids.length - 1));
+}
+
+function addCircle(cx, cy, r, color = theme.muted, opacity = 0.18) {
+  const pts = [];
+  for (let i = 0; i < 96; i++) pts.push({ x: cx + Math.cos((i / 96) * TAU) * r, y: cy + Math.sin((i / 96) * TAU) * r });
+  addLine(pts, color, opacity, true);
+}
+
+// The players on screen and who they are linked to on screen.
+function viewAdjacency(persons) {
+  const adj = new Map();
+  for (const n of persons) adj.set(n.id, [...n.neighbors].filter((m) => m.kind === "person").map((m) => m.id));
+  return adj;
+}
+function bfsFrom(adj, from) {
+  const dist = new Map([[from, 0]]);
+  const prev = new Map([[from, null]]);
+  const queue = [from];
+  for (let i = 0; i < queue.length; i++) {
+    for (const w of adj.get(queue[i])) if (!dist.has(w)) { dist.set(w, dist.get(queue[i]) + 1); prev.set(w, queue[i]); queue.push(w); }
+  }
+  return { dist, prev, reach: queue };
+}
+function componentsOf(adj) {
+  const seen = new Set();
+  const out = [];
+  for (const id of adj.keys()) {
+    if (seen.has(id)) continue;
+    const { reach } = bfsFrom(adj, id);
+    for (const r of reach) seen.add(r);
+    out.push(reach);
+  }
+  return out.sort((a, b) => b.length - a.length);
+}
+// Average and longest distance inside the biggest web, and the two players farthest apart.
+function webStats(adj, web) {
+  let sum = 0, pairs = 0, far = [web[0], web[0], 0];
+  for (const a of web) {
+    const { dist } = bfsFrom(adj, a);
+    for (const [b, d] of dist) {
+      if (b === a) continue;
+      sum += d; pairs++;
+      if (d > far[2] || (d === far[2] && mateCount[a] + mateCount[b] < mateCount[far[0]] + mateCount[far[1]])) far = [a, b, d];
+    }
+  }
+  return { avg: pairs ? sum / pairs : 0, diameter: far[2], far };
+}
+const hubOf = (adj, ids) => ids.reduce((a, b) => (adj.get(b).length > adj.get(a).length ? b : a));
+const mostShow = (ids) => {
+  const c = new Map();
+  for (const id of ids) c.set(personById[id].primary, (c.get(personById[id].primary) ?? 0) + 1);
+  return showById[[...c].sort((a, b) => b[1] - a[1])[0][0]];
+};
+
+// One universe, and the shows that never crossed over.
+function lensIslands(persons, adj) {
+  const [web = [], ...rest] = componentsOf(adj);
+  const hub = hubOf(adj, web);
+  const { dist } = bfsFrom(adj, hub);
+  const byStep = [];
+  for (const id of web) (byStep[dist.get(id)] ??= []).push(id);
+  place(hub, 0, 0);
+  const radii = [0];
+  for (let d = 1; d < byStep.length; d++) {
+    radii[d] = Math.max(radii[d - 1] + 70, ringFor(byStep[d].length, 12));
+    onRing(byStep[d].sort((a, b) => showKey(a) - showKey(b)), radii[d]);
+  }
+  const R = radii[radii.length - 1] + 230;
+  const islands = rest.filter((c) => c.length > 1);
+  const loners = rest.filter((c) => c.length === 1).flat();
+  const groups = [...islands.map((c) => ({ ids: c, name: `${mostShow(c).name} · ${c.length}`, color: mostShow(c).color })),
+    ...(loners.length ? [{ ids: loners, name: `No one to link to · ${loners.length}`, color: theme.muted, loose: true }] : [])];
+  const marks = groups.map((g, i) => {
+    const t = -Math.PI / 2 + ((i + 0.5) / groups.length) * TAU + (groups.length === 1 ? Math.PI : 0);
+    const cx = Math.cos(t) * R, cy = Math.sin(t) * R;
+    const r = g.loose ? sunflower(g.ids, cx, cy, 10) : ringFor(g.ids.length, 13, 16);
+    if (!g.loose) onRing(g.ids.sort((a, b) => mateCount[b] - mateCount[a]), r, cx, cy);
+    return { ...g, cx, cy, r };
+  });
+  const stats = webStats(adj, web);
+  lens.guides = () => {
+    for (let d = 1; d < radii.length; d++) addRing(radii[d], d === 1 ? `Played with ${firstName(hub)}` : d === radii.length - 1 ? `${d} steps` : "");
+    addGuideText(`One web · ${web.length} players`, 0, radii[radii.length - 1] + 34, 20, theme.ink, 0.85);
+    if (marks.length) addRing(R, "");
+    for (const m of marks) {
+      addCircle(m.cx, m.cy, m.r + 10, m.color, 0.55);
+      addGuideText(m.name, m.cx, m.cy + m.r + 30, 16, m.color, 0.95);
+    }
+  };
+  lens.title = islands.length ? `One universe, ${islands.length === 1 ? "one island" : `${islands.length} islands`}` : "One universe";
+  lens.text = `${web.length} of ${persons.length} players form a single web: any two are ${stats.avg.toFixed(1)} steps apart on average, never more than ${stats.diameter}.`
+    + (islands.length ? ` ${andList(islands.map((c) => mostShow(c).name))} never crossed over: nobody from ${islands.length === 1 ? "it" : "them"} has played anywhere else.` : "");
+}
+
+// A ring for each family, set around one big ring.
+function lensFamilies(persons) {
+  const groups = new Map();
+  for (const n of persons) {
+    const f = families.of[n.id];
+    if (!groups.has(f)) groups.set(f, []);
+    groups.get(f).push(n.id);
+  }
+  const big = [...groups].filter(([, ids]) => ids.length >= 4).sort((a, b) => b[1].length - a[1].length);
+  const small = [...groups].filter(([, ids]) => ids.length < 4).flatMap(([, ids]) => ids);
+  const rings = big.map(([f, ids]) => ({ f, ids, name: f.name, color: f.color, r: ringFor(ids.length, 16, 26) }));
+  if (small.length) rings.push({ f: null, ids: small, name: "Small circles", color: theme.muted, r: ringFor(small.length, 16, 26) });
+  const span = (g) => 2 * g.r + 46;
+  const total = rings.reduce((s, g) => s + span(g), 0);
+  const R = Math.max(total / TAU, (rings[0]?.r ?? 0) * 1.6);
+  let a = -Math.PI / 2;
+  for (const g of rings) {
+    const t = a + span(g) / R / 2;
+    a += span(g) / R;
+    g.cx = Math.cos(t) * R; g.cy = Math.sin(t) * R; g.t = t;
+    onRing(g.ids.sort((x, y) => showKey(x) - showKey(y) || mateCount[y] - mateCount[x]), g.r, g.cx, g.cy, t + Math.PI);
+  }
+  lens.guides = () => {
+    addRing(R, "");
+    for (const g of rings) {
+      addCircle(g.cx, g.cy, g.r + 9, g.color, 0.6);
+      const lx = g.cx + Math.cos(g.t) * (g.r + 26), ly = g.cy + Math.sin(g.t) * (g.r + 26);
+      addGuideText(`${g.name} · ${g.ids.length}`, lx, ly, g.ids.length > 20 ? 18 : 13, g.color, 0.95);
+    }
+  };
+  const top = rings[0];
+  lens.title = "A ring of families";
+  lens.text = `${big.length} families, found from who keeps meeting whom rather than from show labels. Every line between two rings is a player crossing from one family to another.`
+    + (top ? ` The biggest, ${top.name}, holds ${top.ids.length} players.` : "");
+}
+
+// Shows around the rim; the more shows a player crossed, the deeper inside they sit.
+function lensCrossroads(persons) {
+  const showsOf = new Map();
+  for (const n of persons) {
+    const w = new Map();
+    for (const a of n.ref.apps) if (seasonOn(a.season)) w.set(seasonById[a.season].show, (w.get(seasonById[a.season].show) ?? 0) + 1);
+    showsOf.set(n.id, w);
+  }
+  const used = new Set([...showsOf.values()].flatMap((w) => [...w.keys()]));
+  const rim = laneOrder.filter((id) => used.has(id));
+  const R = Math.max(240, rim.length * 24);
+  const angle = Object.fromEntries(rim.map((id, i) => [id, -Math.PI / 2 + (i / rim.length) * TAU]));
+  const singles = Object.fromEntries(rim.map((id) => [id, []]));
+  const crossed = Object.fromEntries(rim.map((id) => [id, 0]));
+  const inner = [];
+  for (const n of persons) {
+    const w = showsOf.get(n.id);
+    if (w.size === 1) { singles[[...w.keys()][0]].push(n.id); continue; }
+    let x = 0, y = 0, s = 0;
+    for (const [sh, k] of w) { x += Math.cos(angle[sh]) * k; y += Math.sin(angle[sh]) * k; s += k; crossed[sh]++; }
+    inner.push({ id: n.id, x: (x / s) * R * 0.9, y: (y / s) * R * 0.9, k: w.size });
+  }
+  inner.sort((a, b) => a.k - b.k);
+  inner.forEach((p, i) => place(p.id, p.x + Math.cos(i * 2.4) * 4, p.y + Math.sin(i * 2.4) * 4));
+  const discs = rim.map((sh) => {
+    const ids = singles[sh].sort((a, b) => mateCount[b] - mateCount[a]);
+    const rad = ids.length ? 7.2 * Math.sqrt(ids.length) : 0;
+    const d = R + 34 + rad;
+    if (ids.length) sunflower(ids, Math.cos(angle[sh]) * d, Math.sin(angle[sh]) * d, 8);
+    return { sh, d: d + rad + 30, total: ids.length + crossed[sh] };
+  });
+  lens.guides = () => {
+    addRing(R, "");
+    for (const { sh, d, total } of discs) {
+      const t = angle[sh];
+      addGuideText(showById[sh].name, Math.cos(t) * d, Math.sin(t) * d, 14, showById[sh].color, 0.95);
+      addGuideText(`${crossed[sh]} of ${total} crossed`, Math.cos(t) * d, Math.sin(t) * d - 15, 10, theme.muted, 0.9);
+    }
+  };
+  const busiest = rim.slice().sort((a, b) => crossed[b] - crossed[a])[0];
+  const deepest = inner.slice().sort((a, b) => b.k - a.k || mateCount[b.id] - mateCount[a.id]).slice(0, 2).map((p) => p.id);
+  const busyTotal = discs.find((x) => x.sh === busiest)?.total ?? 0;
+  lens.title = "Crossroads";
+  lens.text = `Players of one show gather outside its name. Anyone who crossed over is pulled inside toward every show they played, so the deeper in, the more shows.`
+    + (busiest ? ` ${showById[busiest].name} is the busiest crossroads: ${crossed[busiest]} of its ${busyTotal} players turn up elsewhere.` : "")
+    + (deepest.length ? ` Nearest the middle: ${listNames(deepest)}.` : "");
+}
+
+// Rings by bridging: the players most shortest chains run through sit in the middle.
+function lensBridges(persons, adj) {
+  const ids = persons.map((n) => n.id).sort((a, b) => bridging[b] - bridging[a]);
+  const fam = (id) => families.of[id].id;
+  const tiers = [
+    { name: "", ids: ids.slice(0, 1) },
+    { name: "Top 8", ids: ids.slice(1, 8) },
+    { name: "Top 40", ids: ids.slice(8, 40) },
+    { name: "On some shortest chains", ids: ids.slice(40).filter((id) => bridging[id] > 0.0005) },
+    { name: "On none", ids: ids.slice(40).filter((id) => bridging[id] <= 0.0005) },
+  ].filter((t) => t.ids.length);
+  let r = 0;
+  tiers.forEach((t, i) => {
+    if (i === 0) { place(t.ids[0], 0, 0); t.r = 0; return; }
+    r = Math.max(r + 120, ringFor(t.ids.length, i < 3 ? 34 : 12));
+    t.r = r;
+    onRing(t.ids.sort((a, b) => fam(a) - fam(b) || bridging[b] - bridging[a]), r);
+  });
+  // Hinges: players whose removal cuts others off from the main web.
+  const [web = []] = componentsOf(adj);
+  const inWeb = new Set(web);
+  const hinges = [];
+  for (const id of ids.slice(0, 60)) {
+    if (!inWeb.has(id) || bridging[id] <= 0) continue;
+    const start = web.find((x) => x !== id);
+    if (!start) continue;
+    const seen = new Set([start, id]);
+    const queue = [start];
+    for (let i = 0; i < queue.length; i++) for (const w of adj.get(queue[i])) if (!seen.has(w)) { seen.add(w); queue.push(w); }
+    const lost = web.length - (seen.size);
+    if (lost > 0) hinges.push({ id, lost: lost });
+  }
+  hinges.sort((a, b) => b.lost - a.lost);
+  lens.guides = () => {
+    for (const t of tiers.slice(1)) addRing(t.r, `${t.name} · ${t.ids.length}`);
+    for (const h of hinges.slice(0, 3)) {
+      const p = lens.pos.get(h.id);
+      if (p) addGuideText(`Hinge · ${h.lost} cut off without them`, p.x, p.y - 16, 11, theme.gold, 0.95);
+    }
+  };
+  lens.title = "Who holds it together";
+  lens.text = `${firstName(ids[0])} sits on more shortest chains between other players than anyone, then ${listNames(ids.slice(1, 4))}.`
+    + (hinges.length ? ` Take away ${firstName(hinges[0].id)} and ${hinges[0].lost} players lose every link to the rest${hinges[1] ? `; without ${firstName(hinges[1].id)}, ${hinges[1].lost}` : ""}.` : " No single player holds a group on their own.");
+}
+
+// Champions in the middle, then everyone by whether they ever met one.
+function lensChampions(persons, adj) {
+  const won = (id) => personById[id].apps.filter((a) => a.won && seasonOn(a.season)).length;
+  const ids = persons.map((n) => n.id);
+  const champs = ids.filter((id) => won(id) > 0).sort((a, b) => won(b) - won(a) || showKey(a) - showKey(b));
+  const best = champs.length ? won(champs[0]) : 0;
+  const kings = champs.filter((id) => won(id) === best);
+  const multi = champs.filter((id) => won(id) > 1 && won(id) < best);
+  const single = champs.filter((id) => won(id) === 1 && best > 1);
+  const champSet = new Set(champs);
+  const met = ids.filter((id) => !champSet.has(id) && adj.get(id).some((o) => champSet.has(o))).sort((a, b) => showKey(a) - showKey(b));
+  const never = ids.filter((id) => !champSet.has(id) && !adj.get(id).some((o) => champSet.has(o))).sort((a, b) => showKey(a) - showKey(b));
+  const rings = [];
+  if (kings.length === 1) place(kings[0], 0, 0); else rings.push({ ids: kings, label: `${best} title${best > 1 ? "s" : ""}`, gap: 30, min: 40 });
+  if (multi.length) rings.push({ ids: multi, label: "More than one title", gap: 30 });
+  if (single.length) rings.push({ ids: single, label: "One title", gap: 20 });
+  rings.push({ ids: met, label: "Played with a champion", gap: 10 }, { ids: never, label: "Never met one", gap: 10 });
+  let r = 0;
+  for (const g of rings.filter((x) => x.ids.length)) {
+    r = Math.max(r + 110, ringFor(g.ids.length, g.gap, g.min ?? 0));
+    g.r = r;
+    onRing(g.ids, r);
+  }
+  lens.guides = () => {
+    for (const g of rings) if (g.ids.length) addRing(g.r, `${g.label} · ${g.ids.length}`);
+  };
+  const second = champs.find((id) => won(id) < best);
+  const others = ids.length - champs.length;
+  lens.title = "The hall of champions";
+  lens.text = champs.length
+    ? `${listNames(kings)} ${kings.length > 1 ? "share" : "has"} ${best} title${best > 1 ? "s" : ""}${second ? `; the next best has ${won(second)}` : ""}. ${champs.length} champions in all, and ${others ? Math.round((met.length / others) * 100) : 0}% of everyone else has shared a season with at least one.`
+    : "No titles have been won in this view yet.";
+}
+
+// Six degrees: columns by distance, flowing left to right from one player.
+function lensSteps(persons, adj) {
+  const [web = []] = componentsOf(adj);
+  const stats = webStats(adj, web);
+  const from = state.lensFrom && adj.has(state.lensFrom) ? state.lensFrom : stats.far[0];
+  const { dist, prev } = bfsFrom(adj, from);
+  const maxD = Math.max(0, ...dist.values());
+  const to = from === stats.far[0] ? stats.far[1] : [...dist].filter(([, d]) => d === maxD).sort((a, b) => mateCount[a[0]] - mateCount[b[0]])[0]?.[0] ?? from;
+  const chain = [];
+  for (let at = to; at != null; at = prev.get(at)) chain.unshift(at);
+  const cols = [];
+  for (const n of persons) (cols[dist.has(n.id) ? dist.get(n.id) : maxD + 1] ??= []).push(n.id);
+  const order = cols.map((ids, d) => (ids ?? []).sort((a, b) => (a === chain[d] ? -1 : b === chain[d] ? 1 : showKey(a) - showKey(b) || mateCount[b] - mateCount[a])));
+  const radius = order.map((ids) => 7.2 * Math.sqrt(Math.max(1, ids.length - 1)));
+  const xs = [];
+  let x = 0;
+  order.forEach((ids, d) => { x += d ? radius[d - 1] + radius[d] + 70 : 0; xs[d] = x; });
+  const shift = x / 2;
+  order.forEach((ids, d) => { if (ids.length) sunflower(ids, xs[d] - shift, 0, 8); });
+  lens.guides = () => {
+    order.forEach((ids, d) => {
+      if (!ids.length) return;
+      const cx = xs[d] - shift;
+      addCircle(cx, 0, radius[d] + 12, d > maxD ? theme.muted : theme.accent, d > maxD ? 0.25 : 0.35);
+      addGuideText(d === 0 ? "Start" : d > maxD ? `No link · ${ids.length}` : `${d} step${d > 1 ? "s" : ""} · ${ids.length}`, cx, radius[d] + 32, 12, theme.muted, 0.9);
+      if (chain[d]) addGuideText(firstName(chain[d]), cx, -radius[d] - 30, 10, theme.gold, 0.95);
+    });
+    addLine(chain.map((id, d) => ({ x: xs[d] - shift, y: 0 })), theme.gold, 0.85);
+  };
+  lens.title = state.lensFrom ? `Steps from ${firstName(from)}` : "Six degrees";
+  lens.text = (state.lensFrom
+    ? `Everyone in columns by how many co-players separate them from ${firstName(from)}. The farthest, ${firstName(to)}, is ${dist.get(to)} steps away: ${chain.map(firstName).join(" → ")}.`
+    : `${firstName(from)} and ${firstName(to)} are the farthest apart in the universe, ${stats.diameter} steps: ${chain.map(firstName).join(" → ")}. Any two players are ${stats.avg.toFixed(1)} steps apart on average.`)
+    + " Tap anyone to measure from them.";
+}
+
+function computeLens(persons) {
+  lens.pos = new Map();
+  const adj = viewAdjacency(persons);
+  if (!persons.length) { lens.guides = () => {}; lens.title = ""; lens.text = ""; return; }
+  ({ islands: lensIslands, families: lensFamilies, crossroads: lensCrossroads, bridges: lensBridges, champions: lensChampions, steps: lensSteps })[state.lens](persons, adj);
+}
+
+function showLensCard() {
+  const on = state.layout === "insights" && !!lens.title;
+  $("lens-card").hidden = !on;
+  if (on) { $("lens-title").textContent = lens.title; $("lens-text").textContent = lens.text; }
+}
+
+// Insights read best with everyone on screen and players as the only nodes.
+function openLens(name) {
+  state.layout = "insights";
+  if (LENS_NAMES.includes(name)) state.lens = name;
+  state.view = "players";
+  state.who = "all";
+  state.ego = null;
+  setPressed("layout", "insights");
+  setPressed("lens", state.lens);
+  setPressed("view", "players");
+  setPressed("who", "all");
+  if (state.lens === "families" && state.colorBy !== "family") { state.colorBy = "family"; $("color-by").value = "family"; }
+  faceOn();
+  render(() => fit(1200));
+}
 
 function applyLayout() {
   const L = state.layout;
   const { nodes } = graph.graphData();
   const persons = nodes.filter((n) => n.kind === "person");
   seasonsMax = Math.max(1, ...persons.map((n) => n.ref.apps.length));
+  if (L === "insights") computeLens(persons);
   if (L === "rings" && state.ringsBy === "steps") {
     if (!personById[state.center]) state.center = "hong-jin-ho";
     stepDist = distances(state.center).dist;
@@ -778,12 +1140,16 @@ function applyLayout() {
     if (pin) { n.fx = 0; n.fy = 0; n.fz = 0; } else if (n.fx !== undefined) { n.fx = n.fy = n.fz = undefined; }
   }
 
-  graph.d3Force("charge").strength((n) => (n.kind === "show" ? -300 : n.kind === "season" ? -100 : L === "web" ? -40 : state.flowBy === "lanes" && L === "flow" ? -10 : -22));
+  graph.d3Force("charge").strength((n) => (n.kind === "show" ? -300 : n.kind === "season" ? -100 : L === "web" ? -40 : L === "insights" ? -5 : state.flowBy === "lanes" && L === "flow" ? -10 : -22));
   graph.d3Force("radial", null);
   // The built-in centering would drag every node off its ring or lane, so it only runs in Web.
   graph.d3Force("center", L === "web" ? forceCenter() : null);
   if (L === "web") {
     for (const [name, f] of [["x", forceX], ["y", forceY], ["z", forceZ]]) graph.d3Force(name, f(0).strength(0.04));
+  } else if (L === "insights") {
+    graph.d3Force("x", forceX((n) => lens.pos.get(n.id)?.x ?? 0).strength(0.8));
+    graph.d3Force("y", forceY((n) => lens.pos.get(n.id)?.y ?? 0).strength(0.8));
+    graph.d3Force("z", forceZ(0).strength(0.8));
   } else if (L === "rings") {
     graph.d3Force("radial", forceRadial(ringRadius, 0, 0, 0).strength(0.85));
     graph.d3Force("x", null);
@@ -806,13 +1172,15 @@ function applyLayout() {
     .distance((l) => (l.kind === "spine" ? 34 : l.kind === "mates" ? 38 - Math.min(l.seasons.length, 4) * 5 : 24))
     .strength((l) => {
       const base = 1 / Math.min(l.source.neighbors?.size || 1, l.target.neighbors?.size || 1);
-      const k = L === "web" ? 1 : L === "rings" ? 0.3 : 0.05;
+      const k = L === "web" ? 1 : L === "rings" ? 0.3 : L === "insights" ? 0.01 : 0.05;
       return (weak(l) ? base * 0.15 : base) * k;
     });
   drawGuides();
   $("rings-by").hidden = L !== "rings";
   $("flow-by").hidden = L !== "flow";
-  $("layout-hint").textContent = HINTS[L === "web" ? "web" : `${L}-${L === "rings" ? state.ringsBy : state.flowBy}`];
+  $("lens-by").hidden = L !== "insights";
+  $("layout-hint").textContent = HINTS[L === "web" ? "web" : `${L}-${L === "rings" ? state.ringsBy : L === "flow" ? state.flowBy : state.lens}`];
+  showLensCard();
 }
 
 // Face the camera straight on, for the flat layouts.
@@ -947,7 +1315,24 @@ function refresh() {
 }
 
 const nodeFor = (id) => graph.graphData().nodes.find((n) => n.id === id) ?? null;
-const fit = (ms = 900) => graph.zoomToFit(ms, narrow() ? 20 : 50);
+// Insights are flat, so they fit by their own extents, leaving room at the top for the headline card.
+function fitFlat(ms) {
+  const nodes = graph.graphData().nodes;
+  if (!nodes.length) return;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const n of nodes) {
+    const p = lens.pos.get(n.id) ?? n;
+    x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+  }
+  const cam = graph.camera();
+  const el = graph.renderer().domElement;
+  const card = narrow() ? 0.22 : 0.2; // share of the height the headline covers
+  const tan = Math.tan((cam.fov * Math.PI) / 360);
+  const half = Math.max((y1 - y0) / 2 / (1 - card), (x1 - x0) / 2 / (el.clientWidth / el.clientHeight)) * 1.12 + 30;
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2 + half * card;
+  graph.cameraPosition({ x: cx, y: cy, z: half / tan }, { x: cx, y: cy, z: 0 }, ms);
+}
+const fit = (ms = 900) => (state.layout === "insights" ? fitFlat(ms) : graph.zoomToFit(ms, narrow() ? 20 : 50));
 
 function render(after) {
   state.hover = null;
@@ -1233,6 +1618,7 @@ function runAction(action) {
   else if (kind === "timeline") play();
   else if (kind === "tour") startTour();
   else if (kind === "center") centerOn(a);
+  else if (kind === "lens") { state.lensFrom = null; openLens(a); }
   else if (kind === "lanes") { state.layout = "flow"; state.flowBy = "lanes"; setPressed("layout", "flow"); setPressed("flow", "lanes"); faceOn(); render(); }
 }
 
@@ -1500,6 +1886,7 @@ for (const b of document.querySelectorAll("#controls [data-view]")) {
 }
 for (const b of document.querySelectorAll("#controls [data-layout]")) {
   b.addEventListener("click", () => {
+    if (b.dataset.layout === "insights") { state.lensFrom = null; openLens(state.lens); return; }
     state.layout = b.dataset.layout;
     setPressed("layout", state.layout);
     // Rings and Flow read best face-on.
@@ -1523,6 +1910,9 @@ for (const b of document.querySelectorAll("#controls [data-flow]")) {
     faceOn();
     render();
   });
+}
+for (const b of document.querySelectorAll("#controls [data-lens]")) {
+  b.addEventListener("click", () => { state.lensFrom = null; openLens(b.dataset.lens); });
 }
 for (const b of document.querySelectorAll("#controls [data-who]")) {
   b.addEventListener("click", () => { state.who = b.dataset.who; setPressed("who", state.who); state.group = null; state.ego = null; render(); });
@@ -1720,9 +2110,10 @@ function resetView() {
   Object.assign(state, {
     view: "players", layout: "web", who: "veterans", year: LAST, strong: true,
     group: null, ego: null, path: null, selected: null, compare: [], colorBy: "show", sizeBy: "connections", stepFrom: null,
-    ringsBy: "tier", flowBy: "debut", center: "hong-jin-ho",
+    ringsBy: "tier", flowBy: "debut", center: "hong-jin-ho", lens: "islands", lensFrom: null,
   });
   setPressed("rings", "tier");
+  setPressed("lens", "islands");
   setPressed("flow", "debut");
   state.shows = new Set(data.shows.map((x) => x.id));
   setPressed("view", "players");
@@ -1741,8 +2132,6 @@ function resetView() {
 const HUB = "hong-jin-ho";
 const titleKing = data.people.reduce((a, b) => (b.titles > a.titles ? b : a));
 const legendsN = data.people.filter((x) => tierOf(x).name === "Legend").length;
-const topBridges = Object.entries(bridgeRank).sort((a, b) => a[1] - b[1]).slice(0, 3).map(([id]) => plain(personById[id].name));
-const circuit = families.list.filter((f) => f.members.length > 4).sort((a, b) => b.cross - a.cross)[0];
 
 const TOUR = [
   {
@@ -1790,19 +2179,29 @@ const TOUR = [
     run: () => { state.layout = "flow"; state.flowBy = "lanes"; setPressed("layout", "flow"); setPressed("flow", "lanes"); faceOn(1200); render(() => fit(1400)); },
   },
   {
-    title: "Hidden families",
-    text: `Colored by family: groups found from who keeps meeting whom, not from show labels. The busiest circuit, ${circuit ? circuit.name : "the crossover crowd"}, has ${circuit ? circuit.members.length : 0} players who keep crossing paths.`,
-    run: () => { state.colorBy = "family"; $("color-by").value = "family"; updateKey(); render(() => fit(1400)); },
+    title: "One universe",
+    text: () => lens.text,
+    run: () => openLens("islands"),
+  },
+  {
+    title: "A ring of families",
+    text: () => lens.text,
+    run: () => openLens("families"),
+  },
+  {
+    title: "Crossroads",
+    text: () => lens.text,
+    run: () => openLens("crossroads"),
   },
   {
     title: "Who holds it together",
-    text: `Sized by bridging: how many shortest chains between other players run through each one. ${topBridges.join(", ")} are the universe's load-bearing players.`,
-    run: () => { state.sizeBy = "bridging"; $("size-by").value = "bridging"; render(() => fit(1400)); },
+    text: () => lens.text,
+    run: () => openLens("bridges"),
   },
   {
     title: "Six degrees",
-    text: "A Go legend and a CrossFit champion: four steps apart, through The Devil's Plan and Synchro Game.",
-    run: () => { setPick("from", "lee-se-dol"); setPick("to", "amotti"); runPath("lee-se-dol", "amotti"); },
+    text: () => lens.text.replace(" Tap anyone to measure from them.", ""),
+    run: () => openLens("steps"),
   },
   {
     title: "The reunion",
@@ -1818,7 +2217,7 @@ function showStep(i) {
   resetView();
   step.run();
   $("tour-title").textContent = step.title;
-  $("tour-text").textContent = step.text;
+  $("tour-text").textContent = typeof step.text === "function" ? step.text() : step.text;
   $("tour-step").textContent = `${tour.i + 1} / ${TOUR.length}`;
   $("tour-prev").disabled = tour.i === 0;
   $("tour-next").textContent = tour.i === TOUR.length - 1 ? "Finish" : "Next";
@@ -1955,6 +2354,8 @@ function writeUrl() {
   if (state.layout === "rings" && state.ringsBy !== "tier") q.set("rings", state.ringsBy);
   if (state.layout === "rings" && state.ringsBy === "steps") q.set("center", state.center);
   if (state.layout === "flow" && state.flowBy !== "debut") q.set("flow", state.flowBy);
+  if (state.layout === "insights") q.set("lens", state.lens);
+  if (state.layout === "insights" && state.lensFrom) q.set("from", state.lensFrom);
   if (state.colorBy !== "show") q.set("color", state.colorBy);
   if (state.sizeBy !== "connections") q.set("size", state.sizeBy);
   if (state.compare.length) q.set("compare", state.compare.join(","));
@@ -1969,7 +2370,9 @@ function writeUrl() {
 function readUrl() {
   const q = new URLSearchParams(location.search);
   if (q.get("view") === "seasons") state.view = "seasons";
-  if (["rings", "flow"].includes(q.get("layout"))) state.layout = q.get("layout");
+  if (["rings", "flow", "insights"].includes(q.get("layout"))) state.layout = q.get("layout");
+  if (LENS_NAMES.includes(q.get("lens"))) state.lens = q.get("lens");
+  if (state.layout === "insights" && personById[q.get("from")] && !q.get("to")) state.lensFrom = q.get("from");
   if (q.get("who") === "all") state.who = "all";
   if (q.get("shows")) {
     const want = q.get("shows").split(",").filter((s) => showById[s]);
@@ -1987,6 +2390,7 @@ function readUrl() {
   if (personById[q.get("center")]) state.center = q.get("center");
   setPressed("rings", state.ringsBy);
   setPressed("flow", state.flowBy);
+  setPressed("lens", state.lens);
   if (state.layout !== "web") graph.cameraPosition({ x: 0, y: 0, z: 2600 }, { x: 0, y: 0, z: 0 });
   if (["bridging", "titles", "seasons"].includes(q.get("size"))) state.sizeBy = q.get("size");
   $("color-by").value = state.colorBy;

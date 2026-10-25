@@ -3,15 +3,17 @@
 An unofficial fan site for Korean survival shows: every season's cast, a bio
 page for each contestant, and the players who crossed from one show to another.
 
-Shows covered (25): The Genius, Society Game, Prison Life of Fools, Money Game,
+Shows covered (30): The Genius, Society Game, Prison Life of Fools, Money Game,
 Accomplice, The Bloody Game (including X), The Black Sheep Game, Physical: 100
 (with Physical: Asia), The Time Hotel, Siren: Survive the Island, The Devil's
 Plan (season 3 announced), University War, The Community, The Influencer,
-Life's Game, Four Wishes, Death Game, Synchro Game and Betting on Fact.
+Life's Game, Four Wishes, Death Game, Synchro Game, Betting on Fact,
+Penthouse (Channel A) and Deadly Tag (Disney+).
 
 Also canon, because the same players carry through them: the mystery and
 escape shows (Crime Scene with Returns and Zero, The Great Escape with The
-Story and its 2026 season, High School Mystery Club, Agents of Mystery) and
+Story and its 2026 season, High School Mystery Club, Agents of Mystery,
+Busted!, The Sixth Sense, Code: Secret Room) and
 the quiz shows (Problematic Men, Brain Academy). They have no eliminations or
 winners, so their seasons list the cast only. Announced but not yet cast:
 Jang Dong-min's untitled Netflix survival show, which he designs as its
@@ -50,7 +52,7 @@ npm run build     # static site in dist/
     by side stats, career strips, seasons together and co-players in common.
   - ← → step through the selected player's strongest connections; Save
     image exports the current view with a caption.
-  - Three layouts, each with variants:
+  - Four layouts, each with variants:
     - Web: players pulled together by shared seasons.
     - Rings by tier (legends at the center, then crossovers, veterans and
       one-season players), by seasons played, or by steps from any player
@@ -58,6 +60,15 @@ npm run build     # static site in dist/
     - Flow by debut year, by show lanes (a lane per show across the years,
       so players crossing lanes are players moving between shows), or as a
       spiral of time winding out from 2013.
+    - Insights (`?layout=insights&lens=<name>`), each with a headline worked
+      out from the live view: Islands (one web in rings, with the shows that
+      never crossed over floating on an outer orbit), Families (a ring for
+      each hidden family, set around one big ring), Crossroads (shows on the
+      rim, crossovers pulled inside toward every show they played), Bridges
+      (rings by bridging, with the hinges that hold a group on their own),
+      Champions (titles at the center, then whether players ever met one)
+      and Six degrees (columns by distance, flowing left to right along the
+      longest chain; tap anyone to start from them).
   - Glowing nodes sized by connections, gold rings for champions, curved
     lines with light flowing from the earlier debut to the later, a faint
     glow behind each show's cluster, names that appear by importance as you

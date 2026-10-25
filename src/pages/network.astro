@@ -45,6 +45,8 @@ const tries = [
   { action: "group:devils-plan-3", label: "Devil's Plan 3 cast" },
   { action: "center:hong-jin-ho", label: "Rings around Hong Jin-ho" },
   { action: "lanes", label: "Show lanes" },
+  { action: "lens:families", label: "Ring of families" },
+  { action: "lens:steps", label: "Six degrees" },
   { action: "focus:jang-dong-min", label: "Jang Dong-min's titles" },
   { action: "timeline", label: "Watch it grow" },
 ];
@@ -84,6 +86,7 @@ const tries = [
           <button type="button" data-layout="web" aria-pressed="true" title="Players pulled together by shared seasons">Web</button>
           <button type="button" data-layout="rings" aria-pressed="false" title="Legends at the center, one-season players outside">Rings</button>
           <button type="button" data-layout="flow" aria-pressed="false" title="Left to right by debut year">Flow</button>
+          <button type="button" data-layout="insights" aria-pressed="false" title="The universe's findings, laid out">Insights</button>
         </div>
         <div class="seg sub" role="group" aria-label="Rings by" id="rings-by" hidden>
           <button type="button" data-rings="tier" aria-pressed="true">Tier</button>
@@ -94,6 +97,14 @@ const tries = [
           <button type="button" data-flow="debut" aria-pressed="true">Debut</button>
           <button type="button" data-flow="lanes" aria-pressed="false">Show lanes</button>
           <button type="button" data-flow="spiral" aria-pressed="false">Spiral</button>
+        </div>
+        <div class="seg sub lenses" role="group" aria-label="Insight" id="lens-by" hidden>
+          <button type="button" data-lens="islands" aria-pressed="true">Islands</button>
+          <button type="button" data-lens="families" aria-pressed="false">Families</button>
+          <button type="button" data-lens="crossroads" aria-pressed="false">Crossroads</button>
+          <button type="button" data-lens="bridges" aria-pressed="false">Bridges</button>
+          <button type="button" data-lens="champions" aria-pressed="false">Champions</button>
+          <button type="button" data-lens="steps" aria-pressed="false">Six degrees</button>
         </div>
         <p class="hint muted" id="layout-hint">Players pulled together by the seasons they shared.</p>
 
@@ -182,6 +193,12 @@ const tries = [
     </section>
 
     <div class="net-count" id="count" aria-live="polite"></div>
+
+    <section class="lens-card" id="lens-card" hidden aria-live="polite">
+      <span class="eyebrow">Insight</span>
+      <h2 id="lens-title"></h2>
+      <p id="lens-text"></p>
+    </section>
 
     <section class="tour" id="tour" hidden aria-live="polite" aria-label="Guided tour">
       <div class="tour-bar"><span id="tour-bar"></span></div>
@@ -370,6 +387,18 @@ const tries = [
   .seg.sub { margin-top: 6px; background: transparent; border: 1px solid var(--line); }
   .seg.sub button { font-size: 13px; padding: 5px 6px; }
   .seg.sub[hidden] { display: none; }
+  .seg.lenses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .lens-card {
+    position: absolute; z-index: 2; top: 16px; left: calc(50% + 171px); transform: translateX(-50%);
+    width: min(540px, calc(100% - 380px)); padding: 12px 16px; border-radius: 14px; pointer-events: none;
+    background: color-mix(in srgb, var(--card) 86%, transparent); backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+  }
+  .lens-card h2 { font-size: 18px; margin: 4px 0 4px; }
+  .lens-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .lens-card[hidden] { display: none; }
+  .net:has(.lens-card:not([hidden])) .net-legend { display: none; }
+  .net:has(.tour:not([hidden])) .lens-card, .net:has(.net-info:not([hidden])) .lens-card { display: none; }
   .net-list[hidden], .active[hidden], .net-info[hidden], .tour[hidden], .color-key[hidden] { display: none; }
 
   .selects { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -436,6 +465,9 @@ const tries = [
     .net-list { inset: 8px; }
     .net-count, .net-legend { display: none; }
     .tour { left: 8px; right: 8px; bottom: 8px; width: auto; transform: none; animation: none; }
+    .lens-card { top: auto; bottom: 8px; left: 8px; right: 8px; width: auto; transform: none; padding: 10px 12px; }
+    .lens-card h2 { font-size: 16px; }
+    .lens-card p { font-size: 13px; }
     .net:has(.tour:not([hidden])) .net-info { display: none; }
     /* With details open, the controls shrink to the search box so the graph stays visible. */
     .net:has(.net-info:not([hidden])) .net-controls > :not(.search) { display: none; }
