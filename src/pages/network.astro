@@ -21,7 +21,7 @@ const graph = {
     known: c.known ?? "",
     photo: photos[c.id]?.src ?? "",
     shows: c.shows.map((s) => s.id),
-    apps: c.apps.map(({ season, entry }) => ({ season: season.id, result: resultText(entry), won: entry.place === 1 })),
+    apps: c.apps.map(({ season, entry }) => ({ season: season.id, result: resultText(entry, season), won: entry.place === 1 })),
   })),
 };
 const veterans = contestants.filter((c) => c.apps.length > 1).length;

@@ -3,9 +3,16 @@
 An unofficial fan site for Korean survival shows: every season's cast, a bio
 page for each contestant, and the players who crossed from one show to another.
 
-Shows covered: The Genius, Society Game, Money Game, The Bloody Game,
-Physical: 100 (with Physical: Asia), Siren: Survive the Island,
-The Devil's Plan and The Influencer.
+Shows covered (19): The Genius, Society Game, Prison Life of Fools, Money Game,
+Accomplice, The Bloody Game (including X), The Black Sheep Game, Physical: 100
+(with Physical: Asia), The Time Hotel, Siren: Survive the Island, The Devil's
+Plan (season 3 announced), University War, The Community, The Influencer,
+Life's Game, Four Wishes, Death Game, Synchro Game and Betting on Fact.
+
+Left out on purpose: mystery, escape and quiz shows with no elimination or
+winner (Crime Scene, The Great Escape, Agents of Mystery, Problematic Men,
+Brain Academy). Announced but not yet cast: Jang Dong-min's untitled Netflix
+survival show.
 
 Built with [Astro](https://astro.build) as a static site.
 
@@ -62,7 +69,10 @@ Promotional photos from networks are copyrighted, so they are never used.
 
 ### Known gaps
 
-- Physical: 100 seasons, Physical: Asia, Siren, The Influencer, Society Game and
-  The Bloody Game X list featured players only; their full rosters are large.
+- Physical: 100 seasons, Physical: Asia, Siren, The Influencer, University War,
+  Death Game and Life's Game list featured players only (or none: Life's Game
+  players are LG employees under aliases).
+- Unconfirmed winners: The Black Sheep Game (not recorded), Accomplice 2 and
+  Four Wishes (from fan records).
 - Some middle placements (The Genius seasons 1, 3 and 4, The Devil's Plan,
   The Bloody Game) are left blank because sources disagree.

@@ -2,7 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
 import Avatar from "../../components/Avatar.astro";
-import { contestants, photos, resultText, seasonLabel, recordBio } from "../../lib/universe.mjs";
+import { contestants, photos, resultText, seasonLabel, seasonNetwork, recordBio } from "../../lib/universe.mjs";
 
 export function getStaticPaths() {
   return contestants.map((c) => ({ params: { id: c.id }, props: { c } }));
@@ -56,9 +56,9 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
             <a class="card" href={`/shows/${show.id}/#${season.id}`} style={`--show:${show.color}`}>
               <span>
                 <b>{seasonLabel(show, season)}</b>
-                <span class="when"> · {show.network}, {season.aired}</span>
+                <span class="when"> · {seasonNetwork(show, season)}, {season.aired}</span>
               </span>
-              <span class:list={["res", { gold: entry.place === 1 }]}>{resultText(entry) || "Contestant"}</span>
+              <span class:list={["res", { gold: entry.place === 1 }]}>{resultText(entry, season) || "Contestant"}</span>
             </a>
           </li>
         ))}

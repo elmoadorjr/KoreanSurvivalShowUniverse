@@ -31,15 +31,16 @@ const { show } = Astro.props;
       <section class="season" id={season.id}>
         <div class="season-head">
           <h2>{season.title === show.name ? show.name : season.title}</h2>
+          {season.upcoming && <span class="chip gold">Coming soon</span>}
           <span class="muted">
             {season.title !== `Season ${season.number}` && season.title !== show.name && show.seasons.length > 1 ? `Season ${season.number} · ` : ""}
-            {season.aired}{season.prize ? ` · Prize ${season.prize}` : ""} · {season.cast.length} {season.complete ? "players" : "featured"}
+            {season.aired}{season.network ? ` on ${season.network}` : ""}{season.prize ? ` · Prize ${season.prize}` : ""}{season.cast.length > 0 && ` · ${season.cast.length} ${season.upcoming ? "announced" : season.complete ? "players" : "featured"}`}
           </span>
         </div>
         {season.note && <p class:list={["note", { pending: !season.complete }]}>{season.note}</p>}
         <div class="grid people">
           {season.cast.map((entry) => (
-            <PersonTile id={entry.person} color={show.color} won={entry.place === 1} sub={resultText(entry)} />
+            <PersonTile id={entry.person} color={show.color} won={entry.place === 1} sub={resultText(entry, season)} />
           ))}
         </div>
       </section>

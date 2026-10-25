@@ -2,23 +2,16 @@
 import Base from "../layouts/Base.astro";
 import ShowCard from "../components/ShowCard.astro";
 import PersonTile from "../components/PersonTile.astro";
-import { shows, contestants, crossovers, seasonLabel } from "../lib/universe.mjs";
+import { shows, contestants, crossovers, champions, seasonLabel } from "../lib/universe.mjs";
 
 const seasons = shows.flatMap((s) => s.seasons);
-const champions = shows.flatMap((show) =>
-  show.seasons.flatMap((season) =>
-    season.cast
-      .filter((c) => c.place === 1 && (!season.teams || c.captain))
-      .map((c) => ({ show, season, entry: c }))
-  )
-);
 ---
 <Base title="Survival Universe">
   <div class="wrap">
     <section class="hero">
       <div class="eyebrow">The Korean survival show fan site</div>
       <h1>Every game, every player, every comeback.</h1>
-      <p class="lede">From The Genius to The Devil's Plan, from Physical: 100 to the indie Money Game. Browse every season's cast and follow players as they cross from show to show.</p>
+      <p class="lede">From The Genius to The Devil's Plan, from The Bloody Game and The Time Hotel to indie web shows like Money Game and Four Wishes. Browse every season's cast and follow players as they cross from show to show.</p>
       <div class="stats">
         <div><b>{shows.length}</b><span>shows</span></div>
         <div><b>{seasons.length}</b><span>seasons</span></div>
@@ -47,8 +40,8 @@ const champions = shows.flatMap((show) =>
     <section>
       <div class="section-head"><h2>Hall of champions</h2></div>
       <div class="grid people">
-        {champions.map(({ show, season, entry }) => (
-          <PersonTile id={entry.person} color={show.color} won sub={seasonLabel(show, season)} />
+        {champions.map(({ show, season, entry, others }) => (
+          <PersonTile id={entry.person} color={show.color} won sub={`${seasonLabel(show, season)}${others ? ` (+${others} shared)` : ""}`} />
         ))}
       </div>
     </section>
