@@ -17,8 +17,35 @@ const cast = ids.map((id) => {
 // Champions first, then the most experienced, then debuts.
 cast.sort((x, y) => y.titles.length - x.titles.length || y.past.length - x.past.length);
 
+// How Netflix and the press frame each player going in. Pre-release only: nothing from the season itself.
+const GROUPS = [
+  { id: "veteran", name: "Survival veterans", text: "Champions and finalists from The Genius, Society Game, The Bloody Game and The Time Hotel." },
+  { id: "returnee", name: "Devil's Plan returnees", text: "Both earlier winners, and a player back for another shot." },
+  { id: "newcomer", name: "Newcomers", text: "New to The Devil's Plan, several of them from Jeong Jong-yeon's mystery shows." },
+];
+const STORY = {
+  "jang-dong-min": ["veteran", "Going for a sixth title, and the favourite."],
+  "hong-jin-ho": ["veteran", "The first Genius champion, now a poker pro, returns."],
+  "oh-hyun-min": ["veteran", "The Jang and Oh alliance reunites. Fans call him the main threat to Jang."],
+  "seo-chul-gu": ["veteran", "The analytical rapper from The Bloody Game."],
+  "yoo-ri-sa": ["veteran", "Billed as the survival game changer."],
+  "hyun-kyung-ryeol": ["veteran", "Society Game's strategist, ten years on."],
+  "john-park": ["veteran", "Another past winner, from The Time Hotel."],
+  "ha-seok-jin": ["returnee", "The first Devil's Plan champion, defending."],
+  "jung-hyun-gyu": ["returnee", "The Death Room winner: a redemption arc or a repeat?"],
+  "kim-dong-jae": ["returnee", "Back from season 1 for another shot."],
+  "shindong": ["newcomer", "Super Junior's escape-room detective."],
+  "jaejae": ["newcomer", "High School Mystery Club's core brain."],
+  "nucksal": ["newcomer", "An 18-year rap veteran and known board gamer. A dark horse."],
+  "lee-do": ["newcomer", "A social studies instructor from Seoul National University."],
+  "stella-jang": ["newcomer", "A singer-songwriter who speaks four languages."],
+  "jung-won-young": ["newcomer", "Won corporate survival contests and board game tournaments. Billed as the dark horse."],
+};
+const groups = GROUPS.map((g) => ({ ...g, cast: cast.filter((c) => STORY[c.id]?.[0] === g.id) }));
+const ungrouped = cast.filter((c) => !STORY[c.id]);
+if (ungrouped.length) groups.push({ id: "other", name: "Also in the house", text: "", cast: ungrouped });
+
 const pairs = pairsWithin(ids, SEASON);
-const debuts = cast.filter((c) => !c.past.length);
 const totalSeasons = cast.reduce((n, c) => n + c.past.length, 0);
 const totalTitles = cast.reduce((n, c) => n + c.titles.length, 0);
 const linked = new Set(pairs.flatMap((p) => [p.a, p.b]));
@@ -46,36 +73,79 @@ const color = show.color;
     </section>
 
     <div class="wrap">
-      <section>
-        <div class="section-head"><h2>The sixteen</h2><span class="muted">{debuts.length} debut{debuts.length === 1 ? "" : "s"}</span></div>
-        <div class="dp3-grid">
-          {cast.map((c) => (
-            <a class="card dp3-card" href={`/contestants/${c.id}/`}>
-              <div class="dp3-top">
-                <Avatar id={c.id} color={c.titles.length ? "#e8b84a" : color} won={c.titles.length > 0} />
-                <div>
-                  <h3>{c.p.name}</h3>
-                  {c.p.known && <div class="muted small">{c.p.known}</div>}
-                </div>
-              </div>
-              <div class="dp3-line">
-                {c.past.length
-                  ? <>{c.past.length} season{c.past.length === 1 ? "" : "s"} on {c.showsPlayed.length} show{c.showsPlayed.length === 1 ? "" : "s"}{c.titles.length > 0 && <b class="gold"> · {c.titles.length} title{c.titles.length === 1 ? "" : "s"}</b>}</>
-                  : <span class="debut">Survival-show debut</span>}
-              </div>
-              {c.past.length > 0 && (
-                <ul class="dp3-past">
-                  {c.past.map((a) => (
-                    <li style={`--c:${a.show.color}`}>
-                      <span>{seasonLabel(a.show, a.season)}</span>
-                      <span class:list={["r", { gold: a.entry.place === 1 }]}>{resultText(a.entry, a.season) || "Played"}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </a>
-          ))}
+      <section class="dp3-about">
+        <div class="section-head"><h2>The season</h2><span class="muted">Spoiler-free: nothing here has aired</span></div>
+        <div class="about-grid">
+          <div class="card">
+            <div class="eyebrow">The concept</div>
+            <p class="tagline">"The Return. The Real Showdown."</p>
+            <p>A re-challenge: players already knocked out of survival shows come back to risk elimination again, on what Netflix calls an expanded board with unpredictable variables. Sixteen players, twelve men and four women, the largest cast in the franchise.</p>
+            <p class="muted small">Directed by Jeong Jong-yeon (The Genius, The Great Escape, High School Mystery Club) and Choi Yun-hee. Produced by TEO.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">How the game works</div>
+            <ul class="rules">
+              <li>Players live together for six nights and seven days, and play only to win.</li>
+              <li>Everyone starts with Pieces. A player with none is out.</li>
+              <li>The Main Match wins or loses Pieces; the Prize Match is played together to grow the shared pot.</li>
+              <li>The lowest-ranked go to Prison. In season 2 a nightly Prison Match sent one player home.</li>
+              <li>New this time: some filming outdoors, and a teaser room split by tall metal bars.</li>
+            </ul>
+          </div>
+          <div class="card quotes">
+            <div class="eyebrow">From the teaser</div>
+            <blockquote>"It's totally different now."<cite>Shindong</cite></blockquote>
+            <blockquote>"Why spare them when I'm gonna wipe them all out anyway?"<cite>Jang Dong-min</cite></blockquote>
+            <blockquote>"We have returned with the most formidable contestants in the history of the franchise."<cite>Jeong Jong-yeon, director</cite></blockquote>
+          </div>
         </div>
+      </section>
+
+      {groups.map((g) => (
+        <section>
+          <div class="section-head"><h2>{g.name}</h2><span class="muted">{g.cast.length}</span></div>
+          {g.text && <p class="muted" style="margin-top:-8px">{g.text}</p>}
+          <div class="dp3-grid">
+            {g.cast.map((c) => (
+                <a class="card dp3-card" href={`/contestants/${c.id}/`}>
+                  <div class="dp3-top">
+                    <Avatar id={c.id} color={c.titles.length ? "#e8b84a" : color} won={c.titles.length > 0} />
+                    <div>
+                      <h3>{c.p.name}</h3>
+                      {c.p.known && <div class="muted small">{c.p.known}</div>}
+                    </div>
+                  </div>
+                  {STORY[c.id] && <p class="dp3-story">{STORY[c.id][1]}</p>}
+                  <div class="dp3-line">
+                    {c.past.length
+                      ? <>{c.past.length} season{c.past.length === 1 ? "" : "s"} on {c.showsPlayed.length} show{c.showsPlayed.length === 1 ? "" : "s"}{c.titles.length > 0 && <b class="gold"> · {c.titles.length} title{c.titles.length === 1 ? "" : "s"}</b>}</>
+                      : <span class="debut">Survival-show debut</span>}
+                  </div>
+                  {c.past.length > 0 && (
+                    <ul class="dp3-past">
+                      {c.past.map((a) => (
+                        <li style={`--c:${a.show.color}`}>
+                          <span>{seasonLabel(a.show, a.season)}</span>
+                          <span class:list={["r", { gold: a.entry.place === 1 }]}>{resultText(a.entry, a.season) || "Played"}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </a>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <section>
+        <div class="section-head"><h2>What fans are watching for</h2></div>
+        <div class="talk">
+          <div class="card"><b>Genius season 4 energy</b><p>A grand reunion of brain-survival legends. Fans joke that even the stills look like a lost season of The Genius.</p></div>
+          <div class="card"><b>Jang Dong-min as the final boss</b><p>Will the house team up to take him out, and do his wins come from game skill or from politics?</p></div>
+          <div class="card"><b>The Jang and Oh alliance</b><p>Black Garnet's partnership together again, with Oh Hyun-min seen as the one player who can rival Jang.</p></div>
+          <div class="card"><b>Veterans and newcomers</b><p>A cast built on experience after season 2, with Nucksal, Jung Won-young and Shindong floated as dark horses.</p></div>
+        </div>
+        <p class="muted small">Claimed results circulating online are unconfirmed, and this site stays spoiler-free.</p>
       </section>
 
       <section>
@@ -141,6 +211,13 @@ const color = show.color;
   .dp3-past { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
   .dp3-past li { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; border-left: 3px solid var(--c); padding-left: 8px; }
   .dp3-past .r { color: var(--muted); text-align: right; flex: none; max-width: 50%; }
+  .dp3-story { margin: 0; font-size: 14px; }
+  .about-grid, .talk { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .about-grid p, .talk p { margin: 8px 0 0; font-size: 15px; }
+  .tagline { font: 700 20px var(--display); color: color-mix(in srgb, var(--show) 60%, var(--ink)); }
+  .rules { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: 15px; }
+  .quotes blockquote { margin: 10px 0 0; font-size: 15px; }
+  .quotes cite { display: block; font-style: normal; font-size: 13px; color: var(--muted); margin-top: 2px; }
   .pairs { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
   .pair { display: grid; gap: 10px; }
   .pair-who { display: flex; align-items: center; gap: 8px; }

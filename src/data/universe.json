@@ -2526,13 +2526,571 @@
           ]
         }
       ]
+    },
+    {
+      "id": "crime-scene",
+      "name": "Crime Scene",
+      "ko": "크라임씬",
+      "network": "JTBC, then TVING and Netflix",
+      "years": "2014-2025",
+      "kind": "Mystery and escape",
+      "color": "#5c677d",
+      "blurb": "The role-play murder mystery. Each player is handed a character and a secret; one of them is the killer, and everyone, culprit included, searches the set for evidence before a vote names the murderer.",
+      "seasons": [
+        {
+          "id": "crime-scene-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2014",
+          "complete": true,
+          "note": "Kang Yong-suk joined partway through and Lim Bang-geul left partway through.",
+          "cast": [
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jun-hyun-moo"
+            },
+            {
+              "person": "hong-jin-ho"
+            },
+            {
+              "person": "ns-yoon-g"
+            },
+            {
+              "person": "kang-yong-suk"
+            },
+            {
+              "person": "lim-bang-geul"
+            }
+          ]
+        },
+        {
+          "id": "crime-scene-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2015",
+          "complete": true,
+          "cast": [
+            {
+              "person": "jang-jin"
+            },
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-dong-min"
+            },
+            {
+              "person": "hong-jin-ho"
+            },
+            {
+              "person": "hani"
+            }
+          ]
+        },
+        {
+          "id": "crime-scene-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2017",
+          "complete": true,
+          "note": "Hong Jin-ho joined partway through.",
+          "cast": [
+            {
+              "person": "jang-jin"
+            },
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "kim-ji-hoon"
+            },
+            {
+              "person": "yang-se-hyung"
+            },
+            {
+              "person": "jung-eun-ji"
+            },
+            {
+              "person": "hong-jin-ho"
+            }
+          ]
+        },
+        {
+          "id": "crime-scene-4",
+          "title": "Returns",
+          "number": 4,
+          "aired": "2024",
+          "complete": true,
+          "network": "TVING",
+          "full": "Crime Scene Returns",
+          "cast": [
+            {
+              "person": "jang-jin"
+            },
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-dong-min"
+            },
+            {
+              "person": "key"
+            },
+            {
+              "person": "joo-hyun-young"
+            },
+            {
+              "person": "an-yu-jin"
+            }
+          ]
+        },
+        {
+          "id": "crime-scene-5",
+          "title": "Zero",
+          "number": 5,
+          "aired": "2025",
+          "complete": true,
+          "network": "Netflix",
+          "full": "Crime Scene Zero",
+          "cast": [
+            {
+              "person": "jang-jin"
+            },
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-dong-min"
+            },
+            {
+              "person": "kim-ji-hoon"
+            },
+            {
+              "person": "an-yu-jin"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "great-escape",
+      "name": "The Great Escape",
+      "ko": "대탈출",
+      "network": "tvN, then TVING",
+      "years": "2018-2026",
+      "kind": "Mystery and escape",
+      "color": "#7f5539",
+      "blurb": "Jeong Jong-yeon's giant escape rooms: six players locked inside whole buildings built as stories, from a bunker to an asylum, who solve their way out. No eliminations, no winner, only the clock.",
+      "seasons": [
+        {
+          "id": "great-escape-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2018",
+          "complete": true,
+          "cast": [
+            {
+              "person": "kang-ho-dong"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "shindong"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "p-o"
+            }
+          ]
+        },
+        {
+          "id": "great-escape-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2019",
+          "complete": true,
+          "cast": [
+            {
+              "person": "kang-ho-dong"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "shindong"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "p-o"
+            }
+          ]
+        },
+        {
+          "id": "great-escape-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2020",
+          "complete": true,
+          "cast": [
+            {
+              "person": "kang-ho-dong"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "shindong"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "p-o"
+            }
+          ]
+        },
+        {
+          "id": "great-escape-4",
+          "title": "Season 4",
+          "number": 4,
+          "aired": "2021",
+          "complete": true,
+          "cast": [
+            {
+              "person": "kang-ho-dong"
+            },
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "shindong"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "p-o"
+            }
+          ]
+        },
+        {
+          "id": "great-escape-5",
+          "title": "The Story",
+          "number": 5,
+          "aired": "2024",
+          "complete": true,
+          "network": "TVING",
+          "full": "The Great Escape: The Story",
+          "cast": [
+            {
+              "person": "kang-ho-dong"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "go-kyung-pyo"
+            },
+            {
+              "person": "baekhyun"
+            },
+            {
+              "person": "yeo-jin-goo"
+            }
+          ]
+        },
+        {
+          "id": "great-escape-6",
+          "title": "Season 6",
+          "number": 6,
+          "aired": "Late 2026",
+          "complete": true,
+          "network": "TVING",
+          "upcoming": true,
+          "note": "Announced in August 2026 for the second half of the year. Kim Jong-min and Shindong return; Kang Ho-dong steps away and Seungkwan joins.",
+          "cast": [
+            {
+              "person": "kim-jong-min"
+            },
+            {
+              "person": "shindong"
+            },
+            {
+              "person": "kim-dong-hyun"
+            },
+            {
+              "person": "yoo-byung-jae"
+            },
+            {
+              "person": "go-kyung-pyo"
+            },
+            {
+              "person": "seungkwan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "high-school-mystery-club",
+      "name": "High School Mystery Club",
+      "ko": "여고추리반",
+      "network": "TVING",
+      "years": "2021-2024",
+      "kind": "Mystery and escape",
+      "color": "#e07a5f",
+      "blurb": "Jeong Jong-yeon's story-driven mystery: five detectives enrol at a school with a secret and solve it over a whole season, one clue at a time.",
+      "seasons": [
+        {
+          "id": "high-school-mystery-club-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2021",
+          "complete": true,
+          "cast": [
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-do-yeon"
+            },
+            {
+              "person": "jaejae"
+            },
+            {
+              "person": "bibi"
+            },
+            {
+              "person": "choi-ye-na"
+            }
+          ]
+        },
+        {
+          "id": "high-school-mystery-club-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2022",
+          "complete": true,
+          "cast": [
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-do-yeon"
+            },
+            {
+              "person": "jaejae"
+            },
+            {
+              "person": "bibi"
+            },
+            {
+              "person": "choi-ye-na"
+            }
+          ]
+        },
+        {
+          "id": "high-school-mystery-club-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2024",
+          "complete": true,
+          "cast": [
+            {
+              "person": "park-ji-yoon"
+            },
+            {
+              "person": "jang-do-yeon"
+            },
+            {
+              "person": "jaejae"
+            },
+            {
+              "person": "bibi"
+            },
+            {
+              "person": "choi-ye-na"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agents-of-mystery",
+      "name": "Agents of Mystery",
+      "ko": "미스터리 수사단",
+      "network": "Netflix",
+      "years": "2024-2026",
+      "kind": "Mystery and escape",
+      "color": "#264653",
+      "blurb": "Jeong Jong-yeon's Netflix mystery: a team of agents investigates the uncanny on sets built like horror films, and has to solve its way out together.",
+      "seasons": [
+        {
+          "id": "agents-of-mystery-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2024",
+          "complete": true,
+          "cast": [
+            {
+              "person": "lee-yong-jin"
+            },
+            {
+              "person": "john-park"
+            },
+            {
+              "person": "lee-eun-ji"
+            },
+            {
+              "person": "hyeri"
+            },
+            {
+              "person": "kim-do-hoon"
+            },
+            {
+              "person": "karina"
+            }
+          ]
+        },
+        {
+          "id": "agents-of-mystery-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2026",
+          "complete": true,
+          "cast": [
+            {
+              "person": "lee-yong-jin"
+            },
+            {
+              "person": "john-park"
+            },
+            {
+              "person": "hyeri"
+            },
+            {
+              "person": "kim-do-hoon"
+            },
+            {
+              "person": "karina"
+            },
+            {
+              "person": "gabee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "problematic-men",
+      "name": "Problematic Men",
+      "ko": "뇌섹시대: 문제적 남자",
+      "network": "tvN",
+      "years": "2015-2019",
+      "kind": "Quiz and puzzles",
+      "color": "#4d908e",
+      "blurb": "The brain-teaser show that made being clever fashionable: a panel of high achievers working through logic puzzles, riddles and entrance-exam questions.",
+      "seasons": [
+        {
+          "id": "problematic-men-1",
+          "title": "Problematic Men",
+          "number": 1,
+          "aired": "2015",
+          "complete": true,
+          "note": "The panel changed over five years; this is its best-known lineup, with Joo Woo-jae joining later.",
+          "cast": [
+            {
+              "person": "jun-hyun-moo"
+            },
+            {
+              "person": "ha-seok-jin"
+            },
+            {
+              "person": "kim-ji-seok"
+            },
+            {
+              "person": "lee-jang-won"
+            },
+            {
+              "person": "tyler-rasch"
+            },
+            {
+              "person": "park-kyung"
+            },
+            {
+              "person": "joo-woo-jae"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brain-academy",
+      "name": "Brain Academy",
+      "ko": "브레인 아카데미",
+      "network": "Channel A",
+      "years": "2025",
+      "kind": "Quiz and puzzles",
+      "color": "#577590",
+      "blurb": "A knowledge quiz for a team of survival-show brains: each week an expert sets graded questions in their field and the six play for a knowledge medal.",
+      "seasons": [
+        {
+          "id": "brain-academy-1",
+          "title": "Brain Academy",
+          "number": 1,
+          "aired": "2025",
+          "complete": true,
+          "cast": [
+            {
+              "person": "jun-hyun-moo"
+            },
+            {
+              "person": "ha-seok-jin"
+            },
+            {
+              "person": "lee-sang-yeob"
+            },
+            {
+              "person": "yoon-so-hee"
+            },
+            {
+              "person": "hwang-je-sung"
+            },
+            {
+              "person": "orbit"
+            }
+          ]
+        }
+      ]
     }
   ],
   "people": {
     "hong-jin-ho": {
       "name": "Hong Jin-ho",
       "ko": "홍진호",
-      "known": "Former pro StarCraft player",
+      "known": "Pro poker player, former StarCraft pro",
       "bio": "One of the most famous StarCraft players of the 2000s, known as \"YellOw\" and for finishing second so often that the number 2 became his joke. He finally won first place on The Genius season 1 and became the genre's most familiar face: The Genius, The Bloody Game, The Time Hotel, Death Game and The Devil's Plan. He is now a professional poker player."
     },
     "kim-kyung-ran": {
@@ -2665,7 +3223,7 @@
     "oh-hyun-min": {
       "name": "Oh Hyun-min",
       "ko": "오현민",
-      "known": "Student, later a quiz show regular",
+      "known": "Math instructor, KAIST graduate",
       "bio": "A young science student who finished second on Black Garnet and third on the Grand Final, known for fast calculation. He won the mafia web show Accomplice as one of the two surviving accomplices and returns for The Devil's Plan season 3."
     },
     "choi-yeon-seung": {
@@ -2719,7 +3277,7 @@
       "name": "Hyun Kyung-ryeol",
       "ko": "현경렬",
       "bio": "A Seoul National University PhD who works at Google. One of the winning Madong three on the first season of Society Game, he returns a decade later for The Devil's Plan season 3.",
-      "known": "Googler with a Seoul National University PhD"
+      "known": "Google engineer, Seoul National University PhD"
     },
     "jung-in-jik": {
       "name": "Jung In-jik",
@@ -2848,7 +3406,8 @@
     "seo-chul-gu": {
       "name": "Seo Chul-gu",
       "ko": "서출구",
-      "bio": "A Bloody Game regular (seasons 2, 3 and X) who also won duels on Netflix's Death Game and joins The Devil's Plan season 3."
+      "bio": "The rapper Xitsuh, who entered university at 16. A Bloody Game regular (seasons 2, 3 and X) who also won duels on Netflix's Death Game and joins The Devil's Plan season 3.",
+      "known": "Rapper (Xitsuh)"
     },
     "nucks": {
       "name": "Nucks",
@@ -2862,8 +3421,8 @@
     "yoo-ri-sa": {
       "name": "Yoo Ri-sa",
       "ko": "유리사",
-      "bio": "A Mensa member with a reported IQ of 156. After The Bloody Game seasons 2 and 3 she won Netflix's Death Game: The Last Winner, beating Park Sung-woong, and joins The Devil's Plan season 3.",
-      "known": "Mensa member"
+      "bio": "A model and Mensa member with a reported IQ of 156, who won an Asian ladies poker tournament six months after learning the game. After The Bloody Game seasons 2 and 3 she won Netflix's Death Game: The Last Winner, beating Park Sung-woong, and joins The Devil's Plan season 3.",
+      "known": "Model, Mensa member"
     },
     "hyun-sung-joo": {
       "name": "Hyun Sung-joo",
@@ -3078,8 +3637,8 @@
     "orbit": {
       "name": "Orbit (Gwedo)",
       "ko": "궤도",
-      "bio": "The science YouTuber Gwedo (his name means \"orbit\"). Runner-up of The Devil's Plan season 1, remembered for playing to save other players from elimination.",
-      "known": "Science communicator"
+      "bio": "The astronomer and science YouTuber Gwedo (his name means \"orbit\"). Runner-up of The Devil's Plan season 1, remembered for playing to save other players from elimination, and later on the quiz team of Brain Academy.",
+      "known": "Astronomer and science communicator"
     },
     "seo-dong-ju": {
       "name": "Seo Dong-ju",
@@ -3094,7 +3653,8 @@
     },
     "seo-yu-min": {
       "name": "Seo Yu-min",
-      "ko": "서유민"
+      "ko": "서유민",
+      "known": "Orthopedic surgeon"
     },
     "boo-seung-kwan": {
       "name": "Boo Seung-kwan",
@@ -3115,7 +3675,8 @@
     "cho-yeon-woo": {
       "name": "Cho Yeon-woo",
       "ko": "조연우",
-      "known": "Actor"
+      "known": "Professional Go player",
+      "bio": "A professional Go player on The Devil's Plan season 1."
     },
     "lee-hye-sung": {
       "name": "Lee Hye-sung",
@@ -3125,13 +3686,13 @@
     "kim-dong-jae": {
       "name": "Kim Dong-jae",
       "ko": "김동재",
-      "known": "Poker player",
+      "known": "Student and pro poker player",
       "bio": "A world-class poker player. Eleventh on the first season of The Devil's Plan, he is back for season 3."
     },
     "guillaume-patry": {
       "name": "Guillaume Patry",
       "ko": "기욤 패트리",
-      "known": "Former pro StarCraft player",
+      "known": "Esports player",
       "bio": "A French StarCraft pro who made his name in the Korean leagues. Twelfth on The Devil's Plan season 1."
     },
     "jung-hyun-gyu": {
@@ -3175,7 +3736,8 @@
     },
     "lee-seung-hyun": {
       "name": "Lee Seung-hyun",
-      "ko": "이승현"
+      "ko": "이승현",
+      "known": "Miss Korea 2022"
     },
     "choi-hyun-joon": {
       "name": "Choi Hyun-joon",
@@ -3413,19 +3975,19 @@
       "name": "Shindong",
       "ko": "신동",
       "known": "Singer, Super Junior",
-      "bio": "A Super Junior member who showed his deduction skills on the escape show The Great Escape."
+      "bio": "A Super Junior member who showed his deduction skills over four seasons of the escape show The Great Escape, and returns for its 2026 season. A newcomer on The Devil's Plan season 3."
     },
     "john-park": {
       "name": "John Park",
       "ko": "존박",
       "known": "Singer",
-      "bio": "A singer who won The Time Hotel in a four-game final against Hong Jin-ho and Hwang Je-sung. Announced for The Devil's Plan season 3."
+      "bio": "A Northwestern graduate and singer who won The Time Hotel in a four-game final against Hong Jin-ho and Hwang Je-sung, and one of Netflix's Agents of Mystery. Announced for The Devil's Plan season 3."
     },
     "jaejae": {
       "name": "JaeJae",
       "ko": "재재",
       "known": "Broadcaster",
-      "bio": "A broadcaster billed as one of season 3's brains."
+      "bio": "A broadcaster and the core brain of High School Mystery Club, a Jeong Jong-yeon show, before joining his Devil's Plan for season 3."
     },
     "stella-jang": {
       "name": "Stella Jang",
@@ -3434,14 +3996,15 @@
       "bio": "A singer-songwriter who studied at a top French university and speaks four languages."
     },
     "lee-do": {
-      "name": "Lee Do",
+      "name": "Yi Do",
       "ko": "이도",
-      "known": "Star lecturer",
-      "bio": "A Seoul National University graduate and star lecturer, seen on the dating show for the never-dated."
+      "known": "Social studies instructor",
+      "bio": "A Seoul National University graduate who teaches social studies, seen on the dating show Better Late Than Single. A newcomer on The Devil's Plan season 3."
     },
     "jung-won-young": {
       "name": "Jung Won-young",
-      "ko": "정원영"
+      "ko": "정원영",
+      "known": "IT project manager"
     },
     "lee-soo-geun": {
       "name": "Lee Soo-geun",
@@ -4407,6 +4970,158 @@
       "name": "Ki Eun-se",
       "ko": "기은세",
       "known": "Actress and influencer"
+    },
+    "jun-hyun-moo": {
+      "name": "Jun Hyun-moo",
+      "ko": "전현무",
+      "known": "TV host"
+    },
+    "park-ji-yoon": {
+      "name": "Park Ji-yoon",
+      "ko": "박지윤",
+      "known": "Broadcaster",
+      "bio": "A former KBS announcer and the one player in every season of Crime Scene, from 2014 to the Netflix revival, and a detective of High School Mystery Club."
+    },
+    "ns-yoon-g": {
+      "name": "NS Yoon-G",
+      "ko": "NS윤지",
+      "known": "Singer"
+    },
+    "lim-bang-geul": {
+      "name": "Lim Bang-geul",
+      "ko": "임방글",
+      "known": "Lawyer"
+    },
+    "jang-jin": {
+      "name": "Jang Jin",
+      "ko": "장진",
+      "known": "Film director",
+      "bio": "The director and playwright who became Crime Scene's sharpest detective, a regular from season 2 through the Netflix revival."
+    },
+    "hani": {
+      "name": "Hani",
+      "ko": "하니",
+      "known": "Singer, EXID"
+    },
+    "kim-ji-hoon": {
+      "name": "Kim Ji-hoon",
+      "ko": "김지훈",
+      "known": "Actor"
+    },
+    "yang-se-hyung": {
+      "name": "Yang Se-hyung",
+      "ko": "양세형",
+      "known": "Comedian"
+    },
+    "jung-eun-ji": {
+      "name": "Jung Eun-ji",
+      "ko": "정은지",
+      "known": "Singer, Apink"
+    },
+    "key": {
+      "name": "Key",
+      "ko": "키",
+      "known": "Singer, SHINee"
+    },
+    "joo-hyun-young": {
+      "name": "Joo Hyun-young",
+      "ko": "주현영",
+      "known": "Comedian and actress"
+    },
+    "an-yu-jin": {
+      "name": "An Yu-jin",
+      "ko": "안유진",
+      "known": "Singer, IVE"
+    },
+    "kang-ho-dong": {
+      "name": "Kang Ho-dong",
+      "ko": "강호동",
+      "known": "TV host"
+    },
+    "yoo-byung-jae": {
+      "name": "Yoo Byung-jae",
+      "ko": "유병재",
+      "known": "Comedian and writer"
+    },
+    "p-o": {
+      "name": "P.O",
+      "ko": "피오",
+      "known": "Singer, Block B"
+    },
+    "go-kyung-pyo": {
+      "name": "Go Kyung-pyo",
+      "ko": "고경표",
+      "known": "Actor"
+    },
+    "baekhyun": {
+      "name": "Baekhyun",
+      "ko": "백현",
+      "known": "Singer, EXO"
+    },
+    "yeo-jin-goo": {
+      "name": "Yeo Jin-goo",
+      "ko": "여진구",
+      "known": "Actor"
+    },
+    "seungkwan": {
+      "name": "Seungkwan",
+      "ko": "승관",
+      "known": "Singer, Seventeen"
+    },
+    "bibi": {
+      "name": "BIBI",
+      "ko": "비비",
+      "known": "Singer"
+    },
+    "lee-eun-ji": {
+      "name": "Lee Eun-ji",
+      "ko": "이은지",
+      "known": "Comedian"
+    },
+    "hyeri": {
+      "name": "Hyeri",
+      "ko": "혜리",
+      "known": "Singer and actress, Girl's Day"
+    },
+    "kim-do-hoon": {
+      "name": "Kim Do-hoon",
+      "ko": "김도훈",
+      "known": "Actor"
+    },
+    "karina": {
+      "name": "Karina",
+      "ko": "카리나",
+      "known": "Singer, aespa"
+    },
+    "gabee": {
+      "name": "Gabee",
+      "ko": "가비",
+      "known": "Dancer"
+    },
+    "kim-ji-seok": {
+      "name": "Kim Ji-seok",
+      "ko": "김지석",
+      "known": "Actor"
+    },
+    "lee-jang-won": {
+      "name": "Lee Jang-won",
+      "ko": "이장원",
+      "known": "Musician, Peppertones"
+    },
+    "tyler-rasch": {
+      "name": "Tyler Rasch",
+      "ko": "타일러 라쉬",
+      "known": "Broadcaster"
+    },
+    "park-kyung": {
+      "name": "Park Kyung",
+      "ko": "박경",
+      "known": "Singer, Block B"
+    },
+    "joo-woo-jae": {
+      "name": "Joo Woo-jae",
+      "ko": "주우재",
+      "known": "Model and TV personality"
     }
   }
 }

@@ -35,7 +35,7 @@ const years = graph.seasons.map((s) => s.year);
 const firstYear = Math.min(...years), lastYear = Math.max(...years);
 
 // Show filters grouped by kind of game.
-const kindOrder = ["Strategy", "Team strategy", "Duel", "Deduction", "Social", "Indie web show", "Brain and physical", "Physical"];
+const kindOrder = ["Strategy", "Team strategy", "Duel", "Deduction", "Social", "Indie web show", "Mystery and escape", "Quiz and puzzles", "Brain and physical", "Physical"];
 const kinds = [...new Set(shows.map((s) => s.kind))].sort((a, b) => (kindOrder.indexOf(a) + 99) % 99 - (kindOrder.indexOf(b) + 99) % 99);
 
 const tries = [
