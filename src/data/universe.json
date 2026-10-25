@@ -29,41 +29,58 @@
             },
             {
               "person": "lee-sang-min",
-              "place": 3
+              "place": 3,
+              "result": "Eliminated in episode 11"
             },
             {
               "person": "kim-sung-kyu",
-              "place": 4
+              "place": 4,
+              "result": "Eliminated in episode 10"
             },
             {
               "person": "park-eun-ji",
-              "place": 5
+              "place": 5,
+              "result": "Eliminated in episode 9"
             },
             {
-              "person": "cha-min-su"
+              "person": "cha-yu-ram",
+              "place": 6,
+              "result": "Eliminated in episode 8"
             },
             {
-              "person": "cha-yu-ram"
+              "person": "kim-poong",
+              "place": 7,
+              "result": "Eliminated in episode 7"
             },
             {
-              "person": "choi-chang-yeop"
+              "person": "kim-gura",
+              "place": 8,
+              "result": "Eliminated in episode 6"
             },
             {
-              "person": "choi-jung-moon"
+              "person": "choi-jung-moon",
+              "place": 9,
+              "result": "Eliminated in episode 5"
             },
             {
-              "person": "kim-gura"
+              "person": "choi-chang-yeop",
+              "place": 10,
+              "result": "Eliminated in episode 4"
             },
             {
-              "person": "kim-poong"
+              "person": "cha-min-su",
+              "place": 11,
+              "result": "Eliminated in episode 3"
             },
             {
               "person": "kim-min-seo",
-              "result": "Eliminated in episode 2"
+              "result": "Eliminated in episode 2",
+              "place": 12
             },
             {
               "person": "lee-jun-seok",
-              "result": "Eliminated in episode 1"
+              "result": "Eliminated in episode 1",
+              "place": 13
             }
           ]
         },
@@ -150,41 +167,58 @@
             },
             {
               "person": "choi-yeon-seung",
-              "place": 3
+              "place": 3,
+              "result": "Eliminated in episode 11"
             },
             {
               "person": "ha-yeon-joo",
-              "place": 4
+              "place": 4,
+              "result": "Eliminated in episode 10"
             },
             {
-              "person": "shin-ah-young"
+              "person": "kim-yoo-hyun",
+              "place": 5,
+              "result": "Eliminated in episode 9"
             },
             {
-              "person": "lee-jong-beom"
+              "person": "shin-ah-young",
+              "place": 6,
+              "result": "Eliminated in episode 8"
             },
             {
-              "person": "kim-jung-hoon"
+              "person": "lee-jong-beom",
+              "place": 7,
+              "result": "Eliminated in episode 7"
             },
             {
-              "person": "yoo-su-jin"
+              "person": "kim-jung-hoon",
+              "place": 8,
+              "result": "Eliminated in episode 6"
             },
             {
-              "person": "nam-hwee-jong"
+              "person": "yoo-su-jin",
+              "place": 9,
+              "result": "Eliminated in episode 5"
             },
             {
-              "person": "kim-yoo-hyun"
+              "person": "nam-hwee-jong",
+              "place": 10,
+              "result": "Eliminated in episode 4"
             },
             {
               "person": "kang-yong-suk",
-              "result": "Eliminated in episode 3"
+              "result": "Eliminated in episode 3",
+              "place": 11
             },
             {
               "person": "kim-kyung-hoon",
-              "result": "Eliminated in episode 2"
+              "result": "Eliminated in episode 2",
+              "place": 12
             },
             {
               "person": "kwon-ju-ri",
-              "result": "Eliminated in episode 1"
+              "result": "Eliminated in episode 1",
+              "place": 13
             }
           ]
         },
@@ -223,16 +257,24 @@
               "place": 6
             },
             {
-              "person": "choi-yeon-seung"
+              "person": "choi-jung-moon",
+              "place": 7,
+              "result": "Eliminated in episode 7"
             },
             {
-              "person": "kim-yoo-hyun"
+              "person": "choi-yeon-seung",
+              "place": 8,
+              "result": "Eliminated in episode 6"
             },
             {
-              "person": "choi-jung-moon"
+              "person": "kim-yoo-hyun",
+              "place": 9,
+              "result": "Eliminated in episode 5"
             },
             {
-              "person": "lim-yoon-sun"
+              "person": "lim-yoon-sun",
+              "place": 10,
+              "result": "Eliminated in episode 4"
             },
             {
               "person": "lee-sang-min",
@@ -685,25 +727,35 @@
               "place": 3
             },
             {
-              "person": "park-ji-min"
+              "person": "park-ji-min",
+              "place": 4,
+              "result": "Eliminated on day 11"
             },
             {
-              "person": "jeong-keun-woo"
+              "person": "heo-joon-young",
+              "place": 9,
+              "result": "Eliminated on day 8"
             },
             {
-              "person": "heo-joon-young"
+              "person": "queen-wasabi",
+              "place": 10,
+              "result": "Eliminated on day 7"
             },
             {
-              "person": "park-jae-il"
+              "person": "jeong-keun-woo",
+              "result": "Eliminated on day 9"
             },
             {
-              "person": "queen-wasabi"
+              "person": "park-jae-il",
+              "result": "Eliminated on day 10"
             },
             {
-              "person": "dex"
+              "person": "dex",
+              "result": "Eliminated on day 10"
             },
             {
-              "person": "lee-na-young"
+              "person": "lee-na-young",
+              "result": "Eliminated on day 9"
             }
           ],
           "network": "MBC"
@@ -714,7 +766,7 @@
           "number": 2,
           "aired": "2023",
           "complete": true,
-          "note": "Filmed on location in Bali.",
+          "note": "Filmed on location in Bali. Lee Jin-hyung beat Dex in the final; he kept 50 million won of the pot.",
           "cast": [
             {
               "person": "lee-jin-hyung",
@@ -722,28 +774,35 @@
               "result": "Winner"
             },
             {
-              "person": "hong-jin-ho"
+              "person": "dex",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "hong-jin-ho",
+              "result": "Finalist"
+            },
+            {
+              "person": "seo-chul-gu",
+              "result": "Finalist"
+            },
+            {
+              "person": "shin-hyun-ji",
+              "place": 5,
+              "result": "Last out in the semi-final"
             },
             {
               "person": "ha-seung-jin"
             },
             {
-              "person": "dex"
-            },
-            {
-              "person": "park-ji-min"
-            },
-            {
-              "person": "seo-chul-gu"
+              "person": "park-ji-min",
+              "result": "Eliminated on day 3"
             },
             {
               "person": "pie"
             },
             {
               "person": "nucks"
-            },
-            {
-              "person": "shin-hyun-ji"
             },
             {
               "person": "yoo-ri-sa"
@@ -776,16 +835,19 @@
               "result": "Winner"
             },
             {
-              "person": "hong-jin-ho",
-              "result": "Finalist"
+              "person": "crocodile",
+              "result": "Runner-up",
+              "place": 2
             },
             {
-              "person": "crocodile",
-              "result": "Finalist"
+              "person": "hong-jin-ho",
+              "result": "Finalist",
+              "place": 3
             },
             {
               "person": "heo-seong-beom",
-              "result": "Finalist"
+              "result": "Finalist",
+              "place": 4
             },
             {
               "person": "kim-kyung-ran"
@@ -924,7 +986,7 @@
           "aired": "2022",
           "prize": "Up to 100 million won",
           "complete": true,
-          "note": "Players went by letters A to H. The winner is not recorded here yet.",
+          "note": "Players went by letters A to H. The two black sheep were D (Kim Kyung-hoon) and E (Pungja), voted out together in the final trial, but the four white sheep left failed the hidden mission, so no one took the 100 million won.",
           "cast": [
             {
               "person": "ju-tarzan",
@@ -940,11 +1002,11 @@
             },
             {
               "person": "kim-kyung-hoon",
-              "result": "Player D"
+              "result": "Player D, a black sheep"
             },
             {
               "person": "pungja",
-              "result": "Player E"
+              "result": "Player E, a black sheep"
             },
             {
               "person": "song-ha",
@@ -1152,25 +1214,32 @@
               "place": 3
             },
             {
-              "person": "monika"
+              "person": "kim-hyun-kyu",
+              "place": 4
             },
             {
-              "person": "layone"
+              "person": "chloe",
+              "place": 5
             },
             {
-              "person": "shin-ji-yeon"
+              "person": "joo-eon-gyu",
+              "place": 6
             },
             {
-              "person": "kim-nam-hee"
+              "person": "shin-ji-yeon",
+              "place": 7
             },
             {
-              "person": "kim-hyun-kyu"
+              "person": "layone",
+              "place": 8
             },
             {
-              "person": "chloe"
+              "person": "kim-nam-hee",
+              "place": 9
             },
             {
-              "person": "joo-eon-gyu"
+              "person": "monika",
+              "place": 10
             }
           ]
         }
@@ -1191,15 +1260,116 @@
           "title": "Season 1",
           "number": 1,
           "aired": "2023",
-          "complete": false,
-          "note": "Team Athlete won, after an alliance with Team Firefighters. Roster in progress.",
+          "complete": true,
+          "note": "Six teams of four by profession. Team Athlete beat Team Firefighter in the final after their alliance knocked out the soldiers and bodyguards.",
           "cast": [
             {
               "person": "kim-hee-jeong",
               "place": 1,
-              "result": "Winner, leader of Team Athlete"
+              "result": "Winner, Team Athlete leader",
+              "captain": true
+            },
+            {
+              "person": "kim-sung-yeon",
+              "place": 1,
+              "result": "Winner, Team Athlete"
+            },
+            {
+              "person": "kim-min-seon",
+              "place": 1,
+              "result": "Winner, Team Athlete"
+            },
+            {
+              "person": "kim-eun-byul",
+              "place": 1,
+              "result": "Winner, Team Athlete"
+            },
+            {
+              "person": "kim-hyun-a",
+              "place": 2,
+              "result": "Runner-up, Team Firefighter leader"
+            },
+            {
+              "person": "jung-min-seon",
+              "place": 2,
+              "result": "Runner-up, Team Firefighter"
+            },
+            {
+              "person": "kim-ji-hye",
+              "place": 2,
+              "result": "Runner-up, Team Firefighter"
+            },
+            {
+              "person": "lim-hyun-ji",
+              "place": 2,
+              "result": "Runner-up, Team Firefighter"
+            },
+            {
+              "person": "kim-kyung-ae",
+              "result": "Team Stunt leader"
+            },
+            {
+              "person": "lee-seo-young",
+              "result": "Team Stunt"
+            },
+            {
+              "person": "jo-hye-kyung",
+              "result": "Team Stunt"
+            },
+            {
+              "person": "ha-seul-gi",
+              "result": "Team Stunt"
+            },
+            {
+              "person": "lee-su-ryeon-siren",
+              "result": "Team Bodyguard leader"
+            },
+            {
+              "person": "hwang-su-hyun",
+              "result": "Team Bodyguard"
+            },
+            {
+              "person": "lee-eun-jin",
+              "result": "Team Bodyguard"
+            },
+            {
+              "person": "lee-ji-hyun",
+              "result": "Team Bodyguard"
+            },
+            {
+              "person": "kim-bom-eun",
+              "result": "Team Soldier leader"
+            },
+            {
+              "person": "kang-eun-mi",
+              "result": "Team Soldier"
+            },
+            {
+              "person": "lee-hyun-seon-siren",
+              "result": "Team Soldier"
+            },
+            {
+              "person": "kim-na-eun",
+              "result": "Team Soldier"
+            },
+            {
+              "person": "kim-hye-ri",
+              "result": "Team Police"
+            },
+            {
+              "person": "lee-seul",
+              "result": "Team Police"
+            },
+            {
+              "person": "seo-jung-ha",
+              "result": "Team Police"
+            },
+            {
+              "person": "kim-hae-young",
+              "result": "Team Police"
             }
-          ]
+          ],
+          "teams": true
         }
       ]
     },
@@ -1240,22 +1410,28 @@
               "place": 4
             },
             {
-              "person": "seo-yu-min"
+              "person": "seo-yu-min",
+              "place": 5
             },
             {
-              "person": "boo-seung-kwan"
+              "person": "boo-seung-kwan",
+              "place": 6
             },
             {
-              "person": "park-kyung-lim"
+              "person": "park-kyung-lim",
+              "place": 7
             },
             {
-              "person": "lee-si-won"
+              "person": "lee-si-won",
+              "place": 8
             },
             {
-              "person": "cho-yeon-woo"
+              "person": "cho-yeon-woo",
+              "place": 9
             },
             {
-              "person": "lee-hye-sung"
+              "person": "lee-hye-sung",
+              "place": 10
             },
             {
               "person": "kim-dong-jae",
@@ -1286,40 +1462,62 @@
               "result": "Runner-up"
             },
             {
-              "person": "lee-se-dol"
+              "person": "choi-hyun-joon",
+              "place": 3,
+              "result": "Out in a prison match on day 6"
             },
             {
-              "person": "justin-h-min"
+              "person": "7high",
+              "place": 4,
+              "result": "Out in the main match on day 6"
             },
             {
-              "person": "kyuhyun"
+              "person": "son-eun-yoo",
+              "place": 5,
+              "result": "Out in the main match on day 6"
             },
             {
-              "person": "kang-ji-young"
+              "person": "kang-ji-young",
+              "place": 6
             },
             {
-              "person": "7high"
+              "person": "kyuhyun",
+              "place": 7
             },
             {
-              "person": "lee-seung-hyun"
+              "person": "tino",
+              "place": 8,
+              "result": "Out in a prison match on day 4"
             },
             {
-              "person": "choi-hyun-joon"
+              "person": "justin-h-min",
+              "place": 9,
+              "result": "Out in the main match on day 4"
             },
             {
-              "person": "chuu"
+              "person": "kim-ha-rin",
+              "place": 10,
+              "result": "Out in a prison match on day 3"
             },
             {
-              "person": "kim-ha-rin"
+              "person": "lee-se-dol",
+              "place": 11,
+              "result": "Out in the main match on day 3"
             },
             {
-              "person": "park-sang-yeon"
+              "person": "park-sang-yeon",
+              "place": 12,
+              "result": "Out in a prison match on day 2"
             },
             {
-              "person": "son-eun-yoo"
+              "person": "lee-seung-hyun",
+              "place": 13,
+              "result": "Out in a hidden match on day 2"
             },
             {
-              "person": "tino"
+              "person": "chuu",
+              "place": 14,
+              "result": "First out, in the prison match on day 1"
             }
           ]
         },
@@ -1330,7 +1528,7 @@
           "aired": "November 2026",
           "complete": true,
           "upcoming": true,
-          "note": "Announced: sixteen players, the most yet, including both earlier winners and champions of The Genius and Society Game.",
+          "note": "Premieres November 10, 2026: 14 episodes over three weeks. Sixteen players, the most yet, including both earlier winners and champions of The Genius and Society Game.",
           "cast": [
             {
               "person": "jang-dong-min"
@@ -1380,7 +1578,8 @@
             {
               "person": "hyun-kyung-ryeol"
             }
-          ]
+          ],
+          "episodes": 14
         }
       ]
     },
@@ -1399,8 +1598,8 @@
           "title": "Season 1",
           "number": 1,
           "aired": "2023",
-          "complete": false,
-          "note": "Seoul National, KAIST, POSTECH, Yonsei, Korea University and Harvard. Seoul National beat Korea University in the final. Featured here: the winning team members on record.",
+          "complete": true,
+          "note": "Five Korean universities and Harvard, four students each. Seoul National beat Korea University in the final.",
           "cast": [
             {
               "person": "kyung-do-hyun",
@@ -1421,6 +1620,90 @@
               "person": "jung-hyun-bin",
               "place": 1,
               "result": "Winner, Seoul National University"
+            },
+            {
+              "person": "kim-jung-min-ku",
+              "place": 2,
+              "result": "Runner-up, Korea University"
+            },
+            {
+              "person": "lee-dong-gyu",
+              "place": 2,
+              "result": "Runner-up, Korea University"
+            },
+            {
+              "person": "lee-ji-su-ku",
+              "place": 2,
+              "result": "Runner-up, Korea University"
+            },
+            {
+              "person": "chae-seung-min",
+              "place": 2,
+              "result": "Runner-up, Korea University"
+            },
+            {
+              "person": "so-hyun-ji",
+              "result": "KAIST"
+            },
+            {
+              "person": "yang-jun-hyuk",
+              "result": "KAIST"
+            },
+            {
+              "person": "choi-seo-yeon",
+              "result": "KAIST"
+            },
+            {
+              "person": "heo-seong-beom",
+              "result": "KAIST"
+            },
+            {
+              "person": "moon-so-yul",
+              "result": "POSTECH"
+            },
+            {
+              "person": "shin-jae-yoon",
+              "result": "POSTECH"
+            },
+            {
+              "person": "shim-min-seop",
+              "result": "POSTECH"
+            },
+            {
+              "person": "lee-hyun-su",
+              "result": "POSTECH"
+            },
+            {
+              "person": "kim-ki-hong",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "park-na-yoon",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "son-ju-hyung",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "jo-hyun-jun",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "david-harvard",
+              "result": "Harvard"
+            },
+            {
+              "person": "janice-harvard",
+              "result": "Harvard"
+            },
+            {
+              "person": "ray-harvard",
+              "result": "Harvard"
+            },
+            {
+              "person": "sky-harvard",
+              "result": "Harvard"
             }
           ]
         },
@@ -1430,20 +1713,120 @@
           "number": 2,
           "aired": "2024",
           "prize": "80 million won",
-          "complete": false,
-          "note": "Seoul National won again, ahead of Korea, Yonsei, KAIST, POSTECH and Oxford. Featured here: the Oxford team.",
+          "complete": true,
+          "note": "Seoul National won again, ahead of Korea, Yonsei, KAIST, POSTECH, Oxford and MIT. Fan records list Lee Seung-chan on both Yonsei and Oxford; he is shown with Oxford.",
           "cast": [
             {
+              "person": "kim-gyu-min",
+              "place": 1,
+              "result": "Winner, Seoul National University"
+            },
+            {
+              "person": "woo-su-han",
+              "place": 1,
+              "result": "Winner, Seoul National University"
+            },
+            {
+              "person": "yuk-jun-hyung",
+              "place": 1,
+              "result": "Winner, Seoul National University"
+            },
+            {
+              "person": "jo-jun-hyung",
+              "place": 1,
+              "result": "Winner, Seoul National University"
+            },
+            {
+              "person": "kang-ra-el",
+              "result": "Korea University"
+            },
+            {
+              "person": "seo-ha-eun",
+              "result": "Korea University"
+            },
+            {
+              "person": "lee-hyun-seung",
+              "result": "Korea University"
+            },
+            {
+              "person": "choi-sung-hyun",
+              "result": "Korea University"
+            },
+            {
+              "person": "park-se-hwan",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "yang-hyun-seung",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "lim-jung-hoon",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "park-ji-sung-kaist",
+              "result": "KAIST"
+            },
+            {
+              "person": "oh-hyung-seok",
+              "result": "KAIST"
+            },
+            {
+              "person": "choi-yu-chan",
+              "result": "KAIST"
+            },
+            {
+              "person": "hwang-ki-hyun",
+              "result": "KAIST"
+            },
+            {
+              "person": "lee-ju-young",
+              "result": "POSTECH"
+            },
+            {
+              "person": "jeon-ji-sung",
+              "result": "POSTECH"
+            },
+            {
+              "person": "choi-jin-hyun",
+              "result": "POSTECH"
+            },
+            {
+              "person": "ha-min-su",
+              "result": "POSTECH"
+            },
+            {
               "person": "choi-won-jin",
-              "result": "Oxford team"
+              "result": "Oxford"
             },
             {
               "person": "ha-eun",
-              "result": "Oxford team"
+              "result": "Oxford"
             },
             {
               "person": "lee-seung-chan",
-              "result": "Oxford team"
+              "result": "Oxford"
+            },
+            {
+              "person": "jang-mun-hyuk",
+              "result": "Oxford"
+            },
+            {
+              "person": "heo-seo-yoon",
+              "result": "MIT"
+            },
+            {
+              "person": "lee-da-eun",
+              "result": "MIT"
+            },
+            {
+              "person": "park-min-seok",
+              "result": "MIT"
+            },
+            {
+              "person": "jeon-hyun-woo",
+              "result": "MIT"
             }
           ]
         },
@@ -1452,9 +1835,114 @@
           "title": "Season 3",
           "number": 3,
           "aired": "2025 to 2026",
-          "complete": false,
-          "note": "Sungkyunkwan joined, and Seoul National entered two teams, medical and science. Seoul National Medical won. Roster in progress.",
-          "cast": []
+          "complete": true,
+          "note": "Sungkyunkwan joined, and Seoul National entered two teams. Seoul National Medical beat Sungkyunkwan in the final, Seoul National's third straight title, with Lee Seung-hyun winning the decisive duel. The two Kang Ji-hoos are different people (the show called the Sungkyunkwan one Seong Ji-hoo).",
+          "cast": [
+            {
+              "person": "kim-min-seok-snu",
+              "place": 1,
+              "result": "Winner, Seoul National University Medical"
+            },
+            {
+              "person": "lee-seung-hyun-snu",
+              "place": 1,
+              "result": "Winner, Seoul National University Medical"
+            },
+            {
+              "person": "ju-min-seo",
+              "place": 1,
+              "result": "Winner, Seoul National University Medical"
+            },
+            {
+              "person": "han-seo-yeon",
+              "place": 1,
+              "result": "Winner, Seoul National University Medical"
+            },
+            {
+              "person": "kang-ji-hoo-skku",
+              "place": 2,
+              "result": "Runner-up, Sungkyunkwan University"
+            },
+            {
+              "person": "kim-dong-yeon",
+              "place": 2,
+              "result": "Runner-up, Sungkyunkwan University"
+            },
+            {
+              "person": "sung-tae-hoon",
+              "place": 2,
+              "result": "Runner-up, Sungkyunkwan University"
+            },
+            {
+              "person": "lee-dong-jae",
+              "place": 2,
+              "result": "Runner-up, Sungkyunkwan University"
+            },
+            {
+              "person": "kim-kang-hyun",
+              "result": "Seoul National University Science and Engineering"
+            },
+            {
+              "person": "kim-dong-gun",
+              "result": "Seoul National University Science and Engineering"
+            },
+            {
+              "person": "song-myung-su",
+              "result": "Seoul National University Science and Engineering"
+            },
+            {
+              "person": "han-jong-yoon",
+              "result": "Seoul National University Science and Engineering"
+            },
+            {
+              "person": "kang-ji-hoo",
+              "result": "KAIST"
+            },
+            {
+              "person": "kim-jae-han",
+              "result": "KAIST"
+            },
+            {
+              "person": "kim-ji-woo-kaist",
+              "result": "KAIST"
+            },
+            {
+              "person": "jeon-ji-min",
+              "result": "KAIST"
+            },
+            {
+              "person": "park-seo-yeon",
+              "result": "POSTECH"
+            },
+            {
+              "person": "lee-jun-woo",
+              "result": "POSTECH"
+            },
+            {
+              "person": "je-seung-gyu",
+              "result": "POSTECH"
+            },
+            {
+              "person": "hwang-seok-hoon",
+              "result": "POSTECH"
+            },
+            {
+              "person": "park-sang-yeon",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "lee-yoon-beom",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "lee-chung-seo",
+              "result": "Yonsei University"
+            },
+            {
+              "person": "choi-a-in",
+              "result": "Yonsei University"
+            }
+          ]
         }
       ]
     },
@@ -1610,7 +2098,7 @@
           "aired": "2024",
           "prize": "300 million won (withheld)",
           "complete": false,
-          "note": "77 creators took part. Featured here: the winner and a few famous names.",
+          "note": "77 creators took part. Featured here: the top eleven and other famous names. Oking beat Risabae in the final.",
           "cast": [
             {
               "person": "oking",
@@ -1618,16 +2106,57 @@
               "result": "Winner (prize withheld)"
             },
             {
-              "person": "jang-keun-suk"
+              "person": "risabae",
+              "place": 2,
+              "result": "Runner-up"
             },
             {
-              "person": "risabae"
+              "person": "pani-bottle",
+              "place": 3
+            },
+            {
+              "person": "jang-ji-su",
+              "place": 4
+            },
+            {
+              "person": "gwajeup-seyeon",
+              "place": 5
+            },
+            {
+              "person": "bbogumi",
+              "place": 6
+            },
+            {
+              "person": "kejimin",
+              "place": 7
+            },
+            {
+              "person": "junwoo",
+              "place": 8
+            },
+            {
+              "person": "jin-yong-jin",
+              "place": 9
+            },
+            {
+              "person": "pyo-eun-ji",
+              "place": 9
+            },
+            {
+              "person": "maibu",
+              "place": 11
+            },
+            {
+              "person": "jang-keun-suk"
             },
             {
               "person": "jung-ji-woo"
             },
             {
-              "person": "bbogumi"
+              "person": "shim-eu-ddeum"
+            },
+            {
+              "person": "ki-eun-se"
             }
           ]
         }
@@ -1648,9 +2177,51 @@
           "title": "Life's Game",
           "number": 1,
           "aired": "2025",
-          "complete": false,
-          "note": "All twelve players are LG employees who appear under aliases (Room Maker, Poker Face, Hidden Conan and others), so no profiles are listed.",
-          "cast": []
+          "complete": true,
+          "note": "All twelve players are LG employees who played under aliases. Engineering Gambler won the last game by calling Three Jangwon's all-in bluff.",
+          "cast": [
+            {
+              "person": "lifes-engineering-gambler",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "lifes-three-jangwon",
+              "place": 2,
+              "result": "Last eliminated"
+            },
+            {
+              "person": "lifes-room-maker"
+            },
+            {
+              "person": "lifes-poker-face"
+            },
+            {
+              "person": "lifes-men-bujang"
+            },
+            {
+              "person": "lifes-communi-queen"
+            },
+            {
+              "person": "lifes-ip-man"
+            },
+            {
+              "person": "lifes-secret-code"
+            },
+            {
+              "person": "lifes-hidden-conan"
+            },
+            {
+              "person": "lifes-sales-king"
+            },
+            {
+              "person": "lifes-forbest"
+            },
+            {
+              "person": "lifes-seok-ho-pil"
+            }
+          ],
+          "prize": "Prizes worth 10 million won"
         }
       ]
     },
@@ -1725,49 +2296,64 @@
           "title": "Bet 10 Million Won",
           "number": 1,
           "aired": "2026",
-          "complete": false,
-          "note": "A new duel every episode, with Jang Dong-min commentating. Wins earned seeds for season 2. Featured here: the players on record.",
+          "complete": true,
+          "note": "A new duel every episode, with Jang Dong-min commentating; each win paid 10 million won and a seed for season 2.",
           "cast": [
             {
+              "person": "hong-jin-ho",
+              "result": "Won episodes 1 and 2 (beat Lee Se-dol, 7high)"
+            },
+            {
+              "person": "lee-se-dol",
+              "result": "Lost episode 1"
+            },
+            {
+              "person": "7high",
+              "result": "Lost episode 2"
+            },
+            {
               "person": "pengsoo",
-              "result": "Three wins"
+              "result": "Won episode 3 (beat Yoo Ri-sa)"
+            },
+            {
+              "person": "yoo-ri-sa",
+              "result": "Lost episode 3"
+            },
+            {
+              "person": "kwon-sung-jun",
+              "result": "Won episode 4 (beat Pengsoo)"
+            },
+            {
+              "person": "park-sung-woong",
+              "result": "Won episode 5 (beat Pani Bottle)"
+            },
+            {
+              "person": "pani-bottle",
+              "result": "Lost episode 5"
+            },
+            {
+              "person": "yang-na-rae",
+              "result": "Won episode 6 (beat Park Sung-woong)"
             },
             {
               "person": "gaeul",
-              "result": "Two wins"
+              "result": "Won episodes 7 and 8 (beat Yang Na-rae, Jin Yong-jin)"
             },
             {
-              "person": "lee-se-dol"
+              "person": "jin-yong-jin",
+              "result": "Lost episode 8"
             },
             {
-              "person": "hong-jin-ho"
+              "person": "dindin",
+              "result": "Won episodes 9 and 10 (beat Gaeul, Heo Seong-beom)"
             },
             {
-              "person": "yoo-ri-sa"
+              "person": "heo-seong-beom",
+              "result": "Lost episode 10"
             },
             {
-              "person": "pani-bottle"
-            },
-            {
-              "person": "7high"
-            },
-            {
-              "person": "kwon-sung-jun"
-            },
-            {
-              "person": "park-sung-woong"
-            },
-            {
-              "person": "dindin"
-            },
-            {
-              "person": "seo-chul-gu"
-            },
-            {
-              "person": "yang-na-rae"
-            },
-            {
-              "person": "jin-yong-jin"
+              "person": "seo-chul-gu",
+              "result": "Won episode 11 (beat Dindin)"
             }
           ]
         },
@@ -2128,7 +2714,8 @@
     "hyun-kyung-ryeol": {
       "name": "Hyun Kyung-ryeol",
       "ko": "현경렬",
-      "bio": "One of the winning Madong three on the first season of Society Game, a decade later announced for The Devil's Plan season 3."
+      "bio": "A Seoul National University PhD who works at Google. One of the winning Madong three on the first season of Society Game, he returns a decade later for The Devil's Plan season 3.",
+      "known": "Googler with a Seoul National University PhD"
     },
     "jung-in-jik": {
       "name": "Jung In-jik",
@@ -2299,7 +2886,9 @@
     },
     "heo-seong-beom": {
       "name": "Heo Seong-beom",
-      "ko": "허성범"
+      "ko": "허성범",
+      "known": "KAIST student",
+      "bio": "A KAIST student first seen on University War, who went on to the final of The Bloody Game season 3, the crossover season X and Netflix's Death Game."
     },
     "lim-hyun-seo": {
       "name": "Lim Hyun-seo",
@@ -2313,7 +2902,8 @@
     "pani-bottle": {
       "name": "Pani Bottle",
       "ko": "빠니보틀",
-      "known": "Travel YouTuber"
+      "known": "Travel YouTuber",
+      "bio": "A travel YouTuber who finished third on The Influencer, played The Bloody Game season 3, and lost a Death Game duel to Park Sung-woong."
     },
     "chungjuman": {
       "name": "Chungjuman (Kim Seon-tae)",
@@ -2347,7 +2937,7 @@
     },
     "kang-ji-hoo": {
       "name": "Kang Ji-hoo",
-      "bio": "A KAIST mathematics student on the rookie side of The Bloody Game X, the series' crossover season, who beat a field of survival-show veterans to win.",
+      "bio": "A KAIST mathematics student who played University War 3 for KAIST, then beat a field of survival-show veterans as a rookie to win The Bloody Game X.",
       "ko": "강지후",
       "known": "KAIST mathematics student"
     },
@@ -2360,22 +2950,23 @@
     "jung-hae-min": {
       "name": "Jung Hae-min",
       "ko": "정해민",
-      "known": "Cyclist",
+      "known": "Keirin cyclist",
       "bio": "A cyclist whose endurance carried him to the final of Physical: 100 season 1."
     },
     "jo-jin-hyeong": {
       "name": "Jo Jin-hyeong",
       "ko": "조진형",
-      "known": "Strongman athlete"
+      "known": "Car dealer and strongman athlete"
     },
     "park-jin-yong": {
       "name": "Park Jin-yong",
       "ko": "박진용",
-      "known": "Athlete"
+      "known": "National team luger"
     },
     "kim-min-cheol": {
       "name": "Kim Min-cheol",
-      "ko": "김민철"
+      "ko": "김민철",
+      "known": "Mountain rescuer"
     },
     "yun-sung-bin": {
       "name": "Yun Sung-bin",
@@ -2396,7 +2987,7 @@
     "hong-beom-seok": {
       "name": "Hong Beom-seok",
       "ko": "홍범석",
-      "known": "Former firefighter",
+      "known": "Former 707th Special Mission Group soldier and firefighter",
       "bio": "A former firefighter who played the first season of Physical: 100 and came back for Underground, where he made the final and finished second to Amotti."
     },
     "yang-hak-seon": {
@@ -2470,7 +3061,9 @@
     },
     "kim-hee-jeong": {
       "name": "Kim Hee-jeong",
-      "bio": "Led Team Athlete to victory on Siren: Survive the Island."
+      "bio": "Led Team Athlete to victory on Siren: Survive the Island.",
+      "ko": "김희정",
+      "known": "Former national kabaddi player"
     },
     "ha-seok-jin": {
       "name": "Ha Seok-jin",
@@ -2479,9 +3072,10 @@
       "bio": "An actor with an engineering degree who won the first season of The Devil's Plan and its 250 million won prize, taking the first two games of the final. He returns for season 3."
     },
     "orbit": {
-      "name": "Orbit",
-      "ko": "오르빗",
-      "bio": "Runner-up of The Devil's Plan season 1, remembered for playing to save other players from elimination."
+      "name": "Orbit (Gwedo)",
+      "ko": "궤도",
+      "bio": "The science YouTuber Gwedo (his name means \"orbit\"). Runner-up of The Devil's Plan season 1, remembered for playing to save other players from elimination.",
+      "known": "Science communicator"
     },
     "seo-dong-ju": {
       "name": "Seo Dong-ju",
@@ -2526,7 +3120,9 @@
     },
     "kim-dong-jae": {
       "name": "Kim Dong-jae",
-      "ko": "김동재"
+      "ko": "김동재",
+      "known": "Poker player",
+      "bio": "A world-class poker player. Eleventh on the first season of The Devil's Plan, he is back for season 3."
     },
     "guillaume-patry": {
       "name": "Guillaume Patry",
@@ -2596,7 +3192,7 @@
       "name": "Park Sang-yeon",
       "ko": "박상연",
       "known": "Medical student",
-      "bio": "A Yonsei University medical student and gold medallist at the International Physics Olympiad."
+      "bio": "A Yonsei University medical student, MENSA member and gold medallist at the International Physics Olympiad. Twelfth on The Devil's Plan: Death Room, then on Yonsei's team in University War 3."
     },
     "son-eun-yoo": {
       "name": "Son Eun-yoo",
@@ -2623,7 +3219,8 @@
     "risabae": {
       "name": "Risabae",
       "ko": "이사배",
-      "known": "Makeup artist and YouTuber"
+      "known": "Makeup artist and YouTuber",
+      "bio": "A makeup artist and YouTuber who reached the final of The Influencer and finished second to Oking."
     },
     "jung-ji-woo": {
       "name": "Jung Ji-woo",
@@ -2631,7 +3228,7 @@
       "known": "Influencer"
     },
     "bbogumi": {
-      "name": "Bbogumi",
+      "name": "Bbogumi (Jeon Bo-min)",
       "ko": "뽀구미",
       "known": "Content creator"
     },
@@ -2805,12 +3402,14 @@
     "nucksal": {
       "name": "Nucksal",
       "ko": "넉살",
-      "known": "Rapper"
+      "known": "Rapper",
+      "bio": "A rapper of 18 years and one of the entertainment world's best-known board game fans."
     },
     "shindong": {
       "name": "Shindong",
       "ko": "신동",
-      "known": "Singer, Super Junior"
+      "known": "Singer, Super Junior",
+      "bio": "A Super Junior member who showed his deduction skills on the escape show The Great Escape."
     },
     "john-park": {
       "name": "John Park",
@@ -2821,16 +3420,20 @@
     "jaejae": {
       "name": "JaeJae",
       "ko": "재재",
-      "known": "Broadcaster"
+      "known": "Broadcaster",
+      "bio": "A broadcaster billed as one of season 3's brains."
     },
     "stella-jang": {
       "name": "Stella Jang",
       "ko": "스텔라장",
-      "known": "Singer-songwriter"
+      "known": "Singer-songwriter",
+      "bio": "A singer-songwriter who studied at a top French university and speaks four languages."
     },
     "lee-do": {
       "name": "Lee Do",
-      "ko": "이도"
+      "ko": "이도",
+      "known": "Star lecturer",
+      "bio": "A Seoul National University graduate and star lecturer, seen on the dating show for the never-dated."
     },
     "jung-won-young": {
       "name": "Jung Won-young",
@@ -2992,7 +3595,9 @@
       "known": "Dancer"
     },
     "layone": {
-      "name": "Layone"
+      "name": "Layone (Raewon)",
+      "ko": "래원",
+      "known": "Rapper"
     },
     "shin-ji-yeon": {
       "name": "Shin Ji-yeon",
@@ -3189,7 +3794,8 @@
     "jin-yong-jin": {
       "name": "Jin Yong-jin",
       "ko": "진용진",
-      "known": "YouTuber, creator of Money Game"
+      "known": "YouTuber, creator of Money Game",
+      "bio": "The YouTuber who created Money Game and helped plan The Bloody Game. On the other side of the table he finished ninth on The Influencer and lost a Death Game duel to IVE's Gaeul."
     },
     "jiyu": {
       "name": "Jiyu",
@@ -3271,6 +3877,532 @@
     "kang-jeon-ae": {
       "name": "Kang Jeon-ae",
       "ko": "강전애"
+    },
+    "kim-sung-yeon": {
+      "name": "Kim Sung-yeon",
+      "ko": "김성연",
+      "known": "Former national judoka"
+    },
+    "kim-min-seon": {
+      "name": "Kim Min-seon",
+      "ko": "김민선",
+      "known": "Former national climber"
+    },
+    "kim-eun-byul": {
+      "name": "Kim Eun-byul",
+      "ko": "김은별",
+      "known": "Ssireum wrestler"
+    },
+    "kim-hyun-a": {
+      "name": "Kim Hyun-a",
+      "ko": "김현아",
+      "known": "Firefighter"
+    },
+    "jung-min-seon": {
+      "name": "Jung Min-seon",
+      "ko": "정민선",
+      "known": "Firefighter"
+    },
+    "kim-ji-hye": {
+      "name": "Kim Ji-hye",
+      "ko": "김지혜",
+      "known": "Firefighter"
+    },
+    "lim-hyun-ji": {
+      "name": "Lim Hyun-ji",
+      "ko": "임현지",
+      "known": "Firefighter"
+    },
+    "kim-kyung-ae": {
+      "name": "Kim Kyung-ae",
+      "ko": "김경애",
+      "known": "Stuntwoman"
+    },
+    "lee-seo-young": {
+      "name": "Lee Seo-young",
+      "ko": "이서영",
+      "known": "Stuntwoman"
+    },
+    "jo-hye-kyung": {
+      "name": "Jo Hye-kyung",
+      "ko": "조혜경",
+      "known": "Stuntwoman"
+    },
+    "ha-seul-gi": {
+      "name": "Ha Seul-gi",
+      "ko": "하슬기",
+      "known": "Stuntwoman"
+    },
+    "lee-su-ryeon-siren": {
+      "name": "Lee Su-ryeon",
+      "ko": "이수련",
+      "known": "Korea's first female presidential bodyguard, now an actress"
+    },
+    "hwang-su-hyun": {
+      "name": "Hwang Su-hyun",
+      "ko": "황수현",
+      "known": "Court security officer"
+    },
+    "lee-eun-jin": {
+      "name": "Lee Eun-jin",
+      "ko": "이은진",
+      "known": "Court security officer"
+    },
+    "lee-ji-hyun": {
+      "name": "Lee Ji-hyun",
+      "ko": "이지현",
+      "known": "Court security officer"
+    },
+    "kim-bom-eun": {
+      "name": "Kim Bom-eun",
+      "ko": "김봄은",
+      "known": "Former 707th Special Mission Group"
+    },
+    "kang-eun-mi": {
+      "name": "Kang Eun-mi",
+      "ko": "강은미",
+      "known": "Former 707th Special Mission Group"
+    },
+    "lee-hyun-seon-siren": {
+      "name": "Lee Hyun-seon",
+      "ko": "이현선",
+      "known": "Former 707th Special Mission Group"
+    },
+    "kim-na-eun": {
+      "name": "Kim Na-eun",
+      "ko": "김나은",
+      "known": "Soldier"
+    },
+    "kim-hye-ri": {
+      "name": "Kim Hye-ri",
+      "ko": "김혜리",
+      "known": "Coast guard officer"
+    },
+    "lee-seul": {
+      "name": "Lee Seul",
+      "ko": "이슬",
+      "known": "Coast guard officer"
+    },
+    "seo-jung-ha": {
+      "name": "Seo Jung-ha",
+      "ko": "서정하",
+      "known": "Coast guard officer"
+    },
+    "kim-hae-young": {
+      "name": "Kim Hae-young",
+      "ko": "김해영",
+      "known": "Former wrestler"
+    },
+    "kim-jung-min-ku": {
+      "name": "Kim Jung-min",
+      "ko": "김정민",
+      "known": "Korea University student"
+    },
+    "lee-dong-gyu": {
+      "name": "Lee Dong-gyu",
+      "ko": "이동규",
+      "known": "Korea University student"
+    },
+    "lee-ji-su-ku": {
+      "name": "Lee Ji-su",
+      "ko": "이지수",
+      "known": "Korea University student"
+    },
+    "chae-seung-min": {
+      "name": "Chae Seung-min",
+      "ko": "채승민",
+      "known": "Korea University student"
+    },
+    "so-hyun-ji": {
+      "name": "So Hyun-ji",
+      "ko": "소현지",
+      "known": "KAIST student"
+    },
+    "yang-jun-hyuk": {
+      "name": "Yang Jun-hyuk",
+      "ko": "양준혁",
+      "known": "KAIST student"
+    },
+    "choi-seo-yeon": {
+      "name": "Choi Seo-yeon",
+      "ko": "최서연",
+      "known": "KAIST student"
+    },
+    "moon-so-yul": {
+      "name": "Moon So-yul",
+      "ko": "문소율",
+      "known": "POSTECH student"
+    },
+    "shin-jae-yoon": {
+      "name": "Shin Jae-yoon",
+      "ko": "신재윤",
+      "known": "POSTECH student"
+    },
+    "shim-min-seop": {
+      "name": "Shim Min-seop",
+      "ko": "심민섭",
+      "known": "POSTECH student"
+    },
+    "lee-hyun-su": {
+      "name": "Lee Hyun-su",
+      "ko": "이현수",
+      "known": "POSTECH student"
+    },
+    "kim-ki-hong": {
+      "name": "Kim Ki-hong",
+      "ko": "김기홍",
+      "known": "Yonsei University student"
+    },
+    "park-na-yoon": {
+      "name": "Park Na-yoon",
+      "ko": "박나윤",
+      "known": "Yonsei University student"
+    },
+    "son-ju-hyung": {
+      "name": "Son Ju-hyung",
+      "ko": "손주형",
+      "known": "Yonsei University student"
+    },
+    "jo-hyun-jun": {
+      "name": "Jo Hyun-jun",
+      "ko": "조현준",
+      "known": "Yonsei University student"
+    },
+    "david-harvard": {
+      "name": "David",
+      "known": "Harvard student"
+    },
+    "janice-harvard": {
+      "name": "Janice",
+      "known": "Harvard student"
+    },
+    "ray-harvard": {
+      "name": "Ray",
+      "known": "Harvard student"
+    },
+    "sky-harvard": {
+      "name": "Sky",
+      "known": "Harvard student"
+    },
+    "kim-gyu-min": {
+      "name": "Kim Gyu-min",
+      "ko": "김규민",
+      "known": "Seoul National University student"
+    },
+    "woo-su-han": {
+      "name": "Woo Su-han",
+      "ko": "우수한",
+      "known": "Seoul National University student"
+    },
+    "yuk-jun-hyung": {
+      "name": "Yuk Jun-hyung",
+      "ko": "육준형",
+      "known": "Seoul National University student"
+    },
+    "jo-jun-hyung": {
+      "name": "Jo Jun-hyung",
+      "ko": "조준형",
+      "known": "Seoul National University student"
+    },
+    "kang-ra-el": {
+      "name": "Kang Ra-el",
+      "ko": "강라엘",
+      "known": "Korea University student"
+    },
+    "seo-ha-eun": {
+      "name": "Seo Ha-eun",
+      "ko": "서하은",
+      "known": "Korea University student"
+    },
+    "lee-hyun-seung": {
+      "name": "Lee Hyun-seung",
+      "ko": "이현승",
+      "known": "Korea University student"
+    },
+    "choi-sung-hyun": {
+      "name": "Choi Sung-hyun",
+      "ko": "최성현",
+      "known": "Korea University student"
+    },
+    "park-se-hwan": {
+      "name": "Park Se-hwan",
+      "ko": "박세환",
+      "known": "Yonsei University student"
+    },
+    "yang-hyun-seung": {
+      "name": "Yang Hyun-seung",
+      "ko": "양현승",
+      "known": "Yonsei University student"
+    },
+    "lim-jung-hoon": {
+      "name": "Lim Jung-hoon",
+      "ko": "임정훈",
+      "known": "Yonsei University student"
+    },
+    "oh-hyung-seok": {
+      "name": "Oh Hyung-seok",
+      "ko": "오형석",
+      "known": "KAIST student"
+    },
+    "choi-yu-chan": {
+      "name": "Choi Yu-chan",
+      "ko": "최유찬",
+      "known": "KAIST student"
+    },
+    "hwang-ki-hyun": {
+      "name": "Hwang Ki-hyun",
+      "ko": "황기현",
+      "known": "KAIST student"
+    },
+    "lee-ju-young": {
+      "name": "Lee Ju-young",
+      "ko": "이주영",
+      "known": "POSTECH student"
+    },
+    "jeon-ji-sung": {
+      "name": "Jeon Ji-sung",
+      "ko": "전지성",
+      "known": "POSTECH student"
+    },
+    "choi-jin-hyun": {
+      "name": "Choi Jin-hyun",
+      "ko": "최진현",
+      "known": "POSTECH student"
+    },
+    "ha-min-su": {
+      "name": "Ha Min-su",
+      "ko": "하민수",
+      "known": "POSTECH student"
+    },
+    "jang-mun-hyuk": {
+      "name": "Jang Mun-hyuk",
+      "ko": "장문혁",
+      "known": "Oxford student"
+    },
+    "heo-seo-yoon": {
+      "name": "Heo Seo-yoon",
+      "ko": "허서윤",
+      "known": "MIT student"
+    },
+    "lee-da-eun": {
+      "name": "Lee Da-eun",
+      "ko": "이다은",
+      "known": "MIT student"
+    },
+    "park-min-seok": {
+      "name": "Park Min-seok",
+      "ko": "박민석",
+      "known": "MIT student"
+    },
+    "jeon-hyun-woo": {
+      "name": "Jeon Hyun-woo",
+      "ko": "전현우",
+      "known": "MIT student"
+    },
+    "kim-min-seok-snu": {
+      "name": "Kim Min-seok",
+      "ko": "김민석",
+      "known": "Seoul National University medical student"
+    },
+    "lee-seung-hyun-snu": {
+      "name": "Lee Seung-hyun",
+      "ko": "이승현",
+      "known": "Seoul National University medical student"
+    },
+    "ju-min-seo": {
+      "name": "Ju Min-seo",
+      "ko": "주민서",
+      "known": "Seoul National University medical student"
+    },
+    "han-seo-yeon": {
+      "name": "Han Seo-yeon",
+      "ko": "한서연",
+      "known": "Seoul National University medical student"
+    },
+    "kang-ji-hoo-skku": {
+      "name": "Kang Ji-hoo (Seong Ji-hoo)",
+      "ko": "강지후",
+      "known": "Sungkyunkwan University student"
+    },
+    "kim-dong-yeon": {
+      "name": "Kim Dong-yeon",
+      "ko": "김동연",
+      "known": "Sungkyunkwan University student"
+    },
+    "sung-tae-hoon": {
+      "name": "Sung Tae-hoon",
+      "ko": "성태훈",
+      "known": "Sungkyunkwan University student"
+    },
+    "lee-dong-jae": {
+      "name": "Lee Dong-jae",
+      "ko": "이동재",
+      "known": "Sungkyunkwan University student"
+    },
+    "kim-kang-hyun": {
+      "name": "Kim Kang-hyun",
+      "ko": "김강현",
+      "known": "Seoul National University student"
+    },
+    "kim-dong-gun": {
+      "name": "Kim Dong-gun",
+      "ko": "김동건",
+      "known": "Seoul National University student"
+    },
+    "song-myung-su": {
+      "name": "Song Myung-su",
+      "ko": "송명수",
+      "known": "Seoul National University student"
+    },
+    "han-jong-yoon": {
+      "name": "Han Jong-yoon",
+      "ko": "한종윤",
+      "known": "Seoul National University student"
+    },
+    "kim-jae-han": {
+      "name": "Kim Jae-han",
+      "ko": "김재한",
+      "known": "KAIST student"
+    },
+    "kim-ji-woo-kaist": {
+      "name": "Kim Ji-woo",
+      "ko": "김지우",
+      "known": "KAIST student"
+    },
+    "jeon-ji-min": {
+      "name": "Jeon Ji-min",
+      "ko": "전지민",
+      "known": "KAIST student"
+    },
+    "park-seo-yeon": {
+      "name": "Park Seo-yeon",
+      "ko": "박서연",
+      "known": "POSTECH student"
+    },
+    "lee-jun-woo": {
+      "name": "Lee Jun-woo",
+      "ko": "이준우",
+      "known": "POSTECH student"
+    },
+    "je-seung-gyu": {
+      "name": "Je Seung-gyu",
+      "ko": "제승규",
+      "known": "POSTECH student"
+    },
+    "hwang-seok-hoon": {
+      "name": "Hwang Seok-hoon",
+      "ko": "황석훈",
+      "known": "POSTECH student"
+    },
+    "lee-yoon-beom": {
+      "name": "Lee Yoon-beom",
+      "ko": "이윤범",
+      "known": "Yonsei University student"
+    },
+    "lee-chung-seo": {
+      "name": "Lee Chung-seo",
+      "ko": "이충서",
+      "known": "Yonsei University student"
+    },
+    "choi-a-in": {
+      "name": "Choi A-in",
+      "ko": "최아인",
+      "known": "Yonsei University student"
+    },
+    "lifes-engineering-gambler": {
+      "name": "Engineering Gambler",
+      "ko": "공대승부사",
+      "known": "LG Energy Solution employee"
+    },
+    "lifes-three-jangwon": {
+      "name": "Three Jangwon",
+      "ko": "쓰리장원",
+      "known": "LG employee"
+    },
+    "lifes-room-maker": {
+      "name": "Room Maker",
+      "ko": "룸메이커",
+      "known": "LG employee"
+    },
+    "lifes-poker-face": {
+      "name": "Poker Face",
+      "ko": "포커페이스",
+      "known": "LG employee"
+    },
+    "lifes-men-bujang": {
+      "name": "Men-bujang",
+      "ko": "멘부장",
+      "known": "LG employee"
+    },
+    "lifes-communi-queen": {
+      "name": "Communi-Queen",
+      "ko": "커뮤니퀸",
+      "known": "LG employee"
+    },
+    "lifes-ip-man": {
+      "name": "IP Man",
+      "ko": "아이피맨",
+      "known": "LG employee"
+    },
+    "lifes-secret-code": {
+      "name": "Secret Code",
+      "ko": "시크릿코드",
+      "known": "LG employee"
+    },
+    "lifes-hidden-conan": {
+      "name": "Hidden Conan",
+      "ko": "히든코난",
+      "known": "LG employee"
+    },
+    "lifes-sales-king": {
+      "name": "Sales King",
+      "ko": "영업왕",
+      "known": "LG employee"
+    },
+    "lifes-forbest": {
+      "name": "Forbest",
+      "ko": "포브스트",
+      "known": "LG employee"
+    },
+    "lifes-seok-ho-pil": {
+      "name": "Seok Ho-pil",
+      "ko": "석호필",
+      "known": "LG employee"
+    },
+    "jang-ji-su": {
+      "name": "Jang Ji-su",
+      "ko": "장지수",
+      "known": "Creator of the mafia show Accomplice"
+    },
+    "gwajeup-seyeon": {
+      "name": "Gwajeup Seyeon (In Se-yeon)",
+      "ko": "과즙세연",
+      "known": "Streamer"
+    },
+    "kejimin": {
+      "name": "Kejimin (Park Ji-min)",
+      "ko": "케지민",
+      "known": "Content creator"
+    },
+    "junwoo": {
+      "name": "Junwoo (Lee Woo-jun)",
+      "ko": "준우",
+      "known": "Content creator"
+    },
+    "pyo-eun-ji": {
+      "name": "Pyo Eun-ji",
+      "ko": "표은지",
+      "known": "Content creator"
+    },
+    "maibu": {
+      "name": "Maibu (Bu Myeong-seon)",
+      "ko": "마이부",
+      "known": "Content creator"
+    },
+    "ki-eun-se": {
+      "name": "Ki Eun-se",
+      "ko": "기은세",
+      "known": "Actress and influencer"
     }
   }
 }
