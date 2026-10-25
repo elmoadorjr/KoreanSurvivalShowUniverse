@@ -9,7 +9,7 @@ const graph = {
     show.seasons.map((season) => ({
       id: season.id,
       show: show.id,
-      name: season.title === show.name ? show.name : season.title,
+      name: seasonLabel(show, season),
       full: seasonLabel(show, season),
       aired: season.aired,
       year: seasonYear(season),
@@ -43,6 +43,8 @@ const tries = [
   { action: "circle:hong-jin-ho", label: "Hong Jin-ho's circle" },
   { action: "path:lee-se-dol:amotti", label: "Lee Se-dol to Amotti" },
   { action: "group:devils-plan-3", label: "Devil's Plan 3 cast" },
+  { action: "center:hong-jin-ho", label: "Rings around Hong Jin-ho" },
+  { action: "lanes", label: "Show lanes" },
   { action: "focus:jang-dong-min", label: "Jang Dong-min's titles" },
   { action: "timeline", label: "Watch it grow" },
 ];
@@ -82,6 +84,16 @@ const tries = [
           <button type="button" data-layout="web" aria-pressed="true" title="Players pulled together by shared seasons">Web</button>
           <button type="button" data-layout="rings" aria-pressed="false" title="Legends at the center, one-season players outside">Rings</button>
           <button type="button" data-layout="flow" aria-pressed="false" title="Left to right by debut year">Flow</button>
+        </div>
+        <div class="seg sub" role="group" aria-label="Rings by" id="rings-by" hidden>
+          <button type="button" data-rings="tier" aria-pressed="true">Tier</button>
+          <button type="button" data-rings="seasons" aria-pressed="false">Seasons</button>
+          <button type="button" data-rings="steps" aria-pressed="false">Steps</button>
+        </div>
+        <div class="seg sub" role="group" aria-label="Flow by" id="flow-by" hidden>
+          <button type="button" data-flow="debut" aria-pressed="true">Debut</button>
+          <button type="button" data-flow="lanes" aria-pressed="false">Show lanes</button>
+          <button type="button" data-flow="spiral" aria-pressed="false">Spiral</button>
         </div>
         <p class="hint muted" id="layout-hint">Players pulled together by the seasons they shared.</p>
 
@@ -355,6 +367,9 @@ const tries = [
   :global(.net-list .chip) { margin: 0 4px 4px 0; }
   :global(.net-list .note) { color: var(--muted); font-size: 13px; padding: 10px 0; }
 
+  .seg.sub { margin-top: 6px; background: transparent; border: 1px solid var(--line); }
+  .seg.sub button { font-size: 13px; padding: 5px 6px; }
+  .seg.sub[hidden] { display: none; }
   .net-list[hidden], .active[hidden], .net-info[hidden], .tour[hidden], .color-key[hidden] { display: none; }
 
   .selects { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }

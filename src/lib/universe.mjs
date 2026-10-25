@@ -12,8 +12,12 @@ const ordinal = (n) => {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 };
 
+// A season's full name, everywhere it appears: "The Bloody Game Season 2",
+// "The Devil's Plan: Death Room", or an official title such as "Physical: Asia".
 export function seasonLabel(show, season) {
-  if (show.seasons.length === 1 && season.title === show.name) return show.name;
+  if (season.full) return season.full;
+  if (season.title === show.name) return show.name;
+  if (/^Season \d+$/.test(season.title)) return `${show.name} ${season.title}`;
   return `${show.name}: ${season.title}`;
 }
 

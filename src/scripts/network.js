@@ -1,9 +1,9 @@
 import ForceGraph3D from "3d-force-graph";
 import SpriteText from "three-spritetext";
-import { forceX, forceY, forceZ, forceRadial } from "d3-force-3d";
+import { forceCenter, forceX, forceY, forceZ, forceRadial } from "d3-force-3d";
 import {
   AdditiveBlending, BufferGeometry, CanvasTexture, Color, Float32BufferAttribute, Group, LineBasicMaterial,
-  LineLoop, Mesh, MeshStandardMaterial, NormalBlending, Points, PointsMaterial, SphereGeometry, SRGBColorSpace,
+  LineLoop, Line as LineStrip, Mesh, MeshStandardMaterial, NormalBlending, Points, PointsMaterial, SphereGeometry, SRGBColorSpace,
   Sprite, SpriteMaterial, Vector3,
 } from "three";
 
@@ -207,6 +207,9 @@ const state = {
   colorBy: "show",
   sizeBy: "connections",
   compare: [],
+  ringsBy: "tier",
+  flowBy: "debut",
+  center: "hong-jin-ho",
 };
 
 // Color and size of a player, by the chosen measure.
@@ -583,6 +586,7 @@ const graph = new ForceGraph3D(el, { controlType: "orbit", rendererConfig: { ant
   .onNodeClick((node, event) => {
     state.stepFrom = null;
     if (event?.shiftKey && node.kind === "person") toggleCompare(node.id);
+    else if (state.layout === "rings" && state.ringsBy === "steps" && node.kind === "person" && node.id !== state.center) centerOn(node.id);
     else select(node, true);
   })
   .onLinkClick((link) => link.kind === "mates" && select(link))
@@ -613,6 +617,37 @@ if (dark) {
 // ---------- Layouts ----------
 const yearX = (y) => (y - (FIRST + LAST) / 2) * 62;
 const nodeYear = (n) => (n.kind === "person" ? n.ref.debut : n.kind === "season" ? n.ref.year : n.ref.debut);
+const nodeShow = (n) => (n.kind === "person" ? n.ref.primary : n.kind === "season" ? n.ref.show : n.ref.id);
+
+// Lanes: one per show, earliest show at the top.
+const laneOrder = [...data.shows].sort((a, b) => a.debut - b.debut).map((x) => x.id);
+const LANE = 42;
+const laneY = (showId) => ((laneOrder.length - 1) / 2 - laneOrder.indexOf(showId)) * LANE;
+
+// Spiral: the years wind outward from the center.
+function spiralPoint(year, nudge = 0) {
+  const t = (year - FIRST) / Math.max(1, LAST - FIRST);
+  const a = t * Math.PI * 3.2 - Math.PI / 2;
+  const r = 50 + t * 330 + nudge;
+  return { x: Math.cos(a) * r, y: Math.sin(a) * r };
+}
+const spiralOf = (n) => spiralPoint(nodeYear(n), (laneOrder.indexOf(nodeShow(n)) - laneOrder.length / 2) * 2.5);
+
+// Rings by steps: how many co-players away everyone is from the center.
+// Each ring is as big as it needs to be to hold its players.
+let stepDist = null;
+let stepRadii = [0];
+function stepRadius(d) {
+  return d === undefined ? stepRadii[stepRadii.length - 1] : stepRadii[d] ?? stepRadii[stepRadii.length - 1];
+}
+function ringRadius(n) {
+  if (n.kind !== "person") return n.kind === "show" ? 0 : 30;
+  if (state.ringsBy === "steps") return stepRadius(stepDist.get(n.id));
+  if (state.ringsBy === "seasons") return 40 + (seasonsMax - n.ref.apps.length) * 70;
+  return tierOf(n.ref).r;
+}
+let stepMax = 0;
+let seasonsMax = 1;
 
 const decor = new Group();
 graph.scene().add(decor);
@@ -626,52 +661,141 @@ function clearDecor() {
 }
 
 function addGuideText(text, x, y, size, color = theme.muted, opacity = 0.7) {
-  const s = noPick(new SpriteText(text));
-  s.fontFace = "Inter, system-ui, sans-serif";
-  s.fontWeight = "700";
-  s.color = color;
-  s.textHeight = size;
-  s.material.transparent = true;
-  s.material.opacity = opacity;
-  s.material.depthWrite = false;
-  s.position.set(x, y, 0);
-  decor.add(s);
+  const t = noPick(new SpriteText(text));
+  t.fontFace = "Inter, system-ui, sans-serif";
+  t.fontWeight = "700";
+  t.color = color;
+  t.textHeight = size;
+  t.material.transparent = true;
+  t.material.opacity = opacity;
+  t.material.depthWrite = false;
+  t.position.set(x, y, 0);
+  decor.add(t);
+}
+
+function addLine(points, color = theme.muted, opacity = 0.2, loop = false) {
+  const geo = new BufferGeometry();
+  geo.setAttribute("position", new Float32BufferAttribute(points.flatMap((q) => [q.x, q.y, 0]), 3));
+  const Line = loop ? LineLoop : LineStrip;
+  decor.add(noPick(new Line(geo, new LineBasicMaterial({ color, transparent: true, opacity }))));
+}
+
+function addRing(r, label) {
+  const pts = [];
+  for (let i = 0; i < 128; i++) {
+    const t = (i / 128) * Math.PI * 2;
+    pts.push({ x: Math.cos(t) * r, y: Math.sin(t) * r });
+  }
+  addLine(pts, theme.muted, 0.18, true);
+  if (label) addGuideText(label, 0, r + 12, 12, theme.muted, 0.8);
 }
 
 function drawGuides() {
   clearDecor();
+  const persons = graph.graphData().nodes.filter((n) => n.kind === "person");
   if (state.layout === "rings" && state.view === "players") {
-    for (const t of TIERS) {
-      const pts = [];
-      for (let i = 0; i < 128; i++) {
-        const a = (i / 128) * Math.PI * 2;
-        pts.push(Math.cos(a) * t.r, Math.sin(a) * t.r, 0);
+    if (state.ringsBy === "tier") {
+      for (const t of TIERS) addRing(t.r, `${t.name}s`.replace("One seasons", "One season"));
+    } else if (state.ringsBy === "seasons") {
+      const counts = [...new Set(persons.map((n) => n.ref.apps.length))].sort((x, y) => y - x);
+      for (const c of counts) addRing(40 + (seasonsMax - c) * 70, `${c} season${c > 1 ? "s" : ""}`);
+    } else {
+      const byStep = {};
+      for (const n of persons) {
+        const d = stepDist.get(n.id);
+        byStep[d ?? "none"] = (byStep[d ?? "none"] ?? 0) + 1;
       }
-      const geo = new BufferGeometry();
-      geo.setAttribute("position", new Float32BufferAttribute(pts, 3));
-      decor.add(noPick(new LineLoop(geo, new LineBasicMaterial({ color: theme.muted, transparent: true, opacity: 0.18 }))));
-      addGuideText(`${t.name}s`.replace("One seasons", "One season"), 0, t.r + 12, 13, theme.muted, 0.8);
+      for (let d = 1; d <= stepMax; d++) {
+        if (!byStep[d]) continue;
+        addRing(stepRadius(d), `${d === 1 ? "Played with" : `${d} steps`} · ${byStep[d]}`);
+      }
+      if (byStep.none) addRing(stepRadii[stepMax + 1], `No link · ${byStep.none}`);
     }
   }
   if (state.layout === "flow") {
-    const pts = [yearX(FIRST) - 30, -230, 0, yearX(LAST) + 30, -230, 0];
-    const geo = new BufferGeometry();
-    geo.setAttribute("position", new Float32BufferAttribute(pts, 3));
-    decor.add(noPick(new LineLoop(geo, new LineBasicMaterial({ color: theme.muted, transparent: true, opacity: 0.3 }))));
-    for (let y = FIRST; y <= LAST; y++) addGuideText(String(y), yearX(y), -252, y === FIRST || y === LAST || y % 2 === 1 ? 14 : 10, theme.muted, 0.85);
+    if (state.flowBy === "spiral") {
+      const pts = [];
+      for (let i = 0; i <= 240; i++) pts.push(spiralPoint(FIRST + ((LAST - FIRST) * i) / 240));
+      addLine(pts, theme.muted, 0.22);
+      for (let y = FIRST; y <= LAST; y++) {
+        const q = spiralPoint(y, 26);
+        addGuideText(String(y), q.x, q.y, y === FIRST || y === LAST || y % 2 === 1 ? 12 : 9, theme.muted, 0.85);
+      }
+    } else {
+      let bottom = -230;
+      if (state.flowBy === "lanes") {
+        const used = new Set(graph.graphData().nodes.map(nodeShow));
+        const lanes = laneOrder.filter((id) => used.has(id));
+        for (const id of lanes) {
+          const y = laneY(id);
+          addLine([{ x: yearX(FIRST) - 20, y }, { x: yearX(LAST) + 20, y }], showById[id].color, 0.28);
+          addGuideText(showById[id].name, yearX(FIRST) - 34 - showById[id].name.length * 2.6, y, 8, showById[id].color, 0.95);
+        }
+        bottom = Math.min(...lanes.map(laneY)) - LANE;
+      }
+      addLine([{ x: yearX(FIRST) - 30, y: bottom }, { x: yearX(LAST) + 30, y: bottom }], theme.muted, 0.3);
+      for (let y = FIRST; y <= LAST; y++) addGuideText(String(y), yearX(y), bottom - 20, y === FIRST || y === LAST || y % 2 === 1 ? 14 : 10, theme.muted, 0.85);
+    }
   }
 }
 
+const HINTS = {
+  web: "Players pulled together by the seasons they shared.",
+  "rings-tier": "Legends at the center (2+ titles or 3+ shows), then crossovers, veterans, and one-season players outside.",
+  "rings-seasons": "The most experienced at the center: one ring for each number of seasons played.",
+  "rings-steps": "Everyone placed by how many co-players separate them from the center. Click any player to put them in the middle.",
+  "flow-debut": "Left to right by debut year. Lines arc forward in time from the earlier debut.",
+  "flow-lanes": "A lane for each show, left to right by year. Lines crossing lanes are players moving between shows.",
+  "flow-spiral": "Time winds outward from 2013 at the center to today on the rim.",
+};
+
 function applyLayout() {
   const L = state.layout;
-  graph.d3Force("charge").strength((n) => (n.kind === "show" ? -300 : n.kind === "season" ? -100 : L === "web" ? -40 : -22));
+  const { nodes } = graph.graphData();
+  const persons = nodes.filter((n) => n.kind === "person");
+  seasonsMax = Math.max(1, ...persons.map((n) => n.ref.apps.length));
+  if (L === "rings" && state.ringsBy === "steps") {
+    if (!personById[state.center]) state.center = "hong-jin-ho";
+    stepDist = distances(state.center).dist;
+    stepMax = Math.max(1, ...persons.map((n) => stepDist.get(n.id) ?? 0));
+    const count = [];
+    let unreachable = 0;
+    for (const n of persons) {
+      const d = stepDist.get(n.id);
+      if (d === undefined) unreachable++;
+      else count[d] = (count[d] ?? 0) + 1;
+    }
+    stepRadii = [0];
+    for (let d = 1; d <= stepMax + 1; d++) {
+      const c = d <= stepMax ? count[d] ?? 0 : unreachable;
+      const needed = (c * 17) / (2 * Math.PI); // room for every player around the ring
+      stepRadii[d] = Math.max(stepRadii[d - 1] + 85, needed);
+    }
+  }
+  // Pin the center player in Steps; free everyone otherwise.
+  for (const n of nodes) {
+    const pin = L === "rings" && state.ringsBy === "steps" && n.id === state.center;
+    if (pin) { n.fx = 0; n.fy = 0; n.fz = 0; } else if (n.fx !== undefined) { n.fx = n.fy = n.fz = undefined; }
+  }
+
+  graph.d3Force("charge").strength((n) => (n.kind === "show" ? -300 : n.kind === "season" ? -100 : L === "web" ? -40 : state.flowBy === "lanes" && L === "flow" ? -10 : -22));
   graph.d3Force("radial", null);
+  // The built-in centering would drag every node off its ring or lane, so it only runs in Web.
+  graph.d3Force("center", L === "web" ? forceCenter() : null);
   if (L === "web") {
     for (const [name, f] of [["x", forceX], ["y", forceY], ["z", forceZ]]) graph.d3Force(name, f(0).strength(0.04));
   } else if (L === "rings") {
-    graph.d3Force("radial", forceRadial((n) => (n.kind === "person" ? tierOf(n.ref).r : n.kind === "show" ? 0 : 30), 0, 0, 0).strength(0.85));
+    graph.d3Force("radial", forceRadial(ringRadius, 0, 0, 0).strength(0.85));
     graph.d3Force("x", null);
     graph.d3Force("y", null);
+    graph.d3Force("z", forceZ(0).strength(0.6));
+  } else if (state.flowBy === "lanes") {
+    graph.d3Force("x", forceX((n) => yearX(nodeYear(n))).strength(1));
+    graph.d3Force("y", forceY((n) => laneY(nodeShow(n))).strength(0.9));
+    graph.d3Force("z", forceZ(0).strength(0.6));
+  } else if (state.flowBy === "spiral") {
+    graph.d3Force("x", forceX((n) => spiralOf(n).x).strength(0.9));
+    graph.d3Force("y", forceY((n) => spiralOf(n).y).strength(0.9));
     graph.d3Force("z", forceZ(0).strength(0.6));
   } else {
     graph.d3Force("x", forceX((n) => yearX(nodeYear(n))).strength(1));
@@ -682,16 +806,33 @@ function applyLayout() {
     .distance((l) => (l.kind === "spine" ? 34 : l.kind === "mates" ? 38 - Math.min(l.seasons.length, 4) * 5 : 24))
     .strength((l) => {
       const base = 1 / Math.min(l.source.neighbors?.size || 1, l.target.neighbors?.size || 1);
-      const k = L === "web" ? 1 : L === "rings" ? 0.35 : 0.06;
+      const k = L === "web" ? 1 : L === "rings" ? 0.3 : 0.05;
       return (weak(l) ? base * 0.15 : base) * k;
     });
   drawGuides();
-  const hints = {
-    web: "Players pulled together by the seasons they shared.",
-    rings: "Legends at the center (2+ titles or 3+ shows), then crossovers, veterans, and one-season players outside.",
-    flow: "Left to right by debut year. Lines arc forward in time from the earlier debut.",
-  };
-  $("layout-hint").textContent = hints[L];
+  $("rings-by").hidden = L !== "rings";
+  $("flow-by").hidden = L !== "flow";
+  $("layout-hint").textContent = HINTS[L === "web" ? "web" : `${L}-${L === "rings" ? state.ringsBy : state.flowBy}`];
+}
+
+// Face the camera straight on, for the flat layouts.
+function faceOn(ms = 900) {
+  graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, ms);
+}
+
+function centerOn(id) {
+  state.layout = "rings";
+  state.ringsBy = "steps";
+  state.center = id;
+  setPressed("layout", "rings");
+  setPressed("rings", "steps");
+  state.selected = null;
+  faceOn();
+  render(() => {
+    fit();
+    const n = nodeFor(id);
+    if (n) select(n);
+  });
 }
 
 // ---------- Nebulae: a soft cloud behind each show's cluster ----------
@@ -950,6 +1091,7 @@ function personPanel(p) {
       <button type="button" class="act" data-circle="${p.id}">${state.ego === p.id ? "Back to everyone" : "Show their circle"}</button>
       <button type="button" class="act ghost" data-from="${p.id}">Connect from here</button>
       <button type="button" class="act ghost" data-compare="${p.id}">${state.compare.includes(p.id) ? "Remove from compare" : "Compare"}</button>
+      <button type="button" class="act ghost" data-center="${p.id}">Rings around them</button>
       <a class="act ghost" href="/contestants/${p.id}/">Bio</a>
     </div>
     <p class="muted" style="font-size:12px;margin:8px 0 0">Tip: ← → step through their strongest connections. Shift-click players to compare.</p>
@@ -1063,6 +1205,7 @@ function handleAction(e) {
     return runPath(from, to);
   }
   if (d.compare) return toggleCompare(d.compare);
+  if (d.center) return centerOn(d.center);
   if (d.family !== undefined && d.family !== "") return showFamily(+d.family);
   if (d.action) return runAction(d.action);
   if ("clearPath" in d) return clearPath();
@@ -1089,6 +1232,8 @@ function runAction(action) {
   else if (kind === "focus") focusPerson(a);
   else if (kind === "timeline") play();
   else if (kind === "tour") startTour();
+  else if (kind === "center") centerOn(a);
+  else if (kind === "lanes") { state.layout = "flow"; state.flowBy = "lanes"; setPressed("layout", "flow"); setPressed("flow", "lanes"); faceOn(); render(); }
 }
 
 // ---------- Compare ----------
@@ -1281,6 +1426,7 @@ function updateActive() {
   if (state.path) tags.push(["path", `Connection: ${plain(personById[state.path[0]].name)} to ${plain(personById[state.path.at(-1)].name)}`]);
   if (state.shows.size < data.shows.length) tags.push(["shows", `${state.shows.size} of ${data.shows.length} shows`]);
   if (state.year < LAST) tags.push(["year", `Seasons up to ${state.year}`]);
+  if (state.layout === "rings" && state.ringsBy === "steps") tags.push(["center", `Rings around ${plain(personById[state.center].name)}`]);
   if (state.compare.length) tags.push(["compare", `Comparing ${state.compare.map((id) => plain(personById[id].name)).join(", ")}`]);
   const box = $("active");
   box.hidden = !tags.length;
@@ -1295,6 +1441,7 @@ $("active").addEventListener("click", (e) => {
   if (k === "shows") { state.shows = new Set(data.shows.map((s) => s.id)); syncChips(); }
   if (k === "year") { stop(); state.year = LAST; syncYear(); }
   if (k === "compare") { state.compare = []; hideInfo(); }
+  if (k === "center") { state.ringsBy = "tier"; setPressed("rings", "tier"); }
   render();
 });
 
@@ -1356,7 +1503,24 @@ for (const b of document.querySelectorAll("#controls [data-layout]")) {
     state.layout = b.dataset.layout;
     setPressed("layout", state.layout);
     // Rings and Flow read best face-on.
-    if (state.layout !== "web") graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 900);
+    if (state.layout !== "web") faceOn();
+    render();
+  });
+}
+for (const b of document.querySelectorAll("#controls [data-rings]")) {
+  b.addEventListener("click", () => {
+    state.ringsBy = b.dataset.rings;
+    setPressed("rings", state.ringsBy);
+    if (state.ringsBy === "steps" && state.selected?.kind === "person") state.center = state.selected.id;
+    faceOn();
+    render();
+  });
+}
+for (const b of document.querySelectorAll("#controls [data-flow]")) {
+  b.addEventListener("click", () => {
+    state.flowBy = b.dataset.flow;
+    setPressed("flow", state.flowBy);
+    faceOn();
     render();
   });
 }
@@ -1556,7 +1720,10 @@ function resetView() {
   Object.assign(state, {
     view: "players", layout: "web", who: "veterans", year: LAST, strong: true,
     group: null, ego: null, path: null, selected: null, compare: [], colorBy: "show", sizeBy: "connections", stepFrom: null,
+    ringsBy: "tier", flowBy: "debut", center: "hong-jin-ho",
   });
+  setPressed("rings", "tier");
+  setPressed("flow", "debut");
   state.shows = new Set(data.shows.map((x) => x.id));
   setPressed("view", "players");
   setPressed("layout", "web");
@@ -1601,12 +1768,26 @@ const TOUR = [
   {
     title: "Legends at the core",
     text: `${legendsN} legends (two or more titles, or three or more shows) sit at the center. Crossovers circle them, then veterans of one show.`,
-    run: () => { state.layout = "rings"; setPressed("layout", "rings"); graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 1200); render(() => fit(1400)); },
+    run: () => { state.layout = "rings"; setPressed("layout", "rings"); faceOn(1200); render(() => fit(1400)); },
+  },
+  {
+    title: "Everyone is close",
+    text: (() => {
+      const { dist } = distances(HUB);
+      const n1 = [...dist.values()].filter((v) => v === 1).length, n2 = [...dist.values()].filter((v) => v === 2).length;
+      return `Rings by steps from Hong Jin-ho: ${n1} players shared a season with him, ${n2} more are just two steps away. Click anyone on the rings to put them in the middle.`;
+    })(),
+    run: () => centerOn(HUB),
   },
   {
     title: "A decade in motion",
     text: "Everyone placed by the year they debuted. The Genius generation on the left; the arcs show how its players kept turning up in the shows that followed.",
-    run: () => { state.layout = "flow"; setPressed("layout", "flow"); graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 1200); render(() => fit(1400)); },
+    run: () => { state.layout = "flow"; setPressed("layout", "flow"); faceOn(1200); render(() => fit(1400)); },
+  },
+  {
+    title: "Rivers of players",
+    text: "A lane for every show, in the order they began. Each line jumping between lanes is a player carrying their history into a new game.",
+    run: () => { state.layout = "flow"; state.flowBy = "lanes"; setPressed("layout", "flow"); setPressed("flow", "lanes"); faceOn(1200); render(() => fit(1400)); },
   },
   {
     title: "Hidden families",
@@ -1771,6 +1952,9 @@ function writeUrl() {
   if (state.dims !== defaultDims) q.set("flat", state.dims === 2 ? "1" : "0");
   if (state.group?.except) q.set("group", state.group.except);
   if (state.ego) q.set("circle", state.ego);
+  if (state.layout === "rings" && state.ringsBy !== "tier") q.set("rings", state.ringsBy);
+  if (state.layout === "rings" && state.ringsBy === "steps") q.set("center", state.center);
+  if (state.layout === "flow" && state.flowBy !== "debut") q.set("flow", state.flowBy);
   if (state.colorBy !== "show") q.set("color", state.colorBy);
   if (state.sizeBy !== "connections") q.set("size", state.sizeBy);
   if (state.compare.length) q.set("compare", state.compare.join(","));
@@ -1798,6 +1982,12 @@ function readUrl() {
   if (q.get("flat") === "0") state.dims = 3;
   if (q.get("circle") && personById[q.get("circle")]) state.ego = q.get("circle");
   if (["tier", "debut", "family"].includes(q.get("color"))) state.colorBy = q.get("color");
+  if (["seasons", "steps"].includes(q.get("rings"))) state.ringsBy = q.get("rings");
+  if (["lanes", "spiral"].includes(q.get("flow"))) state.flowBy = q.get("flow");
+  if (personById[q.get("center")]) state.center = q.get("center");
+  setPressed("rings", state.ringsBy);
+  setPressed("flow", state.flowBy);
+  if (state.layout !== "web") graph.cameraPosition({ x: 0, y: 0, z: 2600 }, { x: 0, y: 0, z: 0 });
   if (["bridging", "titles", "seasons"].includes(q.get("size"))) state.sizeBy = q.get("size");
   $("color-by").value = state.colorBy;
   $("size-by").value = state.sizeBy;

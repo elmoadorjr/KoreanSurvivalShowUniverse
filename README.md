@@ -47,9 +47,14 @@ npm run build     # static site in dist/
     by side stats, career strips, seasons together and co-players in common.
   - ← → step through the selected player's strongest connections; Save
     image exports the current view with a caption.
-  - Three layouts: Web (players pulled together by shared seasons), Rings
-    (legends at the center, then crossovers, veterans and one-season
-    players) and Flow (left to right by debut year, lines arcing forward).
+  - Three layouts, each with variants:
+    - Web: players pulled together by shared seasons.
+    - Rings by tier (legends at the center, then crossovers, veterans and
+      one-season players), by seasons played, or by steps from any player
+      (click someone to put them in the middle; `?rings=steps&center=<id>`).
+    - Flow by debut year, by show lanes (a lane per show across the years,
+      so players crossing lanes are players moving between shows), or as a
+      spiral of time winding out from 2013.
   - Glowing nodes sized by connections, gold rings for champions, curved
     lines with light flowing from the earlier debut to the later, a faint
     glow behind each show's cluster, names that appear by importance as you
@@ -65,7 +70,7 @@ npm run build     # static site in dist/
   - Insights: most connected, most titles, steps from Hong Jin-ho, and the
     players who are the only link between two shows.
   - Show filters grouped by kind, a sortable list view of the same data, and
-    the whole view in the URL (`view`, `layout`, `who`, `shows`, `year`,
+    the whole view in the URL (`view`, `layout`, `rings`, `flow`, `center`, `who`, `shows`, `year`,
     `strong`, `flat`, `color`, `size`, `focus`, `from`/`to`, `group`,
     `circle`, `compare`, `tour`).
 

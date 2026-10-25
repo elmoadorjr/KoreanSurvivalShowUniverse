@@ -1,7 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
-import { shows, resultText } from "../../lib/universe.mjs";
+import { shows, resultText, seasonLabel } from "../../lib/universe.mjs";
 
 export function getStaticPaths() {
   return shows.map((show) => ({ params: { show: show.id }, props: { show } }));
@@ -21,7 +21,7 @@ const { show } = Astro.props;
       <p class="lede">{show.blurb}</p>
       {show.seasons.length > 1 && (
         <nav class="tabs" aria-label="Seasons">
-          {show.seasons.map((s) => <a href={`#${s.id}`}>{s.title}</a>)}
+          {show.seasons.map((s) => <a href={`#${s.id}`}>{seasonLabel(show, s)}</a>)}
         </nav>
       )}
     </div>
@@ -30,10 +30,10 @@ const { show } = Astro.props;
     {show.seasons.map((season) => (
       <section class="season" id={season.id}>
         <div class="season-head">
-          <h2>{season.title === show.name ? show.name : season.title}</h2>
+          <h2>{seasonLabel(show, season)}</h2>
           {season.upcoming && <span class="chip gold">Coming soon</span>}
           <span class="muted">
-            {season.title !== `Season ${season.number}` && season.title !== show.name && show.seasons.length > 1 ? `Season ${season.number} · ` : ""}
+            {!/^Season \d+$/.test(season.title) && season.title !== show.name && show.seasons.length > 1 ? `Season ${season.number} · ` : ""}
             {season.aired}{season.network ? ` on ${season.network}` : ""}{season.prize ? ` · Prize ${season.prize}` : ""}{season.cast.length > 0 && ` · ${season.cast.length} ${season.upcoming ? "announced" : season.complete ? "players" : "featured"}`}
           </span>
         </div>

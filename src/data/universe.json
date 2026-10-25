@@ -965,7 +965,8 @@
               "person": "lee-tae-gyun"
             }
           ],
-          "network": "Wavve"
+          "network": "Wavve",
+          "full": "The Bloody Game X"
         }
       ]
     },
@@ -1124,7 +1125,8 @@
             {
               "person": "jang-sung-yeop"
             }
-          ]
+          ],
+          "full": "Physical: 100 Underground"
         },
         {
           "id": "physical-asia",
@@ -1176,7 +1178,8 @@
               "result": "Captain of the Philippines"
             }
           ],
-          "teams": true
+          "teams": true,
+          "full": "Physical: Asia"
         }
       ]
     },
