@@ -39,6 +39,7 @@ const kindOrder = ["Strategy", "Team strategy", "Duel", "Deduction", "Social", "
 const kinds = [...new Set(shows.map((s) => s.kind))].sort((a, b) => (kindOrder.indexOf(a) + 99) % 99 - (kindOrder.indexOf(b) + 99) % 99);
 
 const tries = [
+  { action: "tour", label: "▶ Take the tour" },
   { action: "circle:hong-jin-ho", label: "Hong Jin-ho's circle" },
   { action: "path:lee-se-dol:amotti", label: "Lee Se-dol to Amotti" },
   { action: "group:devils-plan-3", label: "Devil's Plan 3 cast" },
@@ -84,6 +85,23 @@ const tries = [
         </div>
         <p class="hint muted" id="layout-hint">Players pulled together by the seasons they shared.</p>
 
+        <div class="label">Color by</div>
+        <div class="selects">
+          <select id="color-by" aria-label="Color players by">
+            <option value="show">Main show</option>
+            <option value="tier">Career tier</option>
+            <option value="debut">Debut year</option>
+            <option value="family">Hidden family</option>
+          </select>
+          <select id="size-by" aria-label="Size players by">
+            <option value="connections">Size: connections</option>
+            <option value="bridging">Size: bridging</option>
+            <option value="titles">Size: titles</option>
+            <option value="seasons">Size: seasons</option>
+          </select>
+        </div>
+        <div class="color-key" id="color-key" hidden></div>
+
         <div class="label">View</div>
         <div class="seg" role="group" aria-label="View">
           <button type="button" data-view="players" aria-pressed="true">Players</button>
@@ -125,7 +143,10 @@ const tries = [
         ))}
         <p class="hint muted">Players take the color of the show they played most. Tap a show to hide it, double-tap to show only it. Gold lines join players who met on more than one show.</p>
 
-        <button type="button" class="go ghost" id="list-open">Show as a list</button>
+        <div class="tool-row">
+          <button type="button" class="go ghost" id="list-open">Show as a list</button>
+          <button type="button" class="go ghost" id="save-image">Save image</button>
+        </div>
         <p class="hint muted">Drag to orbit, scroll or pinch to zoom. Hover a line to see what two players shared. Press / to search, Esc to clear.</p>
       </details>
 
@@ -149,6 +170,21 @@ const tries = [
     </section>
 
     <div class="net-count" id="count" aria-live="polite"></div>
+
+    <section class="tour" id="tour" hidden aria-live="polite" aria-label="Guided tour">
+      <div class="tour-bar"><span id="tour-bar"></span></div>
+      <div class="tour-head">
+        <span class="eyebrow">Guided tour · <span id="tour-step"></span></span>
+        <button type="button" class="tour-x" id="tour-exit" aria-label="End the tour">×</button>
+      </div>
+      <h2 id="tour-title"></h2>
+      <p id="tour-text"></p>
+      <div class="tour-nav">
+        <button type="button" class="go ghost" id="tour-prev">Back</button>
+        <button type="button" class="tour-auto" id="tour-auto" aria-pressed="true" title="Advance automatically">Auto</button>
+        <button type="button" class="go" id="tour-next">Next</button>
+      </div>
+    </section>
 
     <div class="net-legend" id="legend" aria-label="Legend">
       <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="12" r="3" fill="currentColor"/><circle cx="17" cy="12" r="6" fill="currentColor"/></svg>Size: how many people they played with</div>
@@ -319,7 +355,50 @@ const tries = [
   :global(.net-list .chip) { margin: 0 4px 4px 0; }
   :global(.net-list .note) { color: var(--muted); font-size: 13px; padding: 10px 0; }
 
-  .net-list[hidden], .active[hidden], .net-info[hidden] { display: none; }
+  .net-list[hidden], .active[hidden], .net-info[hidden], .tour[hidden], .color-key[hidden] { display: none; }
+
+  .selects { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .selects select {
+    font: 500 13px var(--sans); color: var(--ink); background: var(--bg-2);
+    border: 1px solid var(--line); border-radius: 9px; padding: 7px 8px; min-width: 0;
+  }
+  .color-key { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; }
+  :global(.key-item) { display: inline-flex; align-items: center; gap: 5px; font: 500 12px var(--sans); color: var(--muted); background: none; border: 0; padding: 0; cursor: default; }
+  :global(button.key-item) { cursor: pointer; }
+  :global(button.key-item:hover) { color: var(--ink); }
+  :global(.key-item span) { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .tool-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; }
+  .tool-row .go.ghost { margin-top: 0; }
+
+  .tour {
+    position: absolute; z-index: 4; left: calc(50% + 171px); bottom: 24px; transform: translateX(-50%);
+    width: min(560px, calc(100% - 380px)); padding: 18px 20px 16px; border-radius: 16px;
+    background: color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter: blur(14px);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+    box-shadow: 0 18px 50px rgb(0 0 0 / .45);
+    animation: rise .5s ease;
+  }
+  @keyframes rise { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .tour-bar { height: 3px; background: var(--bg-2); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+  .tour-bar span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .6s ease; }
+  .tour-head { display: flex; justify-content: space-between; align-items: center; }
+  .tour-x { background: none; border: 0; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
+  .tour h2 { font-size: 22px; margin: 6px 0 6px; }
+  .tour p { margin: 0 0 14px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+  .tour-nav { display: flex; gap: 8px; align-items: center; }
+  .tour-nav .go { flex: 1; }
+  .tour-nav .go.ghost { margin-top: 0; width: auto; }
+  .tour-auto {
+    font: 600 12px var(--sans); padding: 8px 10px; border-radius: 9px; cursor: pointer;
+    background: var(--bg-2); color: var(--muted); border: 1px solid var(--line);
+  }
+  .tour-auto[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+  .net:has(.tour:not([hidden])) .net-legend { display: none; }
+
+  :global(.net-info .cmp) { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  :global(.net-info .cmp th), :global(.net-info .cmp td) { padding: 5px 4px; border-top: 1px solid var(--line); text-align: left; }
+  :global(.net-info .cmp th) { font-size: 12px; color: var(--ink); }
+  :global(.net-info .cmp td:first-child) { color: var(--muted); }
 
   .net-legend {
     position: absolute; z-index: 1; right: 16px; bottom: 16px; display: grid; gap: 4px;
@@ -341,6 +420,8 @@ const tries = [
     .net-info { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 46%; }
     .net-list { inset: 8px; }
     .net-count, .net-legend { display: none; }
+    .tour { left: 8px; right: 8px; bottom: 8px; width: auto; transform: none; animation: none; }
+    .net:has(.tour:not([hidden])) .net-info { display: none; }
     /* With details open, the controls shrink to the search box so the graph stays visible. */
     .net:has(.net-info:not([hidden])) .net-controls > :not(.search) { display: none; }
   }

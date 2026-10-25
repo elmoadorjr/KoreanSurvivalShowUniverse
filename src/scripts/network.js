@@ -100,6 +100,91 @@ function headToHead(a, b) {
   return { rows, score };
 }
 
+// ---------- Analytics: bridges and families ----------
+const adjacency = Object.fromEntries(data.people.map((p) => [p.id, mates(p.id)]));
+
+// Bridging (betweenness): how many shortest chains between other players run through each one.
+const bridging = (() => {
+  const ids = data.people.map((p) => p.id);
+  const cb = Object.fromEntries(ids.map((id) => [id, 0]));
+  for (const src of ids) {
+    const stack = [];
+    const pred = new Map();
+    const sigma = new Map([[src, 1]]);
+    const dist = new Map([[src, 0]]);
+    const queue = [src];
+    for (let i = 0; i < queue.length; i++) {
+      const v = queue[i];
+      stack.push(v);
+      for (const w of adjacency[v].keys()) {
+        if (!dist.has(w)) { dist.set(w, dist.get(v) + 1); queue.push(w); }
+        if (dist.get(w) === dist.get(v) + 1) {
+          sigma.set(w, (sigma.get(w) ?? 0) + sigma.get(v));
+          if (!pred.has(w)) pred.set(w, []);
+          pred.get(w).push(v);
+        }
+      }
+    }
+    const delta = new Map();
+    while (stack.length) {
+      const w = stack.pop();
+      for (const v of pred.get(w) ?? []) delta.set(v, (delta.get(v) ?? 0) + (sigma.get(v) / sigma.get(w)) * (1 + (delta.get(w) ?? 0)));
+      if (w !== src) cb[w] += delta.get(w) ?? 0;
+    }
+  }
+  const max = Math.max(...Object.values(cb)) || 1;
+  return Object.fromEntries(Object.entries(cb).map(([k, v]) => [k, v / max]));
+})();
+const bridgeRank = Object.fromEntries(Object.entries(bridging).sort((a, b) => b[1] - a[1]).map(([id], i) => [id, i + 1]));
+
+// Families: groups who keep meeting, found from the graph itself (Louvain), not from show labels.
+// Small casts bind harder than big ones, so a shared 8-player game counts for more than a 24-player one.
+const families = (() => {
+  const w = Object.fromEntries(data.people.map((p) => [p.id, new Map()]));
+  for (const [sid, cast] of Object.entries(castOf)) {
+    const x = 1 / Math.max(1, cast.length - 1);
+    for (const a of cast) for (const b of cast) if (a !== b) w[a].set(b, (w[a].get(b) ?? 0) + x);
+  }
+  const nodes = Object.keys(w).sort();
+  const comm = Object.fromEntries(nodes.map((n) => [n, n]));
+  const k = Object.fromEntries(nodes.map((n) => [n, [...w[n].values()].reduce((s2, v) => s2 + v, 0)]));
+  const m2 = Object.values(k).reduce((s2, v) => s2 + v, 0) || 1;
+  const tot = { ...k };
+  for (let it = 0, moved = true; moved && it < 50; it++) {
+    moved = false;
+    for (const n of nodes) {
+      const c0 = comm[n];
+      tot[c0] -= k[n];
+      const links = new Map();
+      for (const [o, v] of w[n]) links.set(comm[o], (links.get(comm[o]) ?? 0) + v);
+      let best = c0, gain = (links.get(c0) ?? 0) - tot[c0] * k[n] / m2;
+      for (const [c, v] of links) {
+        const g = v - (tot[c] ?? 0) * k[n] / m2;
+        if (g > gain + 1e-12) { gain = g; best = c; }
+      }
+      comm[n] = best;
+      tot[best] = (tot[best] ?? 0) + k[n];
+      if (best !== c0) moved = true;
+    }
+  }
+  const groups = {};
+  for (const [id, c] of Object.entries(comm)) (groups[c] ??= []).push(id);
+  const PALETTE = ["#ff6b6b", "#4ecdc4", "#ffd166", "#a78bfa", "#06d6a0", "#f78c6b", "#60a5fa", "#f472b6", "#c3e88d", "#ffb4a2", "#89ddff", "#e9c46a", "#b392f0", "#ff9f1c"];
+  const list = Object.values(groups).sort((a, b) => b.length - a.length).map((members, i) => {
+    const shows = {};
+    for (const id of members) for (const a of personById[id].apps) {
+      const sh = seasonById[a.season].show;
+      shows[sh] = (shows[sh] ?? 0) + 1;
+    }
+    const top = Object.entries(shows).sort((a, b) => b[1] - a[1]).map(([sh]) => showById[sh].name);
+    const cross = members.filter((id) => personById[id].showIds.length > 1).length;
+    return { id: i, members, shows: top, cross, name: top.slice(0, 2).join(" × "), color: members.length > 1 ? PALETTE[i % PALETTE.length] : theme.muted };
+  });
+  const of = {};
+  for (const f of list) for (const id of f.members) of[id] = f;
+  return { list, of };
+})();
+
 // ---------- State ----------
 const defaultDims = narrow() ? 2 : 3;
 const state = {
@@ -119,7 +204,32 @@ const state = {
   settled: false,
   list: false,
   first: true,
+  colorBy: "show",
+  sizeBy: "connections",
+  compare: [],
 };
+
+// Color and size of a player, by the chosen measure.
+const DEBUT_COLORS = ["#60a5fa", "#a78bfa", "#f472b6", "#fb923c", "#facc15"];
+function debutColor(year) {
+  const t = (year - FIRST) / Math.max(1, LAST - FIRST);
+  const i = Math.min(DEBUT_COLORS.length - 2, Math.floor(t * (DEBUT_COLORS.length - 1)));
+  const f = t * (DEBUT_COLORS.length - 1) - i;
+  return "#" + new Color(DEBUT_COLORS[i]).lerp(new Color(DEBUT_COLORS[i + 1]), f).getHexString();
+}
+const TIER_COLORS = { Legend: "#facc15", Crossover: "#4ecdc4", Veteran: "#818cf8", "One season": "#8b8698" };
+function colorOf(p) {
+  if (state.colorBy === "tier") return TIER_COLORS[tierOf(p).name];
+  if (state.colorBy === "debut") return debutColor(p.debut);
+  if (state.colorBy === "family") return families.of[p.id].color;
+  return showById[p.primary].color;
+}
+function sizeOf(p) {
+  if (state.sizeBy === "bridging") return 1 + bridging[p.id] * 26;
+  if (state.sizeBy === "titles") return 1 + p.titles * 6;
+  if (state.sizeBy === "seasons") return 1 + p.apps.length * 2.4;
+  return 1 + mateCount[p.id] / 6 + p.apps.length * 0.6;
+}
 
 const seasonOn = (sid) => state.shows.has(seasonById[sid].show) && sid !== state.group?.except && seasonById[sid].year <= state.year;
 
@@ -169,7 +279,7 @@ function build() {
   const links = [];
   for (const id of ids) {
     const p = personById[id];
-    nodes.push(nodeObj(id, { kind: "person", ref: p, color: showById[p.primary].color, size: 1 + mateCount[id] / 6 + p.apps.length * 0.6 }));
+    nodes.push(nodeObj(id, { kind: "person", ref: p, color: colorOf(p), size: sizeOf(p) }));
   }
 
   if (state.view === "players") {
@@ -269,7 +379,23 @@ function computeLit() {
         }
       }
     }
+    return;
   }
+  // Comparing players: light them and the co-players they have in common.
+  if (state.compare.length >= 2) {
+    const ids = new Set([...state.compare, ...commonMates(state.compare)]);
+    for (const n of nodes) if (ids.has(n.id)) lit.nodes.add(n);
+    const pick = new Set(state.compare);
+    for (const l of links) {
+      const a = l.source.id ?? l.source, b = l.target.id ?? l.target;
+      if ((pick.has(a) && ids.has(b)) || (pick.has(b) && ids.has(a))) lit.links.add(l);
+    }
+  }
+}
+
+function commonMates(ids) {
+  const sets = ids.map((id) => new Set(adjacency[id].keys()));
+  return [...sets[0]].filter((x) => !ids.includes(x) && sets.every((st) => st.has(x)));
 }
 
 const anyLit = () => lit.nodes.size > 0;
@@ -385,13 +511,35 @@ function makeNode(n) {
   parts.label = label;
   g.add(label);
 
+  parts.color = n.color;
+  parts.size = n.size;
   n.parts = parts;
   n.labelSize = label.textHeight;
   return g;
 }
 
+// Recolor and resize a node that already exists, when the measures change.
+function applyLook(n) {
+  const p = n.parts;
+  if (!p || (p.color === n.color && p.size === n.size)) return;
+  const r = radius(n);
+  p.halo.material.color.set(n.color);
+  p.halo.scale.setScalar(r * (n.kind === "show" ? 6 : 4.2));
+  if (p.core.isMesh) {
+    p.core.material.color.set(n.color);
+    p.core.material.emissive.set(n.color);
+    p.core.scale.setScalar(r);
+  } else {
+    p.core.scale.setScalar(r * 2.5);
+  }
+  if (p.ring) p.ring.scale.setScalar(r * 3.1);
+  p.label.center.y = -0.55 - r * 0.09;
+  p.color = n.color;
+  p.size = n.size;
+}
+
 // ---------- The graph ----------
-const graph = new ForceGraph3D(el, { controlType: "orbit" })
+const graph = new ForceGraph3D(el, { controlType: "orbit", rendererConfig: { antialias: true, alpha: false, preserveDrawingBuffer: true } })
   .backgroundColor(theme.bg)
   .showNavInfo(false)
   .numDimensions(state.dims)
@@ -432,7 +580,11 @@ const graph = new ForceGraph3D(el, { controlType: "orbit" })
   })
   .onNodeHover((node) => setHover(node))
   .onLinkHover((link) => setHover(link && link.kind === "mates" ? link : null))
-  .onNodeClick((node) => select(node, true))
+  .onNodeClick((node, event) => {
+    state.stepFrom = null;
+    if (event?.shiftKey && node.kind === "person") toggleCompare(node.id);
+    else select(node, true);
+  })
   .onLinkClick((link) => link.kind === "mates" && select(link))
   .onBackgroundClick(() => clearSelection())
   .d3VelocityDecay(0.32)
@@ -662,6 +814,7 @@ function render(after) {
   state.settled = false;
   state.after = after === undefined ? () => fit() : after;
   const built = build();
+  for (const n of built.nodes) applyLook(n);
   // Labels resize with their importance in the new view.
   for (const n of built.nodes) {
     if (n.parts && n.kind === "person") {
@@ -677,6 +830,7 @@ function render(after) {
   updateActive();
   updateCount();
   if (state.list) renderList();
+  updateKey();
   writeUrl();
   wake();
 }
@@ -790,12 +944,15 @@ function personPanel(p) {
     <h2>${esc(p.name)}</h2>${p.ko ? `<div class="ko" lang="ko">${esc(p.ko)}</div>` : ""}
     ${p.known ? `<div class="muted">${esc(p.known)}</div>` : ""}
     <div class="stat">${p.apps.length} season${p.apps.length > 1 ? "s" : ""} · ${p.showIds.length} show${p.showIds.length > 1 ? "s" : ""}${p.titles ? ` · ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""} · played with ${list.length} (#${connectedRank[p.id]} most connected)</div>
+    <div class="stat">${bridging[p.id] > 0.001 ? `Bridge #${bridgeRank[p.id]}: on ${Math.round(bridging[p.id] * 100)}% as many shortest chains as the top bridge` : "Not on any shortest chain between others"} · Family: <button type="button" class="link" data-family="${families.of[p.id].id}" style="color:${families.of[p.id].color}">${esc(families.of[p.id].name)}</button></div>
     ${careerStrip([p])}
     <div class="acts">
       <button type="button" class="act" data-circle="${p.id}">${state.ego === p.id ? "Back to everyone" : "Show their circle"}</button>
       <button type="button" class="act ghost" data-from="${p.id}">Connect from here</button>
+      <button type="button" class="act ghost" data-compare="${p.id}">${state.compare.includes(p.id) ? "Remove from compare" : "Compare"}</button>
       <a class="act ghost" href="/contestants/${p.id}/">Bio</a>
     </div>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">Tip: ← → step through their strongest connections. Shift-click players to compare.</p>
     <h3>Survival record</h3>
     ${recordList(p)}
     ${repeat.length ? `<h3>Played with more than once</h3><div class="mates">${mateButtons(repeat, LIMIT)}</div>` : ""}
@@ -889,7 +1046,7 @@ function handleAction(e) {
   const t = e.target.closest("button, a");
   if (!t) return;
   const d = t.dataset;
-  if (d.go) return focusPerson(d.go);
+  if (d.go) { state.stepFrom = null; return focusPerson(d.go); }
   if (d.circle) return toggleCircle(d.circle);
   if (d.from) {
     $("more").open = true;
@@ -905,6 +1062,8 @@ function handleAction(e) {
     setPick("to", to);
     return runPath(from, to);
   }
+  if (d.compare) return toggleCompare(d.compare);
+  if (d.family !== undefined && d.family !== "") return showFamily(+d.family);
   if (d.action) return runAction(d.action);
   if ("clearPath" in d) return clearPath();
 }
@@ -929,6 +1088,106 @@ function runAction(action) {
   } else if (kind === "group") setGroup(a);
   else if (kind === "focus") focusPerson(a);
   else if (kind === "timeline") play();
+  else if (kind === "tour") startTour();
+}
+
+// ---------- Compare ----------
+function toggleCompare(id) {
+  const i = state.compare.indexOf(id);
+  if (i >= 0) state.compare.splice(i, 1);
+  else {
+    state.compare.push(id);
+    if (state.compare.length > 4) state.compare.shift();
+  }
+  state.selected = null;
+  state.path = null;
+  if (state.compare.length >= 2) {
+    // Make sure everyone being compared, and what they share, is on screen.
+    const need = new Set([...state.compare, ...commonMates(state.compare)]);
+    const vis = visiblePeople();
+    if ([...need].some((x) => !vis.has(x))) {
+      state.group = null;
+      state.ego = null;
+      state.who = "all";
+      setPressed("who", "all");
+      state.shows = new Set(data.shows.map((x) => x.id));
+      syncChips();
+      state.year = LAST;
+      syncYear();
+    }
+    comparePanel(state.compare);
+    render(() => {
+      refresh();
+      const ids = new Set(state.compare);
+      graph.zoomToFit(900, 80, (n) => ids.has(n.id));
+    });
+  } else {
+    if (state.compare.length === 1) personPanel(personById[state.compare[0]]);
+    else hideInfo();
+    render(null);
+  }
+}
+
+function comparePanel(ids) {
+  const people = ids.map((id) => personById[id]);
+  const common = commonMates(ids).sort((a, b) => mateCount[b] - mateCount[a]);
+  const pairs = [];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const t = together(ids[i], ids[j]);
+    if (t.length) pairs.push([ids[i], ids[j], t]);
+  }
+  showInfo(`
+    <div class="eyebrow">Compare</div>
+    <h2>${people.map((p) => esc(plain(p.name))).join(" · ")}</h2>
+    <div class="stat">${common.length} co-player${common.length === 1 ? "" : "s"} in common${pairs.length ? ` · ${pairs.length} pair${pairs.length === 1 ? "" : "s"} played together` : " · none of them played together"}</div>
+    ${careerStrip(people)}
+    <table class="cmp"><thead><tr><th></th>${people.map((p) => `<th>${esc(plain(p.name))}</th>`).join("")}</tr></thead><tbody>
+      <tr><td>Seasons</td>${people.map((p) => `<td>${p.apps.length}</td>`).join("")}</tr>
+      <tr><td>Shows</td>${people.map((p) => `<td>${p.showIds.length}</td>`).join("")}</tr>
+      <tr><td>Titles</td>${people.map((p) => `<td>${p.titles}</td>`).join("")}</tr>
+      <tr><td>Played with</td>${people.map((p) => `<td>${mateCount[p.id]}</td>`).join("")}</tr>
+      <tr><td>Bridge rank</td>${people.map((p) => `<td>#${bridgeRank[p.id]}</td>`).join("")}</tr>
+      <tr><td>Tier</td>${people.map((p) => `<td>${tierOf(p).name}</td>`).join("")}</tr>
+    </tbody></table>
+    ${pairs.length ? `<h3>Played together</h3><ul>${pairs.map(([a, b, t]) => `<li class="hop"><span class="who">${esc(plain(personById[a].name))} &amp; ${esc(plain(personById[b].name))}</span><span>${t.map((sid) => `<span class="chip" style="--show:${showById[seasonById[sid].show].color}">${esc(seasonById[sid].full)}</span>`).join("")}</span></li>`).join("")}</ul>` : ""}
+    ${common.length ? `<h3>Co-players in common</h3><div class="mates">${mateButtons(common.map((id) => [id, 1]), 60)}</div>` : ""}
+    <div class="acts">${people.map((p) => `<button type="button" class="act ghost" data-compare="${p.id}">Remove ${esc(plain(p.name))}</button>`).join("")}</div>
+  `);
+}
+
+function showFamily(i) {
+  const f = families.list[i];
+  if (!f) return;
+  state.colorBy = "family";
+  $("color-by").value = "family";
+  updateKey();
+  state.ego = null;
+  state.compare = [];
+  state.group = { ids: new Set(f.members), label: `${f.name} family`, except: null };
+  state.selected = null;
+  render();
+  showInfo(`
+    <div class="eyebrow">Family</div>
+    <h2 style="color:${f.color}">${esc(f.name)}</h2>
+    <div class="stat">${f.members.length} players who keep meeting${f.cross ? `, ${f.cross} of them on more than one show` : ""}. Found from the graph itself, not from show labels.</div>
+    <h3>Shows they met on</h3>
+    <p class="muted">${f.shows.slice(0, 6).map(esc).join(", ")}</p>
+    <h3>Members</h3>
+    <div class="mates">${mateButtons(f.members.sort((a, b) => mateCount[b] - mateCount[a]).map((id) => [id, 1]), 80)}</div>
+  `);
+}
+
+// ← → walk through the selected player's strongest connections.
+function stepConnection(dir) {
+  const cur = state.selected?.kind === "person" ? state.selected.id : null;
+  if (!cur) return;
+  if (!adjacency[cur].size) return;
+  state.stepFrom ??= cur;
+  const base = state.stepFrom;
+  const order = [...adjacency[base].entries()].sort((a, b) => b[1] - a[1] || mateCount[b[0]] - mateCount[a[0]]).map(([id]) => id);
+  const at = order.indexOf(cur);
+  const next = order[(at + dir + order.length) % order.length] ?? order[0];
+  focusPerson(next);
 }
 
 // ---------- Actions ----------
@@ -1022,6 +1281,7 @@ function updateActive() {
   if (state.path) tags.push(["path", `Connection: ${plain(personById[state.path[0]].name)} to ${plain(personById[state.path.at(-1)].name)}`]);
   if (state.shows.size < data.shows.length) tags.push(["shows", `${state.shows.size} of ${data.shows.length} shows`]);
   if (state.year < LAST) tags.push(["year", `Seasons up to ${state.year}`]);
+  if (state.compare.length) tags.push(["compare", `Comparing ${state.compare.map((id) => plain(personById[id].name)).join(", ")}`]);
   const box = $("active");
   box.hidden = !tags.length;
   box.innerHTML = tags.map(([k, t]) => `<div class="tag"><span>${esc(t)}</span><button type="button" data-clear="${k}" aria-label="Remove">×</button></div>`).join("");
@@ -1034,6 +1294,7 @@ $("active").addEventListener("click", (e) => {
   if (k === "ego") state.ego = null;
   if (k === "shows") { state.shows = new Set(data.shows.map((s) => s.id)); syncChips(); }
   if (k === "year") { stop(); state.year = LAST; syncYear(); }
+  if (k === "compare") { state.compare = []; hideInfo(); }
   render();
 });
 
@@ -1138,6 +1399,51 @@ $("flat").addEventListener("change", (e) => {
   render();
 });
 
+$("color-by").addEventListener("change", (e) => { state.colorBy = e.target.value; render(null); updateKey(); });
+$("size-by").addEventListener("change", (e) => { state.sizeBy = e.target.value; render(null); });
+
+// A small key for the current coloring.
+function updateKey() {
+  const box = $("color-key");
+  let items = [];
+  if (state.colorBy === "tier") items = Object.entries(TIER_COLORS);
+  else if (state.colorBy === "debut") items = [[String(FIRST), debutColor(FIRST)], [String(Math.round((FIRST + LAST) / 2)), debutColor((FIRST + LAST) / 2)], [String(LAST), debutColor(LAST)]];
+  else if (state.colorBy === "family") {
+    // Only the families on screen, biggest first.
+    const count = new Map();
+    for (const n of graph.graphData().nodes) if (n.kind === "person") count.set(families.of[n.id], (count.get(families.of[n.id]) ?? 0) + 1);
+    items = [...count.entries()].filter(([f, c]) => c >= 2 && f.members.length > 1).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([f]) => [f.name, f.color, f.id]);
+  }
+  box.hidden = !items.length;
+  box.innerHTML = items.map(([t, c, fid]) => (fid !== undefined
+    ? `<button type="button" class="key-item" data-family="${fid}"><span style="background:${c}"></span>${esc(t)}</button>`
+    : `<span class="key-item"><span style="background:${c}"></span>${esc(t)}</span>`)).join("");
+}
+$("color-key").addEventListener("click", handleAction);
+
+// Save the current view as a picture, with a caption.
+$("save-image").addEventListener("click", () => {
+  const src = graph.renderer().domElement;
+  const out = document.createElement("canvas");
+  out.width = src.width;
+  out.height = src.height + 64;
+  const g = out.getContext("2d");
+  g.fillStyle = theme.bg;
+  g.fillRect(0, 0, out.width, out.height);
+  g.drawImage(src, 0, 0);
+  g.fillStyle = theme.ink;
+  g.font = "600 22px Inter, system-ui, sans-serif";
+  g.fillText("Survival Universe", 24, src.height + 40);
+  g.fillStyle = theme.muted;
+  g.font = "16px Inter, system-ui, sans-serif";
+  const caption = $("active").innerText.replace(/×/g, "").replace(/\s+/g, " ").trim() || $("count").textContent;
+  g.fillText(caption.slice(0, 120), 230, src.height + 40);
+  const a = document.createElement("a");
+  a.download = "survival-universe.png";
+  a.href = out.toDataURL("image/png");
+  a.click();
+});
+
 // ---------- List view ----------
 function renderList() {
   const { nodes, links } = graph.graphData();
@@ -1216,7 +1522,16 @@ function renderInsights() {
   const unreachable = data.people.length - dist.size;
   const avg = ([...dist.values()].reduce((s, d) => s + d, 0) / (dist.size - 1)).toFixed(1);
 
+  // Families that cross shows first: they are the ones show labels would never reveal.
+  const bigFamilies = families.list.filter((f) => f.members.length > 2).sort((a, b) => b.cross - a.cross || b.members.length - a.members.length).slice(0, 12);
+  const loadBearing = Object.entries(bridgeRank).sort((a, b) => a[1] - b[1]).slice(0, 8).map(([id]) => id);
   $("insights-body").innerHTML = `
+    <h4>Load-bearing players</h4>
+    <p>The most shortest chains between other players run through them. Take one away and the universe drifts apart.</p>
+    <ol>${loadBearing.map((id) => `<li><button type="button" class="row-btn" data-go="${id}">${esc(plain(personById[id].name))}</button> <span class="n">${Math.round(bridging[id] * 100)}</span></li>`).join("")}</ol>
+    <h4>Hidden families</h4>
+    <p>Groups who keep meeting, found from the graph itself rather than show labels.</p>
+    <ol>${bigFamilies.map((f) => `<li><button type="button" class="row-btn" data-family="${f.id}"><span style="color:${f.color}">●</span> ${esc(f.name)}</button> <span class="n">${f.members.length}${f.cross ? `, ${f.cross} cross-show` : ""}</span></li>`).join("")}</ol>
     <h4>Legends</h4>
     <p>Two or more titles, or three or more shows. They sit at the center of the Rings layout.</p>
     <ol>${legends.map((p) => `<li><button type="button" class="row-btn" data-go="${p.id}">${esc(plain(p.name))}</button> <span class="n">${p.showIds.length} shows${p.titles ? `, ${p.titles} title${p.titles > 1 ? "s" : ""}` : ""}</span></li>`).join("")}</ol>
@@ -1234,6 +1549,125 @@ function renderInsights() {
     <ol>${only.map(({ id, shows: s }) => `<li><button type="button" class="row-btn" data-go="${id}">${esc(plain(personById[id].name))}</button> <span class="n">${esc(s[0])} and ${esc(s[1])}</span></li>`).join("")}</ol>
   `;
 }
+
+// ---------- The guided tour ----------
+function resetView() {
+  stop();
+  Object.assign(state, {
+    view: "players", layout: "web", who: "veterans", year: LAST, strong: true,
+    group: null, ego: null, path: null, selected: null, compare: [], colorBy: "show", sizeBy: "connections", stepFrom: null,
+  });
+  state.shows = new Set(data.shows.map((x) => x.id));
+  setPressed("view", "players");
+  setPressed("layout", "web");
+  setPressed("who", "veterans");
+  syncChips();
+  syncYear();
+  $("strong").checked = true;
+  $("color-by").value = "show";
+  $("size-by").value = "connections";
+  updateKey();
+  hideInfo();
+  closeList();
+}
+
+const HUB = "hong-jin-ho";
+const titleKing = data.people.reduce((a, b) => (b.titles > a.titles ? b : a));
+const legendsN = data.people.filter((x) => tierOf(x).name === "Legend").length;
+const topBridges = Object.entries(bridgeRank).sort((a, b) => a[1] - b[1]).slice(0, 3).map(([id]) => plain(personById[id].name));
+const circuit = families.list.filter((f) => f.members.length > 4).sort((a, b) => b.cross - a.cross)[0];
+
+const TOUR = [
+  {
+    title: "The universe",
+    text: `${data.people.length} players across ${data.shows.length} shows. Every light is a player, colored by the show they played most; a line means two people shared a season, and light flows from the earlier debut to the later.`,
+    run: () => render(() => fit(1600)),
+  },
+  {
+    title: "Where it began",
+    text: "2013: The Genius puts thirteen players in a room with one game a week and a death match for the loser. Hong Jin-ho wins the first season.",
+    run: () => { state.year = FIRST; state.who = "all"; setPressed("who", "all"); syncYear(); render(() => fit(1400)); },
+  },
+  {
+    title: "The great bridge",
+    text: `Hong Jin-ho has played ${personById[HUB].apps.length} seasons on ${personById[HUB].showIds.length} shows with ${mateCount[HUB]} different people, more than anyone. Light up his circle and most of the universe turns on.`,
+    run: () => toggleCircle(HUB),
+  },
+  {
+    title: "The champion",
+    text: `${plain(titleKing.name)} has won ${titleKing.titles} titles on ${new Set(titleKing.apps.filter((a) => a.won).map((a) => seasonById[a.season].show)).size} different shows: the genre's most decorated player, and back for The Devil's Plan season 3.`,
+    run: () => focusPerson(titleKing.id),
+  },
+  {
+    title: "Legends at the core",
+    text: `${legendsN} legends (two or more titles, or three or more shows) sit at the center. Crossovers circle them, then veterans of one show.`,
+    run: () => { state.layout = "rings"; setPressed("layout", "rings"); graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 1200); render(() => fit(1400)); },
+  },
+  {
+    title: "A decade in motion",
+    text: "Everyone placed by the year they debuted. The Genius generation on the left; the arcs show how its players kept turning up in the shows that followed.",
+    run: () => { state.layout = "flow"; setPressed("layout", "flow"); graph.cameraPosition({ x: 0, y: 0, z: 900 }, { x: 0, y: 0, z: 0 }, 1200); render(() => fit(1400)); },
+  },
+  {
+    title: "Hidden families",
+    text: `Colored by family: groups found from who keeps meeting whom, not from show labels. The busiest circuit, ${circuit ? circuit.name : "the crossover crowd"}, has ${circuit ? circuit.members.length : 0} players who keep crossing paths.`,
+    run: () => { state.colorBy = "family"; $("color-by").value = "family"; updateKey(); render(() => fit(1400)); },
+  },
+  {
+    title: "Who holds it together",
+    text: `Sized by bridging: how many shortest chains between other players run through each one. ${topBridges.join(", ")} are the universe's load-bearing players.`,
+    run: () => { state.sizeBy = "bridging"; $("size-by").value = "bridging"; render(() => fit(1400)); },
+  },
+  {
+    title: "Six degrees",
+    text: "A Go legend and a CrossFit champion: four steps apart, through The Devil's Plan and Synchro Game.",
+    run: () => { setPick("from", "lee-se-dol"); setPick("to", "amotti"); runPath("lee-se-dol", "amotti"); },
+  },
+  {
+    title: "The reunion",
+    text: "The Devil's Plan: Dead Again brings sixteen players together on November 10. Here is everyone they have already met.",
+    run: () => setGroup("devils-plan-3"),
+  },
+];
+
+const tour = { active: false, i: 0, timer: null, auto: true };
+function showStep(i) {
+  tour.i = Math.max(0, Math.min(TOUR.length - 1, i));
+  const step = TOUR[tour.i];
+  resetView();
+  step.run();
+  $("tour-title").textContent = step.title;
+  $("tour-text").textContent = step.text;
+  $("tour-step").textContent = `${tour.i + 1} / ${TOUR.length}`;
+  $("tour-prev").disabled = tour.i === 0;
+  $("tour-next").textContent = tour.i === TOUR.length - 1 ? "Finish" : "Next";
+  $("tour-bar").style.width = `${((tour.i + 1) / TOUR.length) * 100}%`;
+  clearTimeout(tour.timer);
+  if (tour.auto && tour.i < TOUR.length - 1) tour.timer = setTimeout(() => showStep(tour.i + 1), 10000);
+}
+function startTour() {
+  tour.active = true;
+  tour.auto = !reduceMotion;
+  $("tour-auto").setAttribute("aria-pressed", String(tour.auto));
+  $("tour").hidden = false;
+  if (narrow()) $("more").open = false;
+  showStep(0);
+}
+function endTour() {
+  tour.active = false;
+  clearTimeout(tour.timer);
+  $("tour").hidden = true;
+  resetView();
+  render();
+}
+$("tour-next").addEventListener("click", () => (tour.i === TOUR.length - 1 ? endTour() : showStep(tour.i + 1)));
+$("tour-prev").addEventListener("click", () => showStep(tour.i - 1));
+$("tour-exit").addEventListener("click", endTour);
+$("tour-auto").addEventListener("click", () => {
+  tour.auto = !tour.auto;
+  $("tour-auto").setAttribute("aria-pressed", String(tour.auto));
+  showStep(tour.i);
+});
 
 // ---------- Search with suggestions ----------
 const fold = (s) => s.toLowerCase().replace(/[\s\-.]/g, "");
@@ -1313,7 +1747,11 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "/" && !typing) {
     e.preventDefault();
     $("find").focus();
+  } else if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && !typing && state.selected?.kind === "person") {
+    e.preventDefault();
+    stepConnection(e.key === "ArrowRight" ? 1 : -1);
   } else if (e.key === "Escape" && !typing) {
+    if (tour.active) return endTour();
     if (state.list) closeList();
     else if (state.selected) clearSelection();
     else if (state.path) clearPath();
@@ -1331,8 +1769,11 @@ function writeUrl() {
   if (state.year < LAST) q.set("year", state.year);
   if (!state.strong) q.set("strong", "0");
   if (state.dims !== defaultDims) q.set("flat", state.dims === 2 ? "1" : "0");
-  if (state.group) q.set("group", state.group.except);
+  if (state.group?.except) q.set("group", state.group.except);
   if (state.ego) q.set("circle", state.ego);
+  if (state.colorBy !== "show") q.set("color", state.colorBy);
+  if (state.sizeBy !== "connections") q.set("size", state.sizeBy);
+  if (state.compare.length) q.set("compare", state.compare.join(","));
   if (state.path) {
     q.set("from", state.path[0]);
     q.set("to", state.path.at(-1));
@@ -1356,6 +1797,10 @@ function readUrl() {
   if (q.get("flat") === "1") state.dims = 2;
   if (q.get("flat") === "0") state.dims = 3;
   if (q.get("circle") && personById[q.get("circle")]) state.ego = q.get("circle");
+  if (["tier", "debut", "family"].includes(q.get("color"))) state.colorBy = q.get("color");
+  if (["bridging", "titles", "seasons"].includes(q.get("size"))) state.sizeBy = q.get("size");
+  $("color-by").value = state.colorBy;
+  $("size-by").value = state.sizeBy;
   setPressed("view", state.view);
   setPressed("layout", state.layout);
   setPressed("who", state.who);
@@ -1375,6 +1820,7 @@ addEventListener("resize", size);
 size();
 if (narrow()) $("more").open = false;
 renderInsights();
+updateKey();
 
 // Open from far away and glide in once the layout settles.
 graph.cameraPosition({ x: 0, y: 0, z: 2600 });
@@ -1389,6 +1835,11 @@ if (q.get("group") && seasonById[q.get("group")]) {
   const id = state.ego;
   state.ego = null;
   toggleCircle(id);
+} else if (q.get("compare")) {
+  render(null);
+  for (const id of q.get("compare").split(",").filter((x) => personById[x]).slice(0, 4)) toggleCompare(id);
+} else if (q.has("tour")) {
+  startTour();
 } else {
   render(() => fit(1800));
   if (q.get("focus")) focusPerson(q.get("focus"));

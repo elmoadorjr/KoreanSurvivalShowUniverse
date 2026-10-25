@@ -36,6 +36,17 @@ npm run build     # static site in dist/
 - `/devils-plan-3/`: The Devil's Plan: Dead Again (November 2026): all sixteen
   players' records and every pair who has played together before
 - `/network/`: the explorer (three.js via 3d-force-graph).
+  - A guided tour (▶ Take the tour, or `?tour`): ten cinematic scenes with
+    captions written from the data, auto-advancing or step by step.
+  - Analytics computed in the browser: bridging (betweenness: how many
+    shortest chains run through each player) and hidden families (Louvain
+    communities, weighted so small casts bind harder than big ones).
+  - Color by main show, career tier, debut year or family; size by
+    connections, bridging, titles or seasons.
+  - Compare up to four players (shift-click, or Compare in the panel): side
+    by side stats, career strips, seasons together and co-players in common.
+  - ← → step through the selected player's strongest connections; Save
+    image exports the current view with a caption.
   - Three layouts: Web (players pulled together by shared seasons), Rings
     (legends at the center, then crossovers, veterans and one-season
     players) and Flow (left to right by debut year, lines arcing forward).
@@ -54,8 +65,9 @@ npm run build     # static site in dist/
   - Insights: most connected, most titles, steps from Hong Jin-ho, and the
     players who are the only link between two shows.
   - Show filters grouped by kind, a sortable list view of the same data, and
-    the whole view in the URL (`view`, `who`, `shows`, `year`, `strong`,
-    `flat`, `focus`, `from`/`to`, `group`, `circle`).
+    the whole view in the URL (`view`, `layout`, `who`, `shows`, `year`,
+    `strong`, `flat`, `color`, `size`, `focus`, `from`/`to`, `group`,
+    `circle`, `compare`, `tour`).
 
 ## Editing the data
 
