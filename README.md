@@ -15,6 +15,11 @@ npm run dev       # local dev server
 npm run build     # static site in dist/
 ```
 
+## Hosting
+
+`netlify.toml` holds the Netlify build settings (`npm run build`, publish
+`dist/`). Any static host works: the build output is plain files.
+
 ## Pages
 
 - `/`: the shows, the crossover players and the hall of champions
