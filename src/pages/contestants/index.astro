@@ -1,0 +1,70 @@
+---
+import Base from "../../layouts/Base.astro";
+import { shows, contestants, initials } from "../../lib/universe.mjs";
+---
+<Base title="Contestants" description="Every contestant across the Korean survival show universe, with a bio page for each.">
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Contestants</div>
+      <h1>Every player</h1>
+      <p class="lede">{contestants.length} profiles across {shows.length} shows. Search by name, in English or Korean, or by what they do.</p>
+    </section>
+
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Search players" aria-label="Search players" />
+      <select id="show" aria-label="Filter by show">
+        <option value="">All shows</option>
+        {shows.map((s) => <option value={s.id}>{s.name}</option>)}
+      </select>
+      <label><input id="multi" type="checkbox" /> Played more than one season</label>
+      <label><input id="won" type="checkbox" /> Winners</label>
+    </div>
+    <p class="count" id="count" aria-live="polite"></p>
+
+    <div class="grid people" id="list">
+      {contestants.map((c) => (
+        <a
+          class:list={["card person", { won: c.apps.some((a) => a.entry.place === 1) }]}
+          href={`/contestants/${c.id}/`}
+          style={`--show:${c.shows[0].color}`}
+          data-search={`${c.name} ${c.ko ?? ""} ${c.known ?? ""}`.toLowerCase()}
+          data-shows={c.shows.map((s) => s.id).join(" ")}
+          data-multi={c.apps.length > 1 ? "1" : ""}
+          data-won={c.apps.some((a) => a.entry.place === 1) ? "1" : ""}
+        >
+          <span class="avatar" aria-hidden="true">{initials(c.name)}{c.apps.some((a) => a.entry.place === 1) && <span class="crown">👑</span>}</span>
+          <span class="who">
+            <span class="name">{c.name}</span>
+            <span class="sub">{c.known ?? c.shows.map((s) => s.name).join(", ")}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const q = $("q"), show = $("show"), multi = $("multi"), won = $("won"), count = $("count");
+    const cards = [...document.querySelectorAll("#list > a")];
+    const params = new URLSearchParams(location.search);
+    if (params.get("multi")) multi.checked = true;
+    if (params.get("show")) show.value = params.get("show");
+
+    function apply() {
+      const term = q.value.trim().toLowerCase();
+      let n = 0;
+      for (const c of cards) {
+        const ok =
+          (!term || c.dataset.search.includes(term)) &&
+          (!show.value || c.dataset.shows.split(" ").includes(show.value)) &&
+          (!multi.checked || c.dataset.multi) &&
+          (!won.checked || c.dataset.won);
+        c.hidden = !ok;
+        if (ok) n++;
+      }
+      count.textContent = `${n} of ${cards.length} players`;
+    }
+    [q, show, multi, won].forEach((el) => el.addEventListener("input", apply));
+    apply();
+  </script>
+</Base>

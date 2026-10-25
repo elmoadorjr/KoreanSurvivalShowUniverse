@@ -1,0 +1,17 @@
+---
+interface Props {
+  show: any;
+}
+const { show } = Astro.props;
+const players = new Set(show.seasons.flatMap((s) => s.cast.map((c) => c.person))).size;
+---
+<a class="card show-card" href={`/shows/${show.id}/`} style={`--show:${show.color}`}>
+  <h3>{show.name}<span class="ko">{show.ko}</span></h3>
+  <div class="meta">{show.network} · {show.years}</div>
+  <p>{show.blurb}</p>
+  <div class="chips">
+    <span class="chip">{show.kind}</span>
+    <span class="chip">{show.seasons.length} {show.seasons.length === 1 ? "season" : "seasons"}</span>
+    <span class="chip">{players} profiles</span>
+  </div>
+</a>

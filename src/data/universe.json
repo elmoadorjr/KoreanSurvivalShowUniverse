@@ -1,0 +1,1582 @@
+{
+  "shows": [
+    {
+      "id": "the-genius",
+      "name": "The Genius",
+      "ko": "더 지니어스",
+      "network": "tvN",
+      "years": "2013 to 2015",
+      "kind": "Strategy",
+      "color": "#c0394b",
+      "blurb": "The show that started it all. Thirteen players, one game a week, and a death match for whoever comes last. Alliances, betrayals and the garnets, produced by Jung Jong-yeon.",
+      "seasons": [
+        {
+          "id": "the-genius-1",
+          "title": "Rules of the Game",
+          "number": 1,
+          "aired": "2013",
+          "complete": true,
+          "cast": [
+            {
+              "person": "hong-jin-ho",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "kim-kyung-ran",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "lee-sang-min",
+              "place": 3
+            },
+            {
+              "person": "kim-sung-kyu",
+              "place": 4
+            },
+            {
+              "person": "park-eun-ji",
+              "place": 5
+            },
+            {
+              "person": "cha-min-su"
+            },
+            {
+              "person": "cha-yu-ram"
+            },
+            {
+              "person": "choi-chang-yeop"
+            },
+            {
+              "person": "choi-jung-moon"
+            },
+            {
+              "person": "kim-gura"
+            },
+            {
+              "person": "kim-poong"
+            },
+            {
+              "person": "kim-min-seo",
+              "result": "Eliminated in episode 2"
+            },
+            {
+              "person": "lee-jun-seok",
+              "result": "Eliminated in episode 1"
+            }
+          ]
+        },
+        {
+          "id": "the-genius-2",
+          "title": "Rule Breaker",
+          "number": 2,
+          "aired": "2013 to 2014",
+          "complete": true,
+          "cast": [
+            {
+              "person": "lee-sang-min",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "lim-yo-hwan",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "yoo-jung-hyun",
+              "place": 3
+            },
+            {
+              "person": "eun-ji-won",
+              "place": 4
+            },
+            {
+              "person": "jo-yoo-young",
+              "place": 5
+            },
+            {
+              "person": "noh-hong-chul",
+              "place": 6
+            },
+            {
+              "person": "hong-jin-ho",
+              "place": 7
+            },
+            {
+              "person": "lee-doo-hee",
+              "place": 8
+            },
+            {
+              "person": "lim-yoon-sun",
+              "place": 9
+            },
+            {
+              "person": "lee-eun-gyeol",
+              "place": 10
+            },
+            {
+              "person": "lee-da-hye",
+              "place": 11
+            },
+            {
+              "person": "kim-jae-kyung",
+              "place": 12
+            },
+            {
+              "person": "nam-hwee-jong",
+              "place": 13,
+              "result": "First eliminated"
+            }
+          ]
+        },
+        {
+          "id": "the-genius-3",
+          "title": "Black Garnet",
+          "number": 3,
+          "aired": "2014",
+          "complete": true,
+          "cast": [
+            {
+              "person": "jang-dong-min",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "oh-hyun-min",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "choi-yeon-seung",
+              "place": 3
+            },
+            {
+              "person": "ha-yeon-joo",
+              "place": 4
+            },
+            {
+              "person": "shin-ah-young"
+            },
+            {
+              "person": "lee-jong-beom"
+            },
+            {
+              "person": "kim-jung-hoon"
+            },
+            {
+              "person": "yoo-su-jin"
+            },
+            {
+              "person": "nam-hwee-jong"
+            },
+            {
+              "person": "kim-yoo-hyun"
+            },
+            {
+              "person": "kang-yong-suk",
+              "result": "Eliminated in episode 3"
+            },
+            {
+              "person": "kim-kyung-hoon",
+              "result": "Eliminated in episode 2"
+            },
+            {
+              "person": "kwon-ju-ri",
+              "result": "Eliminated in episode 1"
+            }
+          ]
+        },
+        {
+          "id": "the-genius-4",
+          "title": "Grand Final",
+          "number": 4,
+          "aired": "2015",
+          "complete": true,
+          "note": "An all-star season: every player had played before.",
+          "cast": [
+            {
+              "person": "jang-dong-min",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "kim-kyung-hoon",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "oh-hyun-min",
+              "place": 3
+            },
+            {
+              "person": "hong-jin-ho",
+              "place": 4
+            },
+            {
+              "person": "lee-jun-seok",
+              "place": 5
+            },
+            {
+              "person": "kim-kyung-ran",
+              "place": 6
+            },
+            {
+              "person": "choi-yeon-seung"
+            },
+            {
+              "person": "kim-yoo-hyun"
+            },
+            {
+              "person": "choi-jung-moon"
+            },
+            {
+              "person": "lim-yoon-sun"
+            },
+            {
+              "person": "lee-sang-min",
+              "place": 11,
+              "result": "Eliminated in episode 3"
+            },
+            {
+              "person": "lim-yo-hwan",
+              "place": 12,
+              "result": "Eliminated in episode 2"
+            },
+            {
+              "person": "yoo-jung-hyun",
+              "place": 13,
+              "result": "Eliminated in episode 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "society-game",
+      "name": "Society Game",
+      "ko": "소사이어티 게임",
+      "network": "tvN",
+      "years": "2016 to 2017",
+      "kind": "Social",
+      "color": "#3f7cac",
+      "blurb": "Twenty-two players split between two villages, Nopdong and Madong, for fourteen days. Each village picks its own leader and its own way to rule, then fights the other for survival.",
+      "seasons": [
+        {
+          "id": "society-game-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2016 to 2017",
+          "complete": false,
+          "note": "Roster in progress: 22 players took part. Placements are left out until they can be checked.",
+          "cast": [
+            {
+              "person": "hyun-kyung-ryeol"
+            },
+            {
+              "person": "jung-in-jik"
+            },
+            {
+              "person": "kwon-a-sol"
+            },
+            {
+              "person": "mj-kim"
+            },
+            {
+              "person": "faro"
+            },
+            {
+              "person": "lee-byung-gwan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "money-game",
+      "name": "Money Game",
+      "ko": "머니게임",
+      "network": "YouTube (Jin Yong-jin)",
+      "years": "2021",
+      "kind": "Indie web show",
+      "color": "#2e9e6b",
+      "blurb": "The indie hit. Creator Jin Yong-jin adapted Bae Jin-soo's webtoon: players locked in a studio for fourteen days, where every purchase, even water, comes out of a shared prize pool.",
+      "seasons": [
+        {
+          "id": "money-game-1",
+          "title": "Money Game",
+          "number": 1,
+          "aired": "April to May 2021",
+          "complete": true,
+          "cast": [
+            {
+              "person": "lee-lu-ri",
+              "place": 1,
+              "result": "Winner (shared)"
+            },
+            {
+              "person": "nigar",
+              "place": 1,
+              "result": "Winner (shared)"
+            },
+            {
+              "person": "pie"
+            },
+            {
+              "person": "gaogai"
+            },
+            {
+              "person": "logic-king-jeon-gi"
+            },
+            {
+              "person": "park-jun-hyung"
+            },
+            {
+              "person": "gong-hyuk-jun"
+            },
+            {
+              "person": "big-hyun-bae"
+            },
+            {
+              "person": "yook-ji-dam"
+            },
+            {
+              "person": "sanbeom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bloody-game",
+      "name": "The Bloody Game",
+      "ko": "피의 게임",
+      "network": "MBC, then Wavve",
+      "years": "2021 to 2025",
+      "kind": "Strategy",
+      "color": "#8e1b2b",
+      "blurb": "A house, a vote and a basement. Players vote each other out, the outcasts survive underground, and the house is never as safe as it looks. Planned with Money Game's Jin Yong-jin.",
+      "seasons": [
+        {
+          "id": "bloody-game-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2021 (MBC)",
+          "complete": true,
+          "cast": [
+            {
+              "person": "lee-tae-gyun",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "choi-yeon-seung",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "song-seo-hyun",
+              "place": 3
+            },
+            {
+              "person": "park-ji-min"
+            },
+            {
+              "person": "jeong-keun-woo"
+            },
+            {
+              "person": "heo-joon-young"
+            },
+            {
+              "person": "park-jae-il"
+            },
+            {
+              "person": "queen-wasabi"
+            },
+            {
+              "person": "dex"
+            },
+            {
+              "person": "lee-na-young"
+            }
+          ]
+        },
+        {
+          "id": "bloody-game-2",
+          "title": "Season 2",
+          "number": 2,
+          "aired": "2023 (Wavve)",
+          "complete": true,
+          "note": "Filmed on location in Bali.",
+          "cast": [
+            {
+              "person": "lee-jin-hyung",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "hong-jin-ho"
+            },
+            {
+              "person": "ha-seung-jin"
+            },
+            {
+              "person": "dex"
+            },
+            {
+              "person": "park-ji-min"
+            },
+            {
+              "person": "seo-chul-gu"
+            },
+            {
+              "person": "pie"
+            },
+            {
+              "person": "nucks"
+            },
+            {
+              "person": "shin-hyun-ji"
+            },
+            {
+              "person": "yoo-ri-sa"
+            },
+            {
+              "person": "hyun-sung-joo"
+            },
+            {
+              "person": "yoon-bi"
+            },
+            {
+              "person": "kerrigan-may"
+            },
+            {
+              "person": "fujii-mina"
+            }
+          ]
+        },
+        {
+          "id": "bloody-game-3",
+          "title": "Season 3",
+          "number": 3,
+          "aired": "2024 (Wavve)",
+          "complete": true,
+          "cast": [
+            {
+              "person": "jang-dong-min",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "hong-jin-ho",
+              "result": "Finalist"
+            },
+            {
+              "person": "crocodile",
+              "result": "Finalist"
+            },
+            {
+              "person": "heo-seong-beom",
+              "result": "Finalist"
+            },
+            {
+              "person": "kim-kyung-ran"
+            },
+            {
+              "person": "lim-hyun-seo"
+            },
+            {
+              "person": "seo-chul-gu"
+            },
+            {
+              "person": "mj-kim"
+            },
+            {
+              "person": "yoo-ri-sa"
+            },
+            {
+              "person": "joo-eon-gyu"
+            },
+            {
+              "person": "pani-bottle"
+            },
+            {
+              "person": "chungjuman"
+            },
+            {
+              "person": "choi-hye-seon"
+            },
+            {
+              "person": "kim-min-a"
+            },
+            {
+              "person": "lee-ji-na"
+            },
+            {
+              "person": "kim-young-kwang"
+            },
+            {
+              "person": "si-yoon"
+            },
+            {
+              "person": "steve-yeh"
+            }
+          ]
+        },
+        {
+          "id": "bloody-game-x",
+          "title": "X",
+          "number": 4,
+          "aired": "2025",
+          "complete": false,
+          "note": "Spin-off with 20 players in teams from the first episode. Roster in progress.",
+          "cast": [
+            {
+              "person": "kang-ji-hoo",
+              "place": 1,
+              "result": "Winner"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "physical-100",
+      "name": "Physical: 100",
+      "ko": "피지컬: 100",
+      "network": "Netflix",
+      "years": "2023 to 2025",
+      "kind": "Physical",
+      "color": "#d9822b",
+      "blurb": "One hundred of the fittest bodies in Korea, each with a plaster cast of their torso, competing for the most perfect physique. Lose a quest and your torso gets smashed.",
+      "seasons": [
+        {
+          "id": "physical-100-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2023",
+          "prize": "300 million won",
+          "complete": false,
+          "note": "100 contestants took part. Featured here: the final five and other well-known names.",
+          "cast": [
+            {
+              "person": "woo-jin-yong",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "jung-hae-min",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "jo-jin-hyeong",
+              "result": "Final five"
+            },
+            {
+              "person": "park-jin-yong",
+              "result": "Final five"
+            },
+            {
+              "person": "kim-min-cheol",
+              "result": "Final five"
+            },
+            {
+              "person": "yun-sung-bin"
+            },
+            {
+              "person": "choo-sung-hoon"
+            },
+            {
+              "person": "shim-eu-ddeum"
+            },
+            {
+              "person": "hong-beom-seok"
+            },
+            {
+              "person": "yang-hak-seon"
+            },
+            {
+              "person": "nam-kyung-jin"
+            },
+            {
+              "person": "jang-eun-sil"
+            },
+            {
+              "person": "kim-kyung-jin"
+            },
+            {
+              "person": "kim-kang-min"
+            }
+          ]
+        },
+        {
+          "id": "physical-100-2",
+          "title": "Underground",
+          "number": 2,
+          "aired": "2024",
+          "prize": "300 million won",
+          "complete": false,
+          "note": "100 contestants took part, in an underground mine set. Featured here: the final four and other well-known names.",
+          "cast": [
+            {
+              "person": "amotti",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "hong-beom-seok",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "andre-jin",
+              "place": 3
+            },
+            {
+              "person": "justin-harvey",
+              "place": 4
+            },
+            {
+              "person": "jang-sung-yeop"
+            }
+          ]
+        },
+        {
+          "id": "physical-asia",
+          "title": "Asia",
+          "number": 3,
+          "aired": "2025",
+          "prize": "1 billion won",
+          "complete": false,
+          "note": "Eight national teams of six. South Korea beat Mongolia 2 to 0 in the final; Australia finished fourth. Featured here: the winning Korean team and two famous captains.",
+          "cast": [
+            {
+              "person": "kim-dong-hyun",
+              "place": 1,
+              "result": "Winner, captain of South Korea",
+              "captain": true
+            },
+            {
+              "person": "yun-sung-bin",
+              "place": 1,
+              "result": "Winner, South Korea"
+            },
+            {
+              "person": "amotti",
+              "place": 1,
+              "result": "Winner, South Korea"
+            },
+            {
+              "person": "jang-eun-sil",
+              "place": 1,
+              "result": "Winner, South Korea"
+            },
+            {
+              "person": "kim-min-jae",
+              "place": 1,
+              "result": "Winner, South Korea"
+            },
+            {
+              "person": "choi-seung-yeon",
+              "place": 1,
+              "result": "Winner, South Korea"
+            },
+            {
+              "person": "robert-whittaker",
+              "place": 4,
+              "result": "Captain of Australia, fourth"
+            },
+            {
+              "person": "manny-pacquiao",
+              "result": "Captain of the Philippines"
+            }
+          ],
+          "teams": true
+        }
+      ]
+    },
+    {
+      "id": "siren",
+      "name": "Siren: Survive the Island",
+      "ko": "사이렌: 불의 섬",
+      "network": "Netflix",
+      "years": "2023",
+      "kind": "Physical",
+      "color": "#c2557a",
+      "blurb": "Twenty-four women in six teams by profession: police, firefighters, bodyguards, soldiers, athletes and stuntwomen. Seven days on an island, guarding a base and stealing flags.",
+      "seasons": [
+        {
+          "id": "siren-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2023",
+          "complete": false,
+          "note": "Team Athlete won, after an alliance with Team Firefighters. Roster in progress.",
+          "cast": [
+            {
+              "person": "kim-hee-jeong",
+              "place": 1,
+              "result": "Winner, leader of Team Athlete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "devils-plan",
+      "name": "The Devil's Plan",
+      "ko": "데블스 플랜",
+      "network": "Netflix",
+      "years": "2023 to 2025",
+      "kind": "Strategy",
+      "color": "#6b3fa0",
+      "blurb": "The Genius producer Jung Jong-yeon's return. Players live together for a week, earning pieces in main matches and fighting to stay out of prison.",
+      "seasons": [
+        {
+          "id": "devils-plan-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2023",
+          "prize": "250 million won",
+          "complete": true,
+          "cast": [
+            {
+              "person": "ha-seok-jin",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "orbit",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "seo-dong-ju",
+              "place": 3
+            },
+            {
+              "person": "kwak-joon-bin",
+              "place": 4
+            },
+            {
+              "person": "seo-yu-min"
+            },
+            {
+              "person": "boo-seung-kwan"
+            },
+            {
+              "person": "park-kyung-lim"
+            },
+            {
+              "person": "lee-si-won"
+            },
+            {
+              "person": "cho-yeon-woo"
+            },
+            {
+              "person": "lee-hye-sung"
+            },
+            {
+              "person": "kim-dong-jae",
+              "place": 11
+            },
+            {
+              "person": "guillaume-patry",
+              "place": 12
+            }
+          ]
+        },
+        {
+          "id": "devils-plan-2",
+          "title": "Death Room",
+          "number": 2,
+          "aired": "2025",
+          "prize": "380 million won",
+          "complete": true,
+          "cast": [
+            {
+              "person": "jung-hyun-gyu",
+              "place": 1,
+              "result": "Winner"
+            },
+            {
+              "person": "yoon-so-hee",
+              "place": 2,
+              "result": "Runner-up"
+            },
+            {
+              "person": "lee-se-dol"
+            },
+            {
+              "person": "justin-h-min"
+            },
+            {
+              "person": "kyuhyun"
+            },
+            {
+              "person": "kang-ji-young"
+            },
+            {
+              "person": "7high"
+            },
+            {
+              "person": "lee-seung-hyun"
+            },
+            {
+              "person": "choi-hyun-joon"
+            },
+            {
+              "person": "chuu"
+            },
+            {
+              "person": "kim-ha-rin"
+            },
+            {
+              "person": "park-sang-yeon"
+            },
+            {
+              "person": "son-eun-yoo"
+            },
+            {
+              "person": "tino"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-influencer",
+      "name": "The Influencer",
+      "ko": "더 인플루언서",
+      "network": "Netflix",
+      "years": "2024",
+      "kind": "Social",
+      "color": "#e0a526",
+      "blurb": "Seventy-seven of Korea's biggest content creators compete to be the most influential, through likes, live broadcasts and attention games.",
+      "seasons": [
+        {
+          "id": "the-influencer-1",
+          "title": "Season 1",
+          "number": 1,
+          "aired": "2024",
+          "prize": "300 million won (withheld)",
+          "complete": false,
+          "note": "77 creators took part. Featured here: the winner and a few famous names.",
+          "cast": [
+            {
+              "person": "oking",
+              "place": 1,
+              "result": "Winner (prize withheld)"
+            },
+            {
+              "person": "jang-keun-suk"
+            },
+            {
+              "person": "risabae"
+            },
+            {
+              "person": "jung-ji-woo"
+            },
+            {
+              "person": "bbogumi"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "people": {
+    "hong-jin-ho": {
+      "name": "Hong Jin-ho",
+      "ko": "홍진호",
+      "known": "Former pro StarCraft player",
+      "bio": "One of the most famous StarCraft players of the 2000s, known as \"YellOw\" and for finishing second so often that the number 2 became his joke. He finally won first place on The Genius season 1 and became the genre's most familiar face, returning to The Genius twice and to The Bloody Game twice."
+    },
+    "kim-kyung-ran": {
+      "name": "Kim Kyung-ran",
+      "ko": "김경란",
+      "known": "Broadcaster, former announcer",
+      "bio": "A former news announcer who reached the final of The Genius season 1. She came back for the all-star Grand Final and, a decade later, for The Bloody Game season 3."
+    },
+    "lee-sang-min": {
+      "name": "Lee Sang-min",
+      "ko": "이상민",
+      "known": "Singer and producer",
+      "bio": "A singer and producer, formerly of the 1990s group Roo'Ra. Third on The Genius season 1, he won season 2, Rule Breaker, beating Lim Yo-hwan in the final."
+    },
+    "kim-sung-kyu": {
+      "name": "Kim Sung-kyu",
+      "ko": "김성규",
+      "known": "Singer, leader of INFINITE",
+      "bio": "Leader and main vocalist of the boy group INFINITE. Finished fourth on The Genius season 1."
+    },
+    "park-eun-ji": {
+      "name": "Park Eun-ji",
+      "ko": "박은지",
+      "known": "TV personality"
+    },
+    "cha-min-su": {
+      "name": "Cha Min-su (Jimmy Cha)",
+      "ko": "차민수",
+      "known": "Professional gambler and Go player"
+    },
+    "cha-yu-ram": {
+      "name": "Cha Yu-ram",
+      "ko": "차유람",
+      "known": "Pocket billiards player"
+    },
+    "choi-chang-yeop": {
+      "name": "Choi Chang-yeop",
+      "ko": "최창엽",
+      "known": "Actor"
+    },
+    "choi-jung-moon": {
+      "name": "Choi Jung-moon",
+      "ko": "최정문",
+      "known": "TV personality",
+      "bio": "Played The Genius season 1 and returned for the all-star Grand Final."
+    },
+    "kim-gura": {
+      "name": "Kim Gura",
+      "ko": "김구라",
+      "known": "Comedian and TV host"
+    },
+    "kim-poong": {
+      "name": "Kim Poong",
+      "ko": "김풍",
+      "known": "Webtoon artist"
+    },
+    "kim-min-seo": {
+      "name": "Kim Min-seo",
+      "ko": "김민서",
+      "known": "Actress"
+    },
+    "lee-jun-seok": {
+      "name": "Lee Jun-seok",
+      "ko": "이준석",
+      "known": "Politician",
+      "bio": "A politician who went on to lead a national party. Out in the first episode of The Genius season 1, he was still picked for the Grand Final and finished fifth."
+    },
+    "lim-yo-hwan": {
+      "name": "Lim Yo-hwan",
+      "ko": "임요환",
+      "known": "StarCraft legend \"BoxeR\"",
+      "bio": "The \"Emperor\" of StarCraft and the player who made esports a career in Korea. Runner-up on The Genius season 2, and an early exit in the Grand Final."
+    },
+    "yoo-jung-hyun": {
+      "name": "Yoo Jung-hyun",
+      "ko": "유정현",
+      "known": "Former announcer and politician"
+    },
+    "eun-ji-won": {
+      "name": "Eun Ji-won",
+      "ko": "은지원",
+      "known": "Singer, Sechs Kies"
+    },
+    "jo-yoo-young": {
+      "name": "Jo Yoo-young",
+      "ko": "조유영"
+    },
+    "noh-hong-chul": {
+      "name": "Noh Hong-chul",
+      "ko": "노홍철",
+      "known": "TV personality"
+    },
+    "lee-doo-hee": {
+      "name": "Lee Doo-hee",
+      "ko": "이두희",
+      "known": "Programmer and hacker"
+    },
+    "lim-yoon-sun": {
+      "name": "Lim Yoon-sun",
+      "ko": "임윤선",
+      "known": "Lawyer and TV personality",
+      "bio": "Played The Genius season 2 and returned for the Grand Final."
+    },
+    "lee-eun-gyeol": {
+      "name": "Lee Eun-gyeol",
+      "ko": "이은결",
+      "known": "Illusionist"
+    },
+    "lee-da-hye": {
+      "name": "Lee Da-hye",
+      "ko": "이다혜",
+      "known": "Professional Go player"
+    },
+    "kim-jae-kyung": {
+      "name": "Kim Jae-kyung",
+      "ko": "김재경",
+      "known": "Singer, Rainbow"
+    },
+    "nam-hwee-jong": {
+      "name": "Nam Hwee-jong",
+      "ko": "남휘종",
+      "bio": "The first player out of The Genius season 2, he returned for season 3, Black Garnet."
+    },
+    "jang-dong-min": {
+      "name": "Jang Dong-min",
+      "ko": "장동민",
+      "known": "Comedian",
+      "bio": "A comedian who turned out to be one of the genre's great players. He won The Genius season 3, won the all-star Grand Final, and nearly a decade later won The Bloody Game season 3."
+    },
+    "oh-hyun-min": {
+      "name": "Oh Hyun-min",
+      "ko": "오현민",
+      "known": "Student, later a quiz show regular",
+      "bio": "A young science student who finished second on Black Garnet and third on the Grand Final, known for fast calculation."
+    },
+    "choi-yeon-seung": {
+      "name": "Choi Yeon-seung",
+      "ko": "최연승",
+      "bio": "Third on The Genius: Black Garnet, he returned for the Grand Final and later finished second on the first season of The Bloody Game."
+    },
+    "ha-yeon-joo": {
+      "name": "Ha Yeon-joo",
+      "ko": "하연주",
+      "known": "Actress"
+    },
+    "shin-ah-young": {
+      "name": "Shin Ah-young",
+      "ko": "신아영",
+      "known": "Broadcaster"
+    },
+    "lee-jong-beom": {
+      "name": "Lee Jong-beom",
+      "ko": "이종범",
+      "known": "Webtoon artist"
+    },
+    "kim-jung-hoon": {
+      "name": "Kim Jung-hoon",
+      "ko": "김정훈",
+      "known": "Singer and actor, UN"
+    },
+    "yoo-su-jin": {
+      "name": "Yoo Su-jin",
+      "ko": "유수진"
+    },
+    "kim-yoo-hyun": {
+      "name": "Kim Yoo-hyun",
+      "ko": "김유현",
+      "bio": "Played Black Garnet and returned for the Grand Final."
+    },
+    "kang-yong-suk": {
+      "name": "Kang Yong-suk",
+      "ko": "강용석",
+      "known": "Lawyer and former lawmaker"
+    },
+    "kim-kyung-hoon": {
+      "name": "Kim Kyung-hoon",
+      "ko": "김경훈",
+      "bio": "Out in the second episode of Black Garnet, he came back for the Grand Final and went all the way to the final, finishing second to Jang Dong-min."
+    },
+    "kwon-ju-ri": {
+      "name": "Kwon Ju-ri",
+      "ko": "권주리"
+    },
+    "hyun-kyung-ryeol": {
+      "name": "Hyun Kyung-ryeol"
+    },
+    "jung-in-jik": {
+      "name": "Jung In-jik"
+    },
+    "kwon-a-sol": {
+      "name": "Kwon A-sol",
+      "ko": "권아솔",
+      "known": "Mixed martial artist"
+    },
+    "mj-kim": {
+      "name": "MJ Kim",
+      "ko": "엠제이킴",
+      "bio": "Played the first season of Society Game and returned to the genre for The Bloody Game season 3."
+    },
+    "faro": {
+      "name": "Faro"
+    },
+    "lee-byung-gwan": {
+      "name": "Lee Byung-gwan"
+    },
+    "lee-lu-ri": {
+      "name": "Lee Lu-ri",
+      "ko": "이루리",
+      "bio": "Shared the win on Money Game with Nigar."
+    },
+    "nigar": {
+      "name": "Nigar",
+      "ko": "니갸르",
+      "known": "Content creator",
+      "bio": "Shared the win on Money Game with Lee Lu-ri."
+    },
+    "pie": {
+      "name": "Pie",
+      "ko": "파이",
+      "known": "Streamer",
+      "bio": "An internet broadcaster who played Money Game and then The Bloody Game season 2."
+    },
+    "gaogai": {
+      "name": "Gaogai",
+      "ko": "가오가이",
+      "known": "Content creator"
+    },
+    "logic-king-jeon-gi": {
+      "name": "Logic King Jeon-gi",
+      "ko": "논리왕 전기",
+      "known": "Content creator"
+    },
+    "park-jun-hyung": {
+      "name": "Park Jun-hyung",
+      "ko": "박준형"
+    },
+    "gong-hyuk-jun": {
+      "name": "Gong Hyuk-jun",
+      "ko": "공혁준",
+      "known": "Streamer"
+    },
+    "big-hyun-bae": {
+      "name": "Big Hyun-bae",
+      "ko": "빅현배",
+      "known": "Content creator"
+    },
+    "yook-ji-dam": {
+      "name": "Yook Ji-dam",
+      "ko": "육지담",
+      "known": "Rapper"
+    },
+    "sanbeom": {
+      "name": "Sanbeom",
+      "ko": "산범",
+      "known": "Content creator"
+    },
+    "lee-tae-gyun": {
+      "name": "Lee Tae-gyun",
+      "ko": "이태균",
+      "bio": "Winner of the first season of The Bloody Game."
+    },
+    "song-seo-hyun": {
+      "name": "Song Seo-hyun",
+      "ko": "송서현"
+    },
+    "park-ji-min": {
+      "name": "Park Ji-min",
+      "ko": "박지민",
+      "bio": "Played the first two seasons of The Bloody Game."
+    },
+    "jeong-keun-woo": {
+      "name": "Jeong Keun-woo",
+      "ko": "정근우",
+      "known": "Former baseball player"
+    },
+    "heo-joon-young": {
+      "name": "Heo Joon-young",
+      "ko": "허준영"
+    },
+    "park-jae-il": {
+      "name": "Park Jae-il",
+      "ko": "박재일"
+    },
+    "queen-wasabi": {
+      "name": "Queen Wasabi",
+      "ko": "퀸 와사비",
+      "known": "Singer"
+    },
+    "dex": {
+      "name": "Dex",
+      "ko": "덱스",
+      "known": "YouTuber and TV personality",
+      "bio": "A former special forces operator turned YouTuber, who played the first two seasons of The Bloody Game."
+    },
+    "lee-na-young": {
+      "name": "Lee Na-young",
+      "ko": "이나영"
+    },
+    "lee-jin-hyung": {
+      "name": "Lee Jin-hyung",
+      "ko": "이진형",
+      "bio": "The only non-celebrity player of The Bloody Game season 2, and its winner."
+    },
+    "ha-seung-jin": {
+      "name": "Ha Seung-jin",
+      "ko": "하승진",
+      "known": "Former basketball player"
+    },
+    "seo-chul-gu": {
+      "name": "Seo Chul-gu",
+      "ko": "서출구",
+      "bio": "Played The Bloody Game seasons 2 and 3."
+    },
+    "nucks": {
+      "name": "Nucks",
+      "ko": "넉스"
+    },
+    "shin-hyun-ji": {
+      "name": "Shin Hyun-ji",
+      "ko": "신현지",
+      "known": "Model"
+    },
+    "yoo-ri-sa": {
+      "name": "Yoo Ri-sa",
+      "ko": "유리사",
+      "bio": "Played The Bloody Game seasons 2 and 3."
+    },
+    "hyun-sung-joo": {
+      "name": "Hyun Sung-joo",
+      "ko": "현성주"
+    },
+    "yoon-bi": {
+      "name": "Yoon Bi",
+      "ko": "윤비",
+      "known": "Rapper"
+    },
+    "kerrigan-may": {
+      "name": "Kerrigan May",
+      "ko": "케리건 메이"
+    },
+    "fujii-mina": {
+      "name": "Fujii Mina",
+      "ko": "후지이 미나",
+      "known": "Actress"
+    },
+    "crocodile": {
+      "name": "Crocodile (Ak-eo)",
+      "ko": "악어",
+      "known": "Streamer",
+      "bio": "A streamer who reached the final of The Bloody Game season 3."
+    },
+    "heo-seong-beom": {
+      "name": "Heo Seong-beom",
+      "ko": "허성범",
+      "bio": "Reached the final of The Bloody Game season 3."
+    },
+    "lim-hyun-seo": {
+      "name": "Lim Hyun-seo",
+      "ko": "임현서"
+    },
+    "joo-eon-gyu": {
+      "name": "Joo Eon-gyu",
+      "ko": "주언규",
+      "known": "Content creator"
+    },
+    "pani-bottle": {
+      "name": "Pani Bottle",
+      "ko": "빠니보틀",
+      "known": "Travel YouTuber"
+    },
+    "chungjuman": {
+      "name": "Chungjuman (Kim Seon-tae)",
+      "ko": "충주맨",
+      "known": "Public relations officer for Chungju City"
+    },
+    "choi-hye-seon": {
+      "name": "Choi Hye-seon",
+      "ko": "최혜선"
+    },
+    "kim-min-a": {
+      "name": "Kim Min-a",
+      "ko": "김민아",
+      "known": "TV personality"
+    },
+    "lee-ji-na": {
+      "name": "Lee Ji-na",
+      "ko": "이지나"
+    },
+    "kim-young-kwang": {
+      "name": "Kim Young-kwang",
+      "ko": "김영광"
+    },
+    "si-yoon": {
+      "name": "Si-yoon",
+      "ko": "시윤"
+    },
+    "steve-yeh": {
+      "name": "Steve Yeh",
+      "ko": "스티브예"
+    },
+    "kang-ji-hoo": {
+      "name": "Kang Ji-hoo",
+      "bio": "Winner of the spin-off The Bloody Game X."
+    },
+    "woo-jin-yong": {
+      "name": "Woo Jin-yong",
+      "ko": "우진용",
+      "known": "Former snowboard cross athlete, CrossFit coach",
+      "bio": "A former snowboard cross athlete who runs a CrossFit gym. He won the first season of Physical: 100, beating cyclist Jung Hae-min in the final."
+    },
+    "jung-hae-min": {
+      "name": "Jung Hae-min",
+      "ko": "정해민",
+      "known": "Cyclist",
+      "bio": "A cyclist whose endurance carried him to the final of Physical: 100 season 1."
+    },
+    "jo-jin-hyeong": {
+      "name": "Jo Jin-hyeong",
+      "ko": "조진형",
+      "known": "Strongman athlete"
+    },
+    "park-jin-yong": {
+      "name": "Park Jin-yong",
+      "ko": "박진용",
+      "known": "Athlete"
+    },
+    "kim-min-cheol": {
+      "name": "Kim Min-cheol",
+      "ko": "김민철"
+    },
+    "yun-sung-bin": {
+      "name": "Yun Sung-bin",
+      "ko": "윤성빈",
+      "known": "Olympic skeleton champion",
+      "bio": "Gold medallist in skeleton at the 2018 PyeongChang Winter Olympics. A favorite on Physical: 100 season 1, he came back with Team Korea and won Physical: Asia."
+    },
+    "choo-sung-hoon": {
+      "name": "Choo Sung-hoon",
+      "ko": "추성훈",
+      "known": "Mixed martial artist and judoka"
+    },
+    "shim-eu-ddeum": {
+      "name": "Shim Eu-ddeum",
+      "ko": "심으뜸",
+      "known": "Fitness creator"
+    },
+    "hong-beom-seok": {
+      "name": "Hong Beom-seok",
+      "ko": "홍범석",
+      "known": "Former firefighter",
+      "bio": "A former firefighter who played the first season of Physical: 100 and came back for Underground, where he made the final and finished second to Amotti."
+    },
+    "yang-hak-seon": {
+      "name": "Yang Hak-seon",
+      "ko": "양학선",
+      "known": "Olympic gymnast"
+    },
+    "nam-kyung-jin": {
+      "name": "Nam Kyung-jin",
+      "ko": "남경진",
+      "known": "Wrestler"
+    },
+    "jang-eun-sil": {
+      "name": "Jang Eun-sil",
+      "ko": "장은실",
+      "known": "Wrestler",
+      "bio": "A former national team wrestler, on Physical: 100 season 1 and on the winning Korean team of Physical: Asia."
+    },
+    "kim-kyung-jin": {
+      "name": "Kim Kyung-jin",
+      "ko": "김경진",
+      "known": "YouTuber and farmer"
+    },
+    "kim-kang-min": {
+      "name": "Kim Kang-min",
+      "ko": "김강민"
+    },
+    "amotti": {
+      "name": "Amotti (Kim Jae-hong)",
+      "ko": "아모띠",
+      "known": "CrossFit YouTuber",
+      "bio": "A CrossFit YouTuber who came back from a bad ankle injury to win Physical: 100 Underground, then won again with Team Korea on Physical: Asia."
+    },
+    "andre-jin": {
+      "name": "Andre Jin",
+      "ko": "앙드레 진",
+      "known": "Rugby player"
+    },
+    "justin-harvey": {
+      "name": "Justin Harvey",
+      "known": "Actor"
+    },
+    "jang-sung-yeop": {
+      "name": "Jang Sung-yeop",
+      "ko": "장성엽",
+      "known": "Bodybuilder"
+    },
+    "kim-dong-hyun": {
+      "name": "Kim Dong-hyun",
+      "ko": "김동현",
+      "known": "Mixed martial artist",
+      "bio": "A former UFC fighter who captained South Korea to the title on Physical: Asia."
+    },
+    "kim-min-jae": {
+      "name": "Kim Min-jae",
+      "ko": "김민재",
+      "known": "Ssireum wrestler"
+    },
+    "choi-seung-yeon": {
+      "name": "Choi Seung-yeon",
+      "ko": "최승연",
+      "known": "CrossFit athlete"
+    },
+    "robert-whittaker": {
+      "name": "Robert Whittaker",
+      "known": "Mixed martial artist, former UFC champion"
+    },
+    "manny-pacquiao": {
+      "name": "Manny Pacquiao",
+      "known": "Boxer and politician"
+    },
+    "kim-hee-jeong": {
+      "name": "Kim Hee-jeong",
+      "bio": "Led Team Athlete to victory on Siren: Survive the Island."
+    },
+    "ha-seok-jin": {
+      "name": "Ha Seok-jin",
+      "ko": "하석진",
+      "known": "Actor",
+      "bio": "An actor with an engineering degree who won the first season of The Devil's Plan and its 250 million won prize, taking the first two games of the final."
+    },
+    "orbit": {
+      "name": "Orbit",
+      "ko": "오르빗",
+      "bio": "Runner-up of The Devil's Plan season 1, remembered for playing to save other players from elimination."
+    },
+    "seo-dong-ju": {
+      "name": "Seo Dong-ju",
+      "ko": "서동주",
+      "known": "Lawyer"
+    },
+    "kwak-joon-bin": {
+      "name": "Kwak Joon-bin",
+      "ko": "곽준빈",
+      "known": "Travel YouTuber"
+    },
+    "seo-yu-min": {
+      "name": "Seo Yu-min",
+      "ko": "서유민"
+    },
+    "boo-seung-kwan": {
+      "name": "Boo Seung-kwan",
+      "ko": "부승관",
+      "known": "Singer, SEVENTEEN"
+    },
+    "park-kyung-lim": {
+      "name": "Park Kyung-lim",
+      "ko": "박경림",
+      "known": "TV host"
+    },
+    "lee-si-won": {
+      "name": "Lee Si-won",
+      "ko": "이시원",
+      "known": "Actress"
+    },
+    "cho-yeon-woo": {
+      "name": "Cho Yeon-woo",
+      "ko": "조연우",
+      "known": "Actor"
+    },
+    "lee-hye-sung": {
+      "name": "Lee Hye-sung",
+      "ko": "이혜성",
+      "known": "Announcer"
+    },
+    "kim-dong-jae": {
+      "name": "Kim Dong-jae",
+      "ko": "김동재"
+    },
+    "guillaume-patry": {
+      "name": "Guillaume Patry",
+      "ko": "기욤 패트리",
+      "known": "Former pro StarCraft player",
+      "bio": "A French StarCraft pro who made his name in the Korean leagues. Twelfth on The Devil's Plan season 1."
+    },
+    "jung-hyun-gyu": {
+      "name": "Jung Hyun-gyu",
+      "ko": "정현규",
+      "known": "Influencer and physical education student",
+      "bio": "Winner of The Devil's Plan: Death Room and its 380 million won prize, beating Yoon So-hee in the best-of-three final."
+    },
+    "yoon-so-hee": {
+      "name": "Yoon So-hee",
+      "ko": "윤소희",
+      "known": "Actress",
+      "bio": "An actress who reached the final of The Devil's Plan: Death Room and finished second."
+    },
+    "lee-se-dol": {
+      "name": "Lee Se-dol",
+      "ko": "이세돌",
+      "known": "Former Go player",
+      "bio": "One of the greatest Go players of his era and the only human to win a game against AlphaGo in their 2016 match."
+    },
+    "justin-h-min": {
+      "name": "Justin H. Min",
+      "ko": "저스틴 민",
+      "known": "Actor",
+      "bio": "An American actor known for The Umbrella Academy and BEEF."
+    },
+    "kyuhyun": {
+      "name": "Kyuhyun",
+      "ko": "규현",
+      "known": "Singer, Super Junior"
+    },
+    "kang-ji-young": {
+      "name": "Kang Ji-young",
+      "ko": "강지영",
+      "known": "TV presenter"
+    },
+    "7high": {
+      "name": "7high",
+      "ko": "세븐하이",
+      "known": "Poker player, DJ and producer"
+    },
+    "lee-seung-hyun": {
+      "name": "Lee Seung-hyun",
+      "ko": "이승현"
+    },
+    "choi-hyun-joon": {
+      "name": "Choi Hyun-joon",
+      "ko": "최현준",
+      "known": "Model and KAIST student"
+    },
+    "chuu": {
+      "name": "Chuu",
+      "ko": "츄",
+      "known": "Singer"
+    },
+    "kim-ha-rin": {
+      "name": "Kim Ha-rin",
+      "ko": "김하린",
+      "known": "Plastic surgeon"
+    },
+    "park-sang-yeon": {
+      "name": "Park Sang-yeon",
+      "ko": "박상연",
+      "known": "Medical student",
+      "bio": "A Yonsei University medical student and gold medallist at the International Physics Olympiad."
+    },
+    "son-eun-yoo": {
+      "name": "Son Eun-yoo",
+      "ko": "손은유",
+      "known": "Lawyer"
+    },
+    "tino": {
+      "name": "Tino",
+      "ko": "티노",
+      "known": "Board game YouTuber",
+      "bio": "Main host of the board game YouTube channel UZTV."
+    },
+    "oking": {
+      "name": "Oking (Oh Byeong-min)",
+      "ko": "오킹",
+      "known": "Streamer",
+      "bio": "Beat 76 other creators to win The Influencer, but Netflix withheld the prize after he revealed the result before the show aired."
+    },
+    "jang-keun-suk": {
+      "name": "Jang Keun-suk",
+      "ko": "장근석",
+      "known": "Singer and actor"
+    },
+    "risabae": {
+      "name": "Risabae",
+      "ko": "이사배",
+      "known": "Makeup artist and YouTuber"
+    },
+    "jung-ji-woo": {
+      "name": "Jung Ji-woo",
+      "ko": "정지우",
+      "known": "Influencer"
+    },
+    "bbogumi": {
+      "name": "Bbogumi",
+      "ko": "뽀구미",
+      "known": "Content creator"
+    }
+  }
+}

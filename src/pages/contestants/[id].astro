@@ -1,0 +1,73 @@
+---
+import Base from "../../layouts/Base.astro";
+import PersonTile from "../../components/PersonTile.astro";
+import { contestants, initials, resultText, seasonLabel, recordBio } from "../../lib/universe.mjs";
+
+export function getStaticPaths() {
+  return contestants.map((c) => ({ params: { id: c.id }, props: { c } }));
+}
+const { c } = Astro.props;
+const color = c.shows[0].color;
+const wins = c.apps.filter((a) => a.entry.place === 1).length;
+
+// Players who shared at least one season, most shared seasons first.
+const shared = new Map();
+for (const { season } of c.apps) {
+  for (const e of season.cast) {
+    if (e.person !== c.id) shared.set(e.person, (shared.get(e.person) ?? 0) + 1);
+  }
+}
+const rivals = [...shared.entries()]
+  .filter(([, n]) => n > 1)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
+---
+<Base title={c.name} description={c.bio ?? recordBio(c)}>
+  <div class="wrap">
+    <a class="back" href="/contestants/" style="margin-top:20px">All contestants</a>
+    <div class="profile">
+      <span class="avatar big" style={`--show:${color}`} aria-hidden="true">{initials(c.name)}{wins > 0 && <span class="crown">👑</span>}</span>
+      <div>
+        <h1>{c.name}</h1>
+        {c.ko && <div class="ko" lang="ko">{c.ko}</div>}
+        {c.known && <div class="known">{c.known}</div>}
+        <div class="chips" style="margin-top:12px">
+          {c.shows.map((s) => <a class="chip" href={`/shows/${s.id}/`} style={`--show:${s.color}`}>{s.name}</a>)}
+          {wins > 0 && <span class="chip gold">{wins === 1 ? "Champion" : `${wins}x champion`}</span>}
+        </div>
+      </div>
+    </div>
+
+    <section style="padding-top:8px">
+      <p class="bio">{c.bio ?? recordBio(c)}</p>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Survival record</h2></div>
+      <ol class="timeline">
+        {c.apps.map(({ show, season, entry }) => (
+          <li>
+            <a class="card" href={`/shows/${show.id}/#${season.id}`} style={`--show:${show.color}`}>
+              <span>
+                <b>{seasonLabel(show, season)}</b>
+                <span class="when"> · {show.network}, {season.aired}</span>
+              </span>
+              <span class:list={["res", { gold: entry.place === 1 }]}>{resultText(entry) || "Contestant"}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {rivals.length > 0 && (
+      <section>
+        <div class="section-head"><h2>Old rivals</h2></div>
+        <p class="muted" style="margin-top:-8px">Players who shared more than one season with {c.name}.</p>
+        <div class="grid people">
+          {rivals.map(([id, n]) => <PersonTile id={id} color={rivalColor(id)} sub={`${n} seasons together`} />)}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>

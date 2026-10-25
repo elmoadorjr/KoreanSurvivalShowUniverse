@@ -1,0 +1,24 @@
+---
+import Base from "../../layouts/Base.astro";
+import ShowCard from "../../components/ShowCard.astro";
+import { shows } from "../../lib/universe.mjs";
+
+const kinds = [...new Set(shows.map((s) => s.kind))];
+---
+<Base title="Shows" description="Every Korean survival show on the site, season by season.">
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Shows</div>
+      <h1>The survival shows</h1>
+      <p class="lede">Strategy games, social experiments, physical contests and the indie web shows in between.</p>
+    </section>
+    {kinds.map((kind) => (
+      <section>
+        <div class="section-head"><h2>{kind}</h2></div>
+        <div class="grid">
+          {shows.filter((s) => s.kind === kind).map((show) => <ShowCard show={show} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>

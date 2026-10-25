@@ -1,0 +1,50 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "A fan site for Korean survival shows: every season, every player, every crossover." } = Astro.props;
+const path = Astro.url.pathname;
+const nav = [
+  { href: "/", label: "Home" },
+  { href: "/shows/", label: "Shows" },
+  { href: "/contestants/", label: "Contestants" },
+];
+const current = (href) => (href === "/" ? path === "/" : path.startsWith(href));
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title === "Survival Universe" ? title : `${title} | Survival Universe`}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-head">
+      <div class="wrap">
+        <a class="brand" href="/">Survival <span>Universe</span></a>
+        <nav class="nav" aria-label="Main">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={current(n.href) ? "page" : undefined}>{n.label}</a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <p><b>Survival Universe</b> is an unofficial fan site. Shows and names belong to their networks and to the people themselves.</p>
+        <p>Cast lists marked "in progress" are partial. Corrections are welcome: edit <code>src/data/universe.json</code>.</p>
+      </div>
+    </footer>
+  </body>
+</html>
