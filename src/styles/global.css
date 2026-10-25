@@ -173,8 +173,18 @@ a.card:hover { border-color: color-mix(in srgb, var(--show, var(--accent)) 70%, 
 .site-foot { border-top: 1px solid var(--line); margin-top: 40px; padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
 .site-foot p { margin: 4px 0; max-width: 720px; }
 
+.nav .short { display: none; }
 @media (max-width: 520px) {
   .nav a { padding: 8px 7px; font-size: 14px; }
+  .nav a.wide { display: none; }
+  .nav .long { display: none; }
+  .nav .short { display: inline; }
   .brand { font-size: 16px; }
-  .brand .long { display: none; }
+}
+
+/* Network tooltips (3d-force-graph) */
+.net-tip {
+  background: var(--card); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 9px; font: 13px/1.4 var(--sans);
 }

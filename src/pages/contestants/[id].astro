@@ -36,6 +36,7 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
           {c.shows.map((s) => <a class="chip" href={`/shows/${s.id}/`} style={`--show:${s.color}`}>{s.name}</a>)}
           {wins > 0 && <span class="chip gold">{wins === 1 ? "Champion" : `${wins}x champion`}</span>}
         </div>
+        <a class="back" href={`/network/?focus=${c.id}`}>See {c.apps.length > 1 ? "their connections" : "them"} in the network</a>
       </div>
     </div>
 

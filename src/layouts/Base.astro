@@ -8,9 +8,10 @@ interface Props {
 const { title, description = "A fan site for Korean survival shows: every season, every player, every crossover." } = Astro.props;
 const path = Astro.url.pathname;
 const nav = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Home", wide: true },
   { href: "/shows/", label: "Shows" },
-  { href: "/contestants/", label: "Contestants" },
+  { href: "/contestants/", label: "Contestants", short: "Players" },
+  { href: "/network/", label: "Network" },
 ];
 const current = (href) => (href === "/" ? path === "/" : path.startsWith(href));
 ---
@@ -32,7 +33,9 @@ const current = (href) => (href === "/" ? path === "/" : path.startsWith(href));
         <a class="brand" href="/">Survival <span>Universe</span></a>
         <nav class="nav" aria-label="Main">
           {nav.map((n) => (
-            <a href={n.href} aria-current={current(n.href) ? "page" : undefined}>{n.label}</a>
+            <a href={n.href} class:list={{ wide: n.wide }} aria-current={current(n.href) ? "page" : undefined}>
+              {n.short ? <><span class="long">{n.label}</span><span class="short">{n.short}</span></> : n.label}
+            </a>
           ))}
         </nav>
       </div>

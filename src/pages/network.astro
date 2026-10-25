@@ -1,0 +1,117 @@
+---
+import Base from "../layouts/Base.astro";
+import { shows, contestants, seasonLabel, resultText } from "../lib/universe.mjs";
+
+// Everything the graph needs, built once at build time.
+const graph = {
+  shows: shows.map((s) => ({ id: s.id, name: s.name, color: s.color, network: s.network, years: s.years })),
+  seasons: shows.flatMap((show) =>
+    show.seasons.map((season) => ({
+      id: season.id,
+      show: show.id,
+      name: season.title === show.name ? show.name : season.title,
+      full: seasonLabel(show, season),
+      aired: season.aired,
+    }))
+  ),
+  people: contestants.map((c) => ({
+    id: c.id,
+    name: c.name,
+    ko: c.ko ?? "",
+    known: c.known ?? "",
+    shows: c.shows.map((s) => s.id),
+    apps: c.apps.map(({ season, entry }) => ({ season: season.id, result: resultText(entry), won: entry.place === 1 })),
+  })),
+};
+const veterans = contestants.filter((c) => c.apps.length > 1).length;
+const crossShow = contestants.filter((c) => c.shows.length > 1).length;
+---
+<Base title="Network" description="A 3D map of the Korean survival show universe: every player linked to every season they played.">
+  <div class="net" id="net">
+    <div class="net-canvas" id="graph" aria-label="3D network of shows, seasons and players"></div>
+
+    <div class="net-panel net-controls">
+      <div class="eyebrow">The network</div>
+      <h1>Who played where</h1>
+      <p class="muted">{veterans} players came back for another season. {crossShow} crossed into a different show; they glow gold.</p>
+      <div class="seg" role="group" aria-label="Who to show">
+        <button type="button" data-who="veterans" aria-pressed="true">Veterans</button>
+        <button type="button" data-who="all" aria-pressed="false">Everyone</button>
+      </div>
+      <div class="seg" role="group" aria-label="Group by">
+        <button type="button" data-group="seasons" aria-pressed="true">Seasons</button>
+        <button type="button" data-group="shows" aria-pressed="false">Shows</button>
+      </div>
+      <input id="find" type="search" list="names" placeholder="Find a player" aria-label="Find a player" />
+      <datalist id="names">
+        {contestants.map((c) => <option value={c.name} />)}
+      </datalist>
+      <ul class="legend">
+        {shows.map((s) => <li><span style={`background:${s.color}`}></span>{s.name}</li>)}
+        <li><span class="gold"></span>Played more than one show</li>
+      </ul>
+      <p class="hint muted">Drag to orbit, scroll or pinch to zoom, tap a node for details.</p>
+    </div>
+
+    <aside class="net-panel net-info" id="info" hidden aria-live="polite">
+      <button type="button" class="close" id="close" aria-label="Close">×</button>
+      <div id="info-body"></div>
+    </aside>
+  </div>
+
+  <script type="application/json" id="graph-data" set:html={JSON.stringify(graph)} />
+  <script>
+    import "../scripts/network.js";
+  </script>
+</Base>
+
+<style>
+  .net { position: relative; height: calc(100dvh - 61px); overflow: hidden; }
+  .net-canvas { position: absolute; inset: 0; }
+  :global(body:has(.net) .site-foot) { display: none; }
+
+  .net-panel {
+    position: absolute; z-index: 2;
+    background: color-mix(in srgb, var(--card) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px;
+  }
+  .net-controls { top: 16px; left: 16px; width: 290px; max-height: calc(100% - 32px); overflow: auto; }
+  .net-controls h1 { font-size: 24px; margin: 6px 0 6px; }
+  .net-controls p { font-size: 14px; margin: 0 0 12px; }
+  .seg { display: flex; background: var(--bg-2); border-radius: 10px; padding: 3px; margin-bottom: 8px; }
+  .seg button {
+    flex: 1; font: 600 14px var(--sans); color: var(--muted); background: none;
+    border: 0; border-radius: 8px; padding: 7px 8px; cursor: pointer;
+    user-select: none; -webkit-user-select: none;
+  }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .25); }
+  #find {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--bg-2);
+    border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; margin: 4px 0 12px;
+  }
+  .legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .legend span { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .legend .gold { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+  .hint { margin: 12px 0 0 !important; font-size: 13px !important; }
+
+  .net-info { top: 16px; right: 16px; width: 320px; max-height: calc(100% - 32px); overflow: auto; }
+  .close { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--muted); font-size: 26px; line-height: 1; cursor: pointer; }
+  :global(.net-info h2) { font-size: 22px; margin: 4px 24px 2px 0; }
+  :global(.net-info .ko) { color: var(--muted); }
+  :global(.net-info ul) { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 6px; }
+  :global(.net-info li) { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; border-left: 3px solid var(--c); padding-left: 8px; }
+  :global(.net-info li b) { font-weight: 600; }
+  :global(.net-info li .r) { color: var(--muted); text-align: right; }
+  :global(.net-info li .r.won) { color: var(--gold); font-weight: 600; }
+  :global(.net-info .go) { display: inline-block; margin-top: 4px; font-weight: 600; color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .net-controls { left: 8px; right: 8px; top: 8px; width: auto; padding: 12px; max-height: 46%; }
+    .net-controls .legend, .net-controls .hint, .net-controls p { display: none; }
+    .net-controls h1 { font-size: 18px; }
+    .net-info { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 50%; }
+  }
+</style>

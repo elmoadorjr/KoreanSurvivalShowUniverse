@@ -21,6 +21,9 @@ npm run build     # static site in dist/
 - `/shows/` and `/shows/<show>/`: each show with every season's cast
 - `/contestants/`: every player, searchable (English or Korean) and filterable
 - `/contestants/<id>/`: a bio, the full survival record and old rivals
+- `/network/`: a 3D graph (three.js, via 3d-force-graph) of every player linked
+  to every season they played; veterans who crossed shows glow gold.
+  `/network/?focus=<id>` flies to a player.
 
 ## Editing the data
 
