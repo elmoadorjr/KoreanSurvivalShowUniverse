@@ -2,11 +2,13 @@
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
 import { shows, resultText, seasonLabel } from "../../lib/universe.mjs";
+import { loreForShow } from "../../lib/lore.mjs";
 
 export function getStaticPaths() {
   return shows.map((show) => ({ params: { show: show.id }, props: { show } }));
 }
 const { show } = Astro.props;
+const lore = loreForShow(show.id);
 ---
 <Base title={show.name} description={show.blurb}>
   <div class="show-hero" style={`--show:${show.color}`}>
@@ -38,6 +40,9 @@ const { show } = Astro.props;
           </span>
         </div>
         {season.note && <p class:list={["note", { pending: !season.complete }]}>{season.note}</p>}
+        {lore.filter((m) => m.season.id === season.id).map((m) => (
+          <a class="lore-note" href={`/lore/#${m.id}`}><b>From the lore: {m.title}.</b> {m.text}</a>
+        ))}
         {season.showcase && <p><a class="showcase-link" href={season.showcase}>The full season guide: every player's record and every old rivalry</a></p>}
         <div class="grid people">
           {season.cast.map((entry) => (

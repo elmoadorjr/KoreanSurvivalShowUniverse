@@ -2,7 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import PersonTile from "../../components/PersonTile.astro";
 import Avatar from "../../components/Avatar.astro";
-import { contestants, photos, resultText, seasonLabel, seasonNetwork, recordBio, headToHeadText } from "../../lib/universe.mjs";
+import { contestants, photos, resultText, seasonLabel, seasonNetwork, recordBio, headToHeadText, people } from "../../lib/universe.mjs";
+import { loreForPerson } from "../../lib/lore.mjs";
 
 export function getStaticPaths() {
   return contestants.map((c) => ({ params: { id: c.id }, props: { c } }));
@@ -23,6 +24,8 @@ const rivals = [...shared.entries()]
   .sort((a, b) => b[1] - a[1])
   .slice(0, 8);
 const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
+const lore = loreForPerson(c.id);
+const others = (ids) => ids.filter((id) => id !== c.id).map((id) => people[id].name.replace(/\s*\(.*\)/, ""));
 ---
 <Base title={c.name} description={c.bio ?? recordBio(c)}>
   <div class="wrap">
@@ -47,6 +50,35 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
         <p class="credit">Photo: {photos[c.id].credit}, <a href={photos[c.id].source} rel="noopener">{photos[c.id].license}</a>, via Wikimedia Commons</p>
       )}
     </section>
+
+    {(lore.moments.length > 0 || lore.bonds.length > 0 || lore.nicknames.length > 0) && (
+      <section>
+        <div class="section-head"><h2>In the lore</h2><a href="/lore/">All the lore</a></div>
+        {lore.nicknames.map((n) => (
+          <p class="nick">Known as {n.names.map((x, i) => <>{i > 0 && ", "}<b>"{x}"</b></>)}. {n.text}</p>
+        ))}
+        <ol class="lore-list">
+          {lore.moments.map((m) => (
+            <li style={`--show:${m.show?.color ?? "var(--gold)"}`}>
+              <a class="card" href={`/lore/#${m.id}`}>
+                <span class="lore-when">{m.year}{m.show ? ` · ${seasonLabel(m.show, m.season)}` : ""}</span>
+                <b>{m.title}</b>
+                <span class="muted">{m.text}</span>
+              </a>
+            </li>
+          ))}
+          {lore.bonds.map((b) => (
+            <li style="--show:var(--gold)">
+              <a class="card" href="/lore/">
+                <span class="lore-when">{b.kind} · with {others(b.people).join(", ")}</span>
+                <b>{b.name}</b>
+                <span class="muted">{b.text}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
 
     <section>
       <div class="section-head"><h2>Survival record</h2></div>
@@ -76,3 +108,12 @@ const rivalColor = (id) => contestants.find((x) => x.id === id).shows[0].color;
     )}
   </div>
 </Base>
+
+<style>
+  .nick { margin: 0 0 10px; font-size: 15px; }
+  .nick b { color: var(--gold); }
+  .lore-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .lore-list .card { display: grid; gap: 4px; text-decoration: none; color: inherit; border-left: 3px solid var(--show); }
+  .lore-list .muted { font-size: 14px; }
+  .lore-when { font-size: 12px; font-weight: 700; color: var(--gold); letter-spacing: .02em; }
+</style>

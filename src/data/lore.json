@@ -1,0 +1,287 @@
+{
+  "eras": [
+    {
+      "id": "genius",
+      "name": "The Genius era",
+      "years": [2013, 2015],
+      "text": "Jeong Jong-yeon's tvN show invents the genre: a room of celebrities and brains, one game a week, and a death match for the loser. Four seasons crown Hong Jin-ho, Lee Sang-min and, twice, Jang Dong-min."
+    },
+    {
+      "id": "society",
+      "name": "Societies and secret rooms",
+      "years": [2016, 2017],
+      "text": "The games grow into whole communities. Society Game splits its players into two villages, Madong under one leader and Nopdong ruled by vote, while Code: Secret Room and Crime Scene turn rooms into puzzles and murders."
+    },
+    {
+      "id": "escape",
+      "name": "The escape years",
+      "years": [2018, 2022],
+      "text": "Brain survival goes quiet on TV while its makers build puzzles instead: The Great Escape's giant escape rooms, Netflix's Busted! and The Sixth Sense. The fight moves online with Money Game and Accomplice on YouTube, and The Bloody Game begins."
+    },
+    {
+      "id": "boom",
+      "name": "The streaming boom",
+      "years": [2023, 2024],
+      "text": "Every platform wants a survival show. Netflix launches The Devil's Plan and Physical: 100, TVING checks in to The Time Hotel, Coupang Play sends universities to war and Wavve builds The Community. The old names start turning up everywhere."
+    },
+    {
+      "id": "reunion",
+      "name": "Dead again",
+      "years": [2025, 2026],
+      "text": "The veterans come back for each other. The Bloody Game 3 is billed as an all-star game, Death Game pits legends one on one, and The Devil's Plan returns with its strongest cast yet. Jang Dong-min, winner of five, crosses over to design a game of his own."
+    }
+  ],
+  "moments": [
+    {
+      "id": "first-champion",
+      "year": 2013,
+      "season": "the-genius-1",
+      "title": "The first champion",
+      "people": ["hong-jin-ho", "kim-kyung-ran"],
+      "text": "The man famous for finishing second finally finishes first. Hong Jin-ho beats Kim Kyung-ran in the final of the very first season and takes home 79 million won.",
+      "source": "https://en.wikipedia.org/wiki/The_Genius:_Rules_of_the_Game"
+    },
+    {
+      "id": "id-card",
+      "year": 2014,
+      "season": "the-genius-2",
+      "title": "The ID card",
+      "people": ["eun-ji-won", "jo-yoo-young", "lee-doo-hee"],
+      "text": "In episode 6 of Rule Breaker, Lee Doo-hee looks away from his desk and his ID card is gone, taken by Eun Ji-won and Jo Yoo-young. The main match cannot be played without it, so he is shut out of the game before it starts. The backlash becomes the most argued-over moment in the genre's history.",
+      "source": "https://en.namu.wiki/w/%EC%9D%B4%EB%91%90%ED%9D%AC/%EB%8D%94%20%EC%A7%80%EB%8B%88%EC%96%B4%EC%8A%A4"
+    },
+    {
+      "id": "rule-breaker",
+      "year": 2014,
+      "season": "the-genius-2",
+      "title": "The singer takes the crown",
+      "people": ["lee-sang-min", "lim-yo-hwan"],
+      "text": "The season of the ID card ends with the singer and producer Lee Sang-min beating the StarCraft legend Lim Yo-hwan in the final.",
+      "source": "https://en.wikipedia.org/wiki/The_Genius:_Rule_Breaker"
+    },
+    {
+      "id": "jang-oh",
+      "year": 2014,
+      "season": "the-genius-3",
+      "title": "The Jang and Oh alliance",
+      "people": ["jang-dong-min", "oh-hyun-min"],
+      "text": "Late in Black Garnet the comedian and the youngest player in the house quietly join forces. They end as the season's final two, and Jang Dong-min beats Oh Hyun-min for his first title.",
+      "source": "https://namu.wiki/w/%EC%9E%A5%EB%8F%99%EB%AF%BC/%EB%8D%94%20%EC%A7%80%EB%8B%88%EC%96%B4%EC%8A%A4"
+    },
+    {
+      "id": "grand-final",
+      "year": 2015,
+      "season": "the-genius-4",
+      "title": "Champion of champions",
+      "people": ["jang-dong-min", "kim-kyung-hoon", "hong-jin-ho", "lee-sang-min"],
+      "text": "The Grand Final brings back the best of every season. Jang Dong-min wins again, this time over Kim Kyung-hoon, who had been knocked out in the second episode of Black Garnet and came back all the way to the final. The prize: 132 million won.",
+      "source": "https://en.wikipedia.org/wiki/The_Genius:_Grand_Final"
+    },
+    {
+      "id": "nopdong",
+      "year": 2017,
+      "season": "society-game-2",
+      "title": "The leader of Nopdong",
+      "people": ["jang-dong-min", "julien-kang", "park-hyun-seok"],
+      "text": "On Society Game 2, Jang Dong-min leads the village that decides by vote, and Nopdong's final three share the win. Title number three.",
+      "source": "https://en.wikipedia.org/wiki/Society_Game"
+    },
+    {
+      "id": "black-sheep",
+      "year": 2022,
+      "season": "black-sheep-game-1",
+      "title": "The game nobody won",
+      "people": ["kim-kyung-hoon", "pungja"],
+      "text": "The Black Sheep Game hides two experienced players among the newcomers. Kim Kyung-hoon and Pungja play the black sheep, and the season ends without a winner."
+    },
+    {
+      "id": "silver-again",
+      "year": 2023,
+      "season": "time-hotel-1",
+      "title": "Second, again",
+      "people": ["john-park", "hong-jin-ho", "hwang-je-sung"],
+      "text": "Ten years after his first title, Hong Jin-ho reaches another final and finishes second, this time to the singer John Park in a four-game finale at The Time Hotel. The number 2 strikes again."
+    },
+    {
+      "id": "devils-plan-1",
+      "year": 2023,
+      "season": "devils-plan-1",
+      "title": "The actor and the astronomer",
+      "people": ["ha-seok-jin", "orbit"],
+      "text": "Netflix's first brain survival show ends with the actor Ha Seok-jin beating the astronomer and science YouTuber Orbit in the final. He calls the prize more a reward for what he achieved than money he planned to spend.",
+      "source": "https://koreatimes.co.kr/www/art/2023/10/688_361315.html"
+    },
+    {
+      "id": "influencer",
+      "year": 2024,
+      "season": "the-influencer-1",
+      "title": "The withheld prize",
+      "people": ["oking", "risabae"],
+      "text": "Oking wins Netflix's The Influencer over Risabae, but the 300 million won prize is withheld."
+    },
+    {
+      "id": "all-star",
+      "year": 2025,
+      "season": "bloody-game-3",
+      "title": "The all-star game",
+      "people": ["jang-dong-min", "hong-jin-ho", "crocodile", "heo-seong-beom"],
+      "text": "Billed as an all-star game of survival legends, The Bloody Game 3 ends in January 2025 with a final four of Jang Dong-min, Hong Jin-ho, Crocodile and Heo Seong-beom. Jang wins his fourth title, four seasons after watching the first Bloody Game from the panel.",
+      "source": "https://enews.imbc.com/News/RetrieveNewsInfo/447416"
+    },
+    {
+      "id": "jangpagetti",
+      "year": 2025,
+      "season": "bloody-game-3",
+      "title": "The Jangpagetti kick",
+      "people": ["jang-dong-min"],
+      "text": "After losing on the day of the raid, Jang Dong-min kicks a stray packet of Chapagetti across the main hall in frustration. It lands neatly on the sofa, and fans give it a name.",
+      "source": "https://namu.wiki/w/%ED%94%BC%EC%9D%98%20%EA%B2%8C%EC%9E%843"
+    },
+    {
+      "id": "death-room",
+      "year": 2025,
+      "season": "devils-plan-2",
+      "title": "One in two",
+      "people": ["jung-hyun-gyu", "yoon-so-hee"],
+      "text": "The Death Room final comes down to a one-in-two guess. Jung Hyun-gyu calls it right and beats Yoon So-hee, and the finale sets off a backlash that follows him all the way to Dead Again.",
+      "source": "https://www.allkpop.com/article/2025/05/the-devils-plan-death-room-yoon-so-hee-and-jeong-hyun-gyu-face-online-backlash-did-they-mistake-this-for-a-dating-show"
+    },
+    {
+      "id": "go-legend",
+      "year": 2026,
+      "season": "death-game-1",
+      "title": "The Go legend falls",
+      "people": ["hong-jin-ho", "lee-se-dol", "7high"],
+      "text": "Death Game opens with legends one on one. Hong Jin-ho wins the first two duels, beating Lee Se-dol, the only human to win a game against AlphaGo, and then the poker pro 7high."
+    },
+    {
+      "id": "last-winner",
+      "year": 2026,
+      "season": "death-game-2",
+      "title": "The last winner",
+      "people": ["yoo-ri-sa", "park-sung-woong"],
+      "text": "Death Game's tournament season ends with Yoo Ri-sa, the Mensa model from The Bloody Game, beating Park Sung-woong for the title."
+    },
+    {
+      "id": "five",
+      "year": 2026,
+      "season": "betting-on-fact-1",
+      "title": "Five for five",
+      "people": ["jang-dong-min", "lee-yong-jin"],
+      "text": "Jang Dong-min wins Betting on Fact over Lee Yong-jin: five brain survival titles. \"100% win rate,\" he says, \"and I will keep challenging.\"",
+      "source": "https://sports.khan.co.kr/en/article/202605110942007"
+    },
+    {
+      "id": "architect",
+      "year": 2026,
+      "title": "The Architect",
+      "people": ["jang-dong-min"],
+      "text": "Netflix announces a new brain survival show designed by Jang Dong-min, not as a player but as its Architect, directed by The Bloody Game's Hyun Jung-wan.",
+      "source": "https://www.tenasia.com/tv/2026041243454"
+    },
+    {
+      "id": "dead-again",
+      "year": 2026,
+      "season": "devils-plan-3",
+      "title": "The reunion",
+      "people": ["jang-dong-min", "hong-jin-ho", "oh-hyun-min", "ha-seok-jin", "jung-hyun-gyu"],
+      "text": "The Devil's Plan: Dead Again gathers sixteen players on November 10: both earlier winners, the Jang and Oh alliance, Hong Jin-ho and champions of Society Game and The Time Hotel. \"The Return. The Real Showdown.\"",
+      "source": "https://about.netflix.com/en/news/the-devils-plan-dead-again-teaser"
+    }
+  ],
+  "bonds": [
+    {
+      "id": "jang-oh",
+      "kind": "Alliance",
+      "name": "The Jang and Oh alliance",
+      "people": ["jang-dong-min", "oh-hyun-min"],
+      "text": "Black Garnet's final two, and the partnership fans most want to see again. Dead Again puts them back in the same house, where many see Oh as the one player who can rival Jang."
+    },
+    {
+      "id": "jang-hong",
+      "kind": "Rivalry",
+      "name": "The two faces of the genre",
+      "people": ["jang-dong-min", "hong-jin-ho"],
+      "text": "The genre's champion and its most familiar face have met on four different shows: The Genius, Crime Scene, The Bloody Game and The Devil's Plan."
+    },
+    {
+      "id": "id-card",
+      "kind": "Feud",
+      "name": "The ID card",
+      "people": ["eun-ji-won", "lee-doo-hee", "jo-yoo-young"],
+      "text": "One stolen card in Rule Breaker, and a decade of arguments about where strategy ends and bullying begins."
+    },
+    {
+      "id": "first-two",
+      "kind": "Old guard",
+      "name": "The first two champions",
+      "people": ["hong-jin-ho", "lee-sang-min"],
+      "text": "The winners of the first two Genius seasons kept sharing a house, from Rules of the Game to The Bloody Game."
+    },
+    {
+      "id": "bloody-trio",
+      "kind": "Co-travellers",
+      "name": "The Bloody Game trio",
+      "people": ["hong-jin-ho", "seo-chul-gu", "yoo-ri-sa"],
+      "text": "From The Bloody Game to Death Game and now Dead Again, the strategist, the rapper and the Mensa model keep landing in the same house."
+    },
+    {
+      "id": "escape-six",
+      "kind": "Crew",
+      "name": "The Great Escape six",
+      "people": ["kang-ho-dong", "kim-jong-min", "kim-dong-hyun", "shindong", "yoo-byung-jae", "p-o"],
+      "text": "Four seasons locked in buildings together. Shindong carries the escape-room instinct into Dead Again, and Kim Dong-hyun went on to captain South Korea to the Physical: Asia title."
+    }
+  ],
+  "nicknames": [
+    {
+      "person": "hong-jin-ho",
+      "names": ["YellOw", "Kong", "King of Silver"],
+      "text": "His StarCraft alias was YellOw and fans call him Kong. Six second places in major tournaments made him the King of Silver, and the number 2 has followed him ever since.",
+      "source": "https://en.wikipedia.org/wiki/Hong_Jin-ho"
+    },
+    {
+      "person": "jang-dong-min",
+      "names": ["God of Survival"],
+      "text": "Five brain survival titles: The Genius: Black Garnet, The Genius: Grand Final, Society Game 2, The Bloody Game 3 and Betting on Fact.",
+      "source": "https://www.soompi.com/article/1876436wpp/watch-the-devils-plan-season-3-reveals-16-contestants-for-its-strongest-lineup-yet"
+    },
+    {
+      "person": "orbit",
+      "names": ["Gwedo"],
+      "text": "His Korean name, 궤도, means orbit."
+    },
+    {
+      "person": "seo-chul-gu",
+      "names": ["Xitsuh"],
+      "text": "The rapper's stage name. He entered university at 16."
+    },
+    {
+      "person": "yoo-ri-sa",
+      "names": ["The survival game changer"],
+      "text": "How Netflix billed her for Dead Again: a Mensa member with a reported IQ of 156 who won an Asian ladies poker tournament six months after learning the game."
+    },
+    {
+      "person": "oh-hyun-min",
+      "names": ["The youngest finalist"],
+      "text": "The youngest player of Black Garnet, and its runner-up."
+    }
+  ],
+  "architects": [
+    {
+      "name": "Jeong Jong-yeon",
+      "ko": "정종연",
+      "role": "The father of the genre",
+      "shows": ["the-genius", "society-game", "great-escape", "high-school-mystery-club", "devils-plan", "agents-of-mystery"],
+      "text": "He made The Genius, then Society Game, then built escape rooms and mysteries for a decade before bringing brain survival to Netflix with The Devil's Plan."
+    },
+    {
+      "name": "Hyun Jung-wan",
+      "ko": "현정완",
+      "role": "The other pillar",
+      "shows": ["bloody-game", "deadly-tag"],
+      "text": "The Bloody Game's creator, called one of the two pillars of survival alongside Jeong Jong-yeon. He made Deadly Tag for Disney+ and directs Jang Dong-min's Netflix game.",
+      "source": "https://www.starnewskorea.com/en/star/2026/10/13/2026101311535147771"
+    }
+  ]
+}

@@ -4,6 +4,8 @@ import ShowCard from "../components/ShowCard.astro";
 import PersonTile from "../components/PersonTile.astro";
 import Avatar from "../components/Avatar.astro";
 import { shows, contestants, crossovers, champions, seasonLabel, findSeason } from "../lib/universe.mjs";
+import { moments } from "../lib/lore.mjs";
+const loreTeaser = ["id-card", "jang-oh", "silver-again", "five"].map((id) => moments.find((m) => m.id === id)).filter(Boolean);
 
 const dp3 = findSeason("devils-plan-3");
 
@@ -37,6 +39,19 @@ const seasons = shows.flatMap((s) => s.seasons);
       <div class="section-head"><h2>The shows</h2><a href="/shows/">All shows</a></div>
       <div class="grid">
         {shows.map((show) => <ShowCard show={show} />)}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>From the lore</h2><a href="/lore/">All the lore</a></div>
+      <div class="lore-grid">
+        {loreTeaser.map((m) => (
+          <a class="card lore-tease" href={`/lore/#${m.id}`} style={`--show:${m.show?.color ?? "var(--gold)"}`}>
+            <span class="lore-y">{m.year}{m.show ? ` · ${m.show.name}` : ""}</span>
+            <b>{m.title}</b>
+            <span class="muted">{m.text}</span>
+          </a>
+        ))}
       </div>
     </section>
 

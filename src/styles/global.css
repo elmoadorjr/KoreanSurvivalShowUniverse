@@ -196,6 +196,12 @@ a.card:hover { border-color: color-mix(in srgb, var(--show, var(--accent)) 70%, 
   .nav .short { display: inline; }
   .brand { font-size: 16px; }
 }
+@media (max-width: 420px) {
+  .site-head .wrap { gap: 8px; }
+  .nav { gap: 0; }
+  .nav a { padding: 8px 6px; font-size: 13px; }
+  .brand { font-size: 15px; }
+}
 
 /* Network tooltips (3d-force-graph) */
 .net-tip {
@@ -203,3 +209,11 @@ a.card:hover { border-color: color-mix(in srgb, var(--show, var(--accent)) 70%, 
   border: 1px solid var(--line); border-radius: 8px;
   padding: 6px 9px; font: 13px/1.4 var(--sans);
 }
+
+/* Lore notes on show pages and the home page teaser */
+.lore-note { display: block; margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; font-size: 14px; color: var(--muted); text-decoration: none; background: color-mix(in srgb, var(--gold) 9%, transparent); border-left: 3px solid var(--gold); }
+.lore-note b { color: var(--ink); }
+.lore-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.lore-tease { display: grid; gap: 6px; align-content: start; text-decoration: none; color: inherit; border-top: 3px solid var(--show); }
+.lore-tease .muted { font-size: 14px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.lore-y { font-size: 12px; font-weight: 700; color: var(--gold); }

@@ -35,6 +35,9 @@ npm run build     # static site in dist/
 ## Pages
 
 - `/`: the shows, the crossover players and the hall of champions
+- `/lore/`: the eras, legendary moments, alliances and feuds, nicknames and
+  the two creators, from `src/data/lore.json` (every id is checked at build
+  time). Moments also appear on the players' and shows' own pages.
 - `/shows/` and `/shows/<show>/`: each show with every season's cast
 - `/contestants/`: every player, searchable (English or Korean) and filterable
 - `/contestants/<id>/`: a bio, the full survival record and old rivals
